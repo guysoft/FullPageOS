@@ -5,6 +5,10 @@ A `Raspberry Pi <http://www.raspberrypi.org/>`_ distribution for 3d printers. It
 
 This repository contains the source script to generate the distribution out of an existing `Raspbian <http://www.raspbian.org/>`_ distro image.
 
+Where to get it?
+----------------
+
+Official mirror is `here <http://www.gitiverse.com/octopi/>`_
 
 Requirements
 -------------
