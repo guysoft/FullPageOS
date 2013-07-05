@@ -15,7 +15,7 @@ How to use it?
 
 #. unzip the image and dd it to an sd card like any other Raspberry Pi image
 #. boot the pi and connect it to a lan or wifi network, like any other Rasbpian installation.
-#. Octoprint port is 5000m located at `http://octopi.local:5000 <http://octopi.local:5000>`_.
+#. Octoprint port is 5000 located at `http://octopi.local:5000 <http://octopi.local:5000>`_.
 #. If a webcam was plugged in, MJPG-streamer is on port 8080. You can reach it at: `http://octopi.local:8080/?action=stream <octopi.local:8080/?action=stream>`_.
 
 Developing
@@ -32,9 +32,9 @@ Requirements
 Usage
 ~~~~~
 
-#. In the `src/octopi` script set the path of `ZIP_IMG` to the path of your Raspbian image.
-#. Run `src/octopi` as root.
-#. The final image will be created at the `src/workspace`
+#. In the ``src/octopi`` script set the path of ``ZIP_IMG`` to the path of your Raspbian image.
+#. Run ``src/octopi`` as root.
+#. The final image will be created at the ``src/workspace``
 
 
 
