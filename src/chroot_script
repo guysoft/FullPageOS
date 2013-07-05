@@ -1,0 +1,108 @@
+#!/usr/bin/env bash
+# OctoPI generation script
+# Helper script that runs in a Raspbian chroot to create the OctoPI distro
+# Written by Guy Sheffer <guysoft at gmail dot com>
+# GPL V3
+fixLd(){
+  sed -i 's@/usr/lib/arm-linux-gnueabihf/libcofi_rpi.so@\#/usr/lib/arm-linux-gnueabihf/libcofi_rpi.so@' /etc/ld.so.preload
+}
+
+fixLd
+apt-get update
+
+#apt-get octoprint virtualenv
+apt-get -y install python-virtualenv python-dev git
+  
+  pushd /home/pi
+  
+  #Get octopi and mjpg-streamer
+  sudo -u pi git clone https://github.com/foosel/OctoPrint.git
+
+  #mjpg-streamer
+  sudo -u pi wget -O mjpg-streamer.tar.gz http://mjpg-streamer.svn.sourceforge.net/viewvc/mjpg-streamer/mjpg-streamer/?view=tar
+  
+  #build virtualenv
+  sudo -u pi virtualenv oprint
+  
+  sudo -u pi oprint/bin/pip install -r /home/pi/OctoPrint/requirements.txt
+  sudo -u pi oprint/bin/pip install -r /home/pi/OctoPrint/requirements.txt
+
+  #taken from octoprint website:
+  sudo usermod -a -G tty pi
+  sudo usermod -a -G dialout pi
+  
+  sudo -u pi mkdir -p .octoprint
+  sudo -u pi echo "webcam:
+  stream: http://octopi.local>:8080/?action=stream
+  snapshot: http://127.0.0.1:8080/?action=snapshot
+  ffmpeg: /usr/bin/avconv
+system:
+  actions:
+  - name: Shutdown
+    command: sudo shutdown -h now
+    action: shutdown
+    confirm: You are about to shutdown the system.
+  - name: Reboot
+    command: sudo shutdown -r now
+    action: reboot
+    confirm: You are about to reboot the system
+" >> .octoprint/config.yaml
+      
+  #mjpg-streamer
+  sudo apt-get -y install subversion libjpeg8-dev imagemagick libav-tools
+  sudo -u pi tar xfz mjpg-streamer.tar.gz
+
+    pushd mjpg-streamer
+    sudo -u pi make    
+    popd
+  
+  #make autostart scripts
+  mkdir -p scripts
+  pushd scripts
+    sudo -u pi echo "#!/bin/sh
+OCTOPRINT_HOME=/home/pi/OctoPrint
+VIRTUALENV_HOME=/home/pi/oprint
+
+# start the webui
+#$OCTOPRINT_HOME/run --daemon start
+\$VIRTUALENV_HOME/bin/python \$OCTOPRINT_HOME/run --daemon start" > octoPrintStart
+
+  sudo -u pi echo "#!/bin/bash
+while true; do
+
+    if [ -c /dev/video0 ];then
+        echo \"starting webcam\"
+        pushd /home/pi/mjpg-streamer
+        #try both ways
+        ./mjpg_streamer -i \"./input_uvc.so -d /dev/video0 -y  -r 640x480 -f 10\" -o \"./output_http.so\"
+        ./mjpg_streamer -i \"./input_uvc.so -d /dev/video0  -r 640x480 -f 10\" -o \"./output_http.so\"
+        popd
+    fi
+
+    sleep 120
+done
+" > webcamDaemon
+  chmod 755 octoPrintStart
+  chmod 755 webcamDaemon
+  popd
+  
+  popd
+
+  sed -i 's@exit 0@@' /etc/rc.local
+echo "sudo -u pi /home/pi/scripts/octoPrintStart" >> /etc/rc.local
+echo "sudo -u pi /home/pi/scripts/webcamDaemon &" >> /etc/rc.local
+echo "exit 0" >> /etc/rc.local
+
+#automatic startup
+echo "pi ALL=NOPASSWD: /sbin/shutdown" > /etc/sudoers.d/octoprint-shutdown
+
+#reach printer by name
+sudo apt-get -y install avahi-daemon
+echo octopi > /etc/hostname
+sed -i 's@raspberrypi@octopi@' /etc/hosts
+
+#cleanup
+fixLd
+sudo apt-get clean
+
+sed -i 's@\#/usr/lib/arm-linux-gnueabihf/libcofi_rpi.so@/usr/lib/arm-linux-gnueabihf/libcofi_rpi.so@' /etc/ld.so.preload
