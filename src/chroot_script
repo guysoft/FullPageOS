@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -x
 # OctoPI generation script
 # Helper script that runs in a Raspbian chroot to create the OctoPI distro
 # Written by Guy Sheffer <guysoft at gmail dot com>
@@ -11,7 +12,7 @@ fixLd
 apt-get update
 
 #apt-get octoprint virtualenv
-apt-get -y install python-virtualenv python-dev git
+apt-get -y install python-virtualenv python-dev git python-numpy
   
   pushd /home/pi
   
@@ -22,7 +23,7 @@ apt-get -y install python-virtualenv python-dev git
   sudo -u pi wget -O mjpg-streamer.tar.gz http://mjpg-streamer.svn.sourceforge.net/viewvc/mjpg-streamer/mjpg-streamer/?view=tar
   
   #build virtualenv
-  sudo -u pi virtualenv oprint
+  sudo -u pi virtualenv --system-site-packages oprint
   
   sudo -u pi oprint/bin/pip install -r /home/pi/OctoPrint/requirements.txt
   sudo -u pi oprint/bin/pip install -r /home/pi/OctoPrint/requirements.txt
