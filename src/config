@@ -1,0 +1,4 @@
+ZIP_IMG=`dirname $0`/2013-02-09-wheezy-raspbian.zip
+OCTOPI_WORKSPCE=`dirname $0`/workspace
+CHTOOT_SCRIPT_PATH=`dirname $0`/chroot_script
+MOUNT_PATH=$OWORKSPCE/mount

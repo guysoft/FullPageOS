@@ -1,0 +1,3 @@
+#!/usr/bin/env bash -x
+. `dirname $0`/config
+`dirname $0`/octopi

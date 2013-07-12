@@ -3,13 +3,9 @@
 # This script takes a Raspbian image and adds to it octoprint and verions addons
 # Written by Guy Sheffer <guysoft at gmail dot com>
 # GPL V3
-ZIP_IMG=`dirname $0`/2013-05-25-wheezy-raspbian.zip
-WORKSPCE=`dirname $0`/workspace
-CHTOOT_SCRIPT_PATH=`dirname $0`/chroot_script
-MOUNT_PATH=$WORKSPCE/mount
-mkdir -p $WORKSPCE
+mkdir -p $OCTOPI_WORKSPCE
 mkdir -p $MOUNT_PATH
-pushd $WORKSPCE
+pushd $OCTOPI_WORKSPCE
 rm *.img
 unzip $ZIP_IMG
 IMG_PATH=`ls  | grep .img`

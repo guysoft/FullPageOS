@@ -32,8 +32,8 @@ Requirements
 Usage
 ~~~~~
 
-#. In the ``src/octopi`` script set the path of ``ZIP_IMG`` to the path of your Raspbian image.
-#. Run ``src/octopi`` as root.
+#. In the ``src/config`` script set the path of ``ZIP_IMG`` to the path of your Raspbian image.
+#. Run ``src/build`` as root.
 #. The final image will be created at the ``src/workspace``
 
 
