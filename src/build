@@ -1,3 +1,4 @@
-#!/usr/bin/env bash -x
-. `dirname $0`/config
-`dirname $0`/octopi
+#!/usr/bin/env bash
+OCTOPI_PATH=$(dirname $(realpath -s $0))
+. $OCTOPI_PATH/config
+$OCTOPI_PATH/octopi

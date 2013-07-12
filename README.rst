@@ -28,6 +28,7 @@ Requirements
 #. Downloaded `Raspbian <http://www.raspbian.org/>`_ image.
 #. root privileges for choot
 #. Bash
+#. realpath
 
 Usage
 ~~~~~
