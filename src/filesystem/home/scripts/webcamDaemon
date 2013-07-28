@@ -1,0 +1,12 @@
+#!/bin/bash
+vcgencmd version
+while true; do
+if [ "`vcgencmd get_camera`" = "supported=1 detected=1" ]; then
+logger "Starting webcam"
+pushd /home/pi/mjpg-streamer-experimental
+LD_LIBRARY_PATH=. ./mjpg_streamer -o "output_http.so -w ./www" -i "input_raspicam.so -d 100"
+popd
+fi
+ 
+sleep 120
+done

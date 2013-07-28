@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -x
 # OctoPI generation script
 # Helper script that runs in a Raspbian chroot to create the OctoPI distro
 # Written by Guy Sheffer <guysoft at gmail dot com>
@@ -7,11 +8,18 @@ fixLd(){
   sed -i 's@/usr/lib/arm-linux-gnueabihf/libcofi_rpi.so@\#/usr/lib/arm-linux-gnueabihf/libcofi_rpi.so@' /etc/ld.so.preload
 }
 
+unpackHome(){
+  chown -hR pi /filesystem/home
+  chgrp -hR pi /filesystem/home
+  cp -av /filesystem/home/* /home/pi
+}
+
 fixLd
+unpackHome
 apt-get update
 
 #apt-get octoprint virtualenv
-apt-get -y install python-virtualenv python-dev git
+apt-get -y install python-virtualenv python-dev git python-numpy
   
   pushd /home/pi
   
@@ -22,7 +30,7 @@ apt-get -y install python-virtualenv python-dev git
   sudo -u pi wget -O mjpg-streamer.tar.gz http://mjpg-streamer.svn.sourceforge.net/viewvc/mjpg-streamer/mjpg-streamer/?view=tar
   
   #build virtualenv
-  sudo -u pi virtualenv oprint
+  sudo -u pi virtualenv --system-site-packages oprint
   
   sudo -u pi oprint/bin/pip install -r /home/pi/OctoPrint/requirements.txt
   sudo -u pi oprint/bin/pip install -r /home/pi/OctoPrint/requirements.txt
@@ -67,29 +75,7 @@ system:
   popd
   
   #make autostart scripts
-  mkdir -p scripts
   pushd scripts
-    sudo -u pi echo "#!/bin/sh
-OCTOPRINT_HOME=/home/pi/OctoPrint
-VIRTUALENV_HOME=/home/pi/oprint
-
-# start the webui
-#$OCTOPRINT_HOME/run --daemon start
-\$VIRTUALENV_HOME/bin/python \$OCTOPRINT_HOME/run --daemon start" > octoPrintStart
-
-  sudo -u pi echo "#!/bin/bash
-while true; do
-
-if [ \"\`vcgencmd get_camera\`\" = \"supported=1 detected=1\" ]; then
-        echo \"starting webcam\"
-        pushd /home/pi/mjpg-streamer-experimental
-        LD_LIBRARY_PATH=. ./mjpg_streamer -o \"output_http.so -w ./www\" -i \"input_raspicam.so\"        
-        popd
-    fi
-
-    sleep 120
-done
-" > webcamDaemon
   chmod 755 octoPrintStart
   chmod 755 webcamDaemon
   popd

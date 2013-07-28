@@ -3,17 +3,12 @@
 # This script takes a Raspbian image and adds to it octoprint and verions addons
 # Written by Guy Sheffer <guysoft at gmail dot com>
 # GPL V3
-SCRIPT_PATH=$(dirname $(realpath -s $0))
-ZIP_IMG=$SCRIPT_PATH/2013-05-29-wheezy-armel.zip
-WORKSPCE=$SCRIPT_PATH/workspace
-CHTOOT_SCRIPT_PATH=$SCRIPT_PATH/chroot_script
-MOUNT_PATH=$WORKSPCE/mount
-mkdir -p $WORKSPCE
+mkdir -p $OCTOPI_WORKSPCE
 mkdir -p $MOUNT_PATH
-pushd $WORKSPCE
+pushd $OCTOPI_WORKSPCE
 rm *.img
 unzip $ZIP_IMG
-IMG_PATH=`ls  | grep .img`
+IMG_PATH=`ls | grep .img`
 sudo mount -t ext4 -o loop,offset=62914560 $IMG_PATH $MOUNT_PATH
 
   #Edit pi filesystem
@@ -22,6 +17,8 @@ sudo mount -t ext4 -o loop,offset=62914560 $IMG_PATH $MOUNT_PATH
 #make QEMU boot (remember to return)
 #sed -i 's@include /etc/ld.so.conf.d/\*.conf@\#include /etc/ld.so.conf.d/\*.conf@' etc/ld.so.conf
 
+#move OctoPi filesystem files
+cp -av $SCRIPT_PATH/filesystem . 
 
 #black magic of qemu-arm-static
 cp `which qemu-arm-static` usr/bin
@@ -30,10 +27,12 @@ chmod 755 chroot_script
 
 chroot . usr/bin/qemu-arm-static /bin/bash /chroot_script
 
+#cleanup
 rm chroot_script
-rm usr/bin/qemu-arm-static
+rm -rfv filesystem
 popd
 
+#rm whats left of the filesystem
 sudo umount $MOUNT_PATH
 chmod 777 $IMG_PATH
 popd
