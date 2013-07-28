@@ -1,0 +1,14 @@
+#!/bin/bash
+while true; do
+
+    if [ -c /dev/video0 ];then
+        echo "starting webcam"
+        pushd /home/pi/mjpg-streamer
+        #try both ways
+        ./mjpg_streamer -i "./input_uvc.so -d /dev/video0 -y  -r 640x480 -f 10" -o "./output_http.so"
+        ./mjpg_streamer -i "./input_uvc.so -d /dev/video0  -r 640x480 -f 10" -o "./output_http.so"
+        popd
+    fi
+
+    sleep 120
+done
