@@ -55,6 +55,16 @@ system:
     pushd mjpg-streamer
     sudo -u pi make    
     popd
+
+  sudo apt-get -y install cmake
+  sudo -u pi mkdir mjpg-streamer-campi
+  pushd mjpg-streamer-campi
+    sudo -u pi git clone https://github.com/jacksonliam/mjpg-streamer.git
+  popd
+  sudo -u pi mv mjpg-streamer-campi/mjpg-streamer/mjpg-streamer-experimental /home/pi
+  pushd mjpg-streamer-experimental 
+  sudo -u pi make
+  popd
   
   #make autostart scripts
   mkdir -p scripts
@@ -70,12 +80,10 @@ VIRTUALENV_HOME=/home/pi/oprint
   sudo -u pi echo "#!/bin/bash
 while true; do
 
-    if [ -c /dev/video0 ];then
+if [ \"\`vcgencmd get_camera\`\" = \"supported=1 detected=1\" ]; then
         echo \"starting webcam\"
-        pushd /home/pi/mjpg-streamer
-        #try both ways
-        ./mjpg_streamer -i \"./input_uvc.so -d /dev/video0 -y  -r 640x480 -f 10\" -o \"./output_http.so\"
-        ./mjpg_streamer -i \"./input_uvc.so -d /dev/video0  -r 640x480 -f 10\" -o \"./output_http.so\"
+        pushd /home/pi/mjpg-streamer-experimental
+        LD_LIBRARY_PATH=. ./mjpg_streamer -o \"output_http.so -w ./www\" -i \"input_raspicam.so\"        
         popd
     fi
 
@@ -102,7 +110,6 @@ echo octopi > /etc/hostname
 sed -i 's@raspberrypi@octopi@' /etc/hosts
 
 #cleanup
-fixLd
 sudo apt-get clean
 
 sed -i 's@\#/usr/lib/arm-linux-gnueabihf/libcofi_rpi.so@/usr/lib/arm-linux-gnueabihf/libcofi_rpi.so@' /etc/ld.so.preload
