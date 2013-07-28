@@ -96,6 +96,7 @@ echo octopi > /etc/hostname
 sed -i 's@raspberrypi@octopi@' /etc/hosts
 
 #cleanup
+fixLd
 sudo apt-get clean
 
 sed -i 's@\#/usr/lib/arm-linux-gnueabihf/libcofi_rpi.so@/usr/lib/arm-linux-gnueabihf/libcofi_rpi.so@' /etc/ld.so.preload
