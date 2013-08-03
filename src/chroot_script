@@ -12,6 +12,7 @@ unpackHome(){
   chown -hR pi /filesystem/home
   chgrp -hR pi /filesystem/home
   cp -av /filesystem/home/* /home/pi
+  cp -av /filesystem/home/.* /home/pi
 }
 
 fixLd
@@ -38,23 +39,6 @@ apt-get -y install python-virtualenv python-dev git python-numpy
   #taken from octoprint website:
   sudo usermod -a -G tty pi
   sudo usermod -a -G dialout pi
-  
-  sudo -u pi mkdir -p .octoprint
-  sudo -u pi echo "webcam:
-  stream: http://octopi.local>:8080/?action=stream
-  snapshot: http://127.0.0.1:8080/?action=snapshot
-  ffmpeg: /usr/bin/avconv
-system:
-  actions:
-  - name: Shutdown
-    command: sudo shutdown -h now
-    action: shutdown
-    confirm: You are about to shutdown the system.
-  - name: Reboot
-    command: sudo shutdown -r now
-    action: reboot
-    confirm: You are about to reboot the system
-" >> .octoprint/config.yaml
       
   #mjpg-streamer
   sudo apt-get -y install subversion libjpeg8-dev imagemagick libav-tools
