@@ -73,6 +73,14 @@ system:
   popd
 
   sed -i 's@exit 0@@' /etc/rc.local
+
+echo "Make Octoprint avilable on port 80"
+echo "echo \"1\" > /proc/sys/net/ipv4/conf/all/forwarding" >> /etc/rc.local
+echo "iptables -t nat -A POSTROUTING -o all -j MASQUERADE" >> /etc/rc.local
+echo "iptables -t nat -A PREROUTING -p tcp -i wlan0 --dport 80 -j REDIRECT --to-port 5000" >> /etc/rc.local
+echo "iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 80 -j REDIRECT --to-port 5000" >> /etc/rc.local
+echo "" >> /etc/rc.local
+
 echo "sudo -u pi /home/pi/scripts/octoPrintStart" >> /etc/rc.local
 echo "sudo -u pi /home/pi/scripts/webcamDaemon &" >> /etc/rc.local
 echo "exit 0" >> /etc/rc.local
