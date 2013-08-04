@@ -15,7 +15,12 @@ unpackHome(){
   cp -av /filesystem/home/.* /home/pi
 }
 
+unpackRoot(){
+  cp -av /filesystem/root/* /
+}
+
 fixLd
+unpackRoot
 unpackHome
 apt-get update
 
