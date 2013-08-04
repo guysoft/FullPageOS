@@ -8,7 +8,20 @@ fixLd(){
   sed -i 's@/usr/lib/arm-linux-gnueabihf/libcofi_rpi.so@\#/usr/lib/arm-linux-gnueabihf/libcofi_rpi.so@' /etc/ld.so.preload
 }
 
+unpackHome(){
+  chown -hR pi /filesystem/home
+  chgrp -hR pi /filesystem/home
+  cp -av /filesystem/home/* /home/pi
+  cp -av /filesystem/home/.* /home/pi
+}
+
+unpackRoot(){
+  cp -av /filesystem/root/* /
+}
+
 fixLd
+unpackRoot
+unpackHome
 apt-get update
 
 #apt-get octoprint virtualenv
@@ -31,23 +44,6 @@ apt-get -y install python-virtualenv python-dev git python-numpy
   #taken from octoprint website:
   sudo usermod -a -G tty pi
   sudo usermod -a -G dialout pi
-  
-  sudo -u pi mkdir -p .octoprint
-  sudo -u pi echo "webcam:
-  stream: http://octopi.local>:8080/?action=stream
-  snapshot: http://127.0.0.1:8080/?action=snapshot
-  ffmpeg: /usr/bin/avconv
-system:
-  actions:
-  - name: Shutdown
-    command: sudo shutdown -h now
-    action: shutdown
-    confirm: You are about to shutdown the system.
-  - name: Reboot
-    command: sudo shutdown -r now
-    action: reboot
-    confirm: You are about to reboot the system
-" >> .octoprint/config.yaml
       
   #mjpg-streamer
   sudo apt-get -y install subversion libjpeg8-dev imagemagick libav-tools
@@ -58,31 +54,7 @@ system:
     popd
   
   #make autostart scripts
-  mkdir -p scripts
   pushd scripts
-    sudo -u pi echo "#!/bin/sh
-OCTOPRINT_HOME=/home/pi/OctoPrint
-VIRTUALENV_HOME=/home/pi/oprint
-
-# start the webui
-#$OCTOPRINT_HOME/run --daemon start
-\$VIRTUALENV_HOME/bin/python \$OCTOPRINT_HOME/run --daemon start" > octoPrintStart
-
-  sudo -u pi echo "#!/bin/bash
-while true; do
-
-    if [ -c /dev/video0 ];then
-        echo \"starting webcam\"
-        pushd /home/pi/mjpg-streamer
-        #try both ways
-        ./mjpg_streamer -i \"./input_uvc.so -d /dev/video0 -y  -r 640x480 -f 10\" -o \"./output_http.so\"
-        ./mjpg_streamer -i \"./input_uvc.so -d /dev/video0  -r 640x480 -f 10\" -o \"./output_http.so\"
-        popd
-    fi
-
-    sleep 120
-done
-" > webcamDaemon
   chmod 755 octoPrintStart
   chmod 755 webcamDaemon
   popd
@@ -90,6 +62,14 @@ done
   popd
 
   sed -i 's@exit 0@@' /etc/rc.local
+
+echo "Make Octoprint avilable on port 80"
+echo "echo \"1\" > /proc/sys/net/ipv4/conf/all/forwarding" >> /etc/rc.local
+echo "iptables -t nat -A POSTROUTING -o all -j MASQUERADE" >> /etc/rc.local
+echo "iptables -t nat -A PREROUTING -p tcp -i wlan0 --dport 80 -j REDIRECT --to-port 5000" >> /etc/rc.local
+echo "iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 80 -j REDIRECT --to-port 5000" >> /etc/rc.local
+echo "" >> /etc/rc.local
+
 echo "sudo -u pi /home/pi/scripts/octoPrintStart" >> /etc/rc.local
 echo "sudo -u pi /home/pi/scripts/webcamDaemon &" >> /etc/rc.local
 echo "exit 0" >> /etc/rc.local
