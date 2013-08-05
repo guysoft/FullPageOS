@@ -8,7 +8,7 @@ This repository contains the source script to generate the distribution out of a
 Where to get it?
 ----------------
 
-Official mirror is `here <https://dl.dropboxusercontent.com/u/895101/OctoPi/index.html>`_
+Official mirror is `here <http://www.gitiverse.com/octopi/>`_
 
 How to use it?
 --------------
