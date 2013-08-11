@@ -35,7 +35,7 @@ Build OctoPi From within OctoPi / Raspbian / Debian / Ubuntu
 
 OctoPi can be built from Debian, Ubuntu, Raspbian, or even OctoPi.
 Build requires about 2.5 GB of free space avilable.
-You can build it by issuing the following commands:
+You can build it by issuing the following commands::
 
     sudo apt-get install realpath qemu-user-static
     git clone https://github.com/guysoft/OctoPi.git
