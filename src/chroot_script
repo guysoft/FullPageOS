@@ -52,9 +52,6 @@ pushd /home/pi
   sudo -u pi mkdir mjpg-streamer-campi
   pushd mjpg-streamer-campi
     sudo -u pi git clone https://github.com/jacksonliam/mjpg-streamer.git
-  popd
-  sudo -u pi mv mjpg-streamer-campi/mjpg-streamer/mjpg-streamer-experimental /home/pi
-  pushd mjpg-streamer-experimental 
     sudo -u pi make
   popd
   

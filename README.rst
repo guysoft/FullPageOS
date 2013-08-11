@@ -1,7 +1,7 @@
 OctoPi
 ======
 A `Raspberry Pi <http://www.raspberrypi.org/>`_ distribution for 3d printers. It includes the `Octoprint <http://octoprint.org>`_
-,  3d printer out of the box, and `mjpg-streamer <http://sourceforge.net/projects/mjpg-streamer/>`_ for live viewing of prints and stop motion video creation.
+,  3d printer out of the box, and `mjpg-streamer with rapicam support <https://github.com/jacksonliam/mjpg-streamer>`_ for live viewing of prints and stop motion video creation.
 
 This repository contains the source script to generate the distribution out of an existing `Raspbian <http://www.raspbian.org/>`_ distro image.
 
