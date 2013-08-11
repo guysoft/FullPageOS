@@ -6,8 +6,8 @@ MJPGSTREAMER_INPUT_RASPICAM="input_raspicam.so"
 
 # init configuration
 camera="auto"
-camera_usb_options=""
-camera_raspi_options=""
+camera_usb_options="-r 640x480 -f 10"
+camera_raspi_options="-d 100"
 
 if [ -e "/boot/octopi.txt" ]; then
     source "/boot/octopi.txt"
