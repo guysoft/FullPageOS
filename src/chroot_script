@@ -19,22 +19,24 @@ unpackRoot(){
   cp -av /filesystem/root/* /
 }
 
+unpackBoot(){
+  cp -av /filesystem/boot/* /boot
+}
+
 fixLd
 unpackRoot
 unpackHome
+unpackBoot
 apt-get update
 
 #apt-get octoprint virtualenv
 apt-get -y install python-virtualenv python-dev git python-numpy
-  
-  pushd /home/pi
+
+pushd /home/pi
   
   #Get octopi and mjpg-streamer
   sudo -u pi git clone https://github.com/foosel/OctoPrint.git
 
-  #mjpg-streamer
-  sudo -u pi wget -O mjpg-streamer.tar.gz http://mjpg-streamer.svn.sourceforge.net/viewvc/mjpg-streamer/mjpg-streamer/?view=tar
-  
   #build virtualenv
   sudo -u pi virtualenv --system-site-packages oprint
   
@@ -46,32 +48,25 @@ apt-get -y install python-virtualenv python-dev git python-numpy
   sudo usermod -a -G dialout pi
       
   #mjpg-streamer
-  sudo apt-get -y install subversion libjpeg8-dev imagemagick libav-tools
-  sudo -u pi tar xfz mjpg-streamer.tar.gz
-
-    pushd mjpg-streamer
-    sudo -u pi make    
-    popd
-
-  sudo apt-get -y install cmake
+  sudo apt-get -y install subversion libjpeg8-dev imagemagick libav-tools cmake
   sudo -u pi mkdir mjpg-streamer-campi
   pushd mjpg-streamer-campi
     sudo -u pi git clone https://github.com/jacksonliam/mjpg-streamer.git
   popd
   sudo -u pi mv mjpg-streamer-campi/mjpg-streamer/mjpg-streamer-experimental /home/pi
   pushd mjpg-streamer-experimental 
-  sudo -u pi make
+    sudo -u pi make
   popd
   
   #make autostart scripts
   pushd scripts
-  chmod 755 octoPrintStart
-  chmod 755 webcamDaemon
+    chmod 755 octoPrintStart
+    chmod 755 webcamDaemon
   popd
   
-  popd
+popd
 
-  sed -i 's@exit 0@@' /etc/rc.local
+sed -i 's@exit 0@@' /etc/rc.local
 
 echo "Make Octoprint avilable on port 80"
 echo "echo \"1\" > /proc/sys/net/ipv4/conf/all/forwarding" >> /etc/rc.local
@@ -91,6 +86,11 @@ echo "pi ALL=NOPASSWD: /sbin/shutdown" > /etc/sudoers.d/octoprint-shutdown
 sudo apt-get -y install avahi-daemon
 echo octopi > /etc/hostname
 sed -i 's@raspberrypi@octopi@' /etc/hosts
+
+# enable raspicam
+echo "# enable raspicam" >> /boot/config.txt
+echo "start_x=1" >> /boot/config.txt
+echo "gpu_mem=128" >> /boot/config.txt
 
 #cleanup
 fixLd

@@ -3,37 +3,42 @@
 # This script takes a Raspbian image and adds to it octoprint and verions addons
 # Written by Guy Sheffer <guysoft at gmail dot com>
 # GPL V3
-mkdir -p $OCTOPI_WORKSPCE
+mkdir -p $OCTOPI_WORKSPACE
 mkdir -p $MOUNT_PATH
-pushd $OCTOPI_WORKSPCE
-rm *.img
-unzip $ZIP_IMG
-IMG_PATH=`ls | grep .img`
-sudo mount -t ext4 -o loop,offset=62914560 $IMG_PATH $MOUNT_PATH
+
+pushd $OCTOPI_WORKSPACE
+  rm *.img
+  unzip $ZIP_IMG
+  IMG_PATH=`ls | grep .img`
+
+  # mount root and boot partition
+  sudo mount -o loop,offset=$((512*122880)) $IMG_PATH $MOUNT_PATH
+  sudo mount -o loop,offset=$((512*8192)) $IMG_PATH $MOUNT_PATH/boot
 
   #Edit pi filesystem
   pushd $MOUNT_PATH
 
-#make QEMU boot (remember to return)
-#sed -i 's@include /etc/ld.so.conf.d/\*.conf@\#include /etc/ld.so.conf.d/\*.conf@' etc/ld.so.conf
+    #make QEMU boot (remember to return)
+    #sed -i 's@include /etc/ld.so.conf.d/\*.conf@\#include /etc/ld.so.conf.d/\*.conf@' etc/ld.so.conf
 
-#move OctoPi filesystem files
-cp -av $SCRIPT_PATH/filesystem . 
+    #move OctoPi filesystem files
+    cp -av $SCRIPT_PATH/filesystem . 
 
-#black magic of qemu-arm-static
-cp `which qemu-arm-static` usr/bin
-cp $CHTOOT_SCRIPT_PATH chroot_script
-chmod 755 chroot_script
-
-chroot . usr/bin/qemu-arm-static /bin/bash /chroot_script
-
-#cleanup
-rm chroot_script
-rm -rfv filesystem
-popd
-
-#rm whats left of the filesystem
-sudo umount $MOUNT_PATH
-chmod 777 $IMG_PATH
+    #black magic of qemu-arm-static
+    cp `which qemu-arm-static` usr/bin
+    cp $CHROOT_SCRIPT_PATH chroot_script
+    chmod 755 chroot_script
+    
+    chroot . usr/bin/qemu-arm-static /bin/bash /chroot_script
+    
+    #cleanup
+    rm chroot_script
+    rm -rfv filesystem
+  popd
+  
+  # unmount first boot, then root partition
+  sudo umount $MOUNT_PATH/boot
+  sudo umount $MOUNT_PATH
+  chmod 777 $IMG_PATH
 popd
 
