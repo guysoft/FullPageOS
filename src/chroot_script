@@ -19,9 +19,14 @@ unpackRoot(){
   cp -av /filesystem/root/* /
 }
 
+unpackBoot(){
+  cp -av /filesystem/boot/* /boot
+}
+
 fixLd
 unpackRoot
 unpackHome
+unpackBoot
 apt-get update
 
 #apt-get octoprint virtualenv
