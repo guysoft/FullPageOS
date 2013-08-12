@@ -49,9 +49,9 @@ pushd /home/pi
       
   #mjpg-streamer
   sudo apt-get -y install subversion libjpeg8-dev imagemagick libav-tools cmake
-  sudo -u pi mkdir mjpg-streamer-campi
-  pushd mjpg-streamer-campi
-    sudo -u pi git clone https://github.com/jacksonliam/mjpg-streamer.git
+  sudo -u pi git clone https://github.com/jacksonliam/mjpg-streamer.git
+  pushd mjpg-streamer
+    mv mjpg-streamer-experimental/* .
     sudo -u pi make
   popd
   
