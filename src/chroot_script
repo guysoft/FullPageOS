@@ -24,10 +24,11 @@ unpackBoot(){
 }
 
 fixLd
-unpackRoot
 unpackHome
 unpackBoot
 apt-get update
+
+apt-get remove -y --purge scratch
 
 #apt-get octoprint virtualenv
 apt-get -y install python-virtualenv python-dev git python-numpy
@@ -59,8 +60,27 @@ pushd /home/pi
   pushd scripts
     chmod 755 octoPrintStart
     chmod 755 webcamDaemon
+    chmod 755 genCert
   popd
   
+#setup haproxy for http and https, and webcam
+export HAPROXY_VERSION=1.5-dev19
+sudo apt-get -y install ssl-cert libssl-dev libpcre3-dev checkinstall
+rm /etc/ssl/private/ssl-cert-snakeoil.key /etc/ssl/certs/ssl-cert-snakeoil.pem
+sudo -u pi wget http://haproxy.1wt.eu/download/1.5/src/devel/haproxy-${HAPROXY_VERSION}.tar.gz
+sudo -u pi tar xzvf haproxy-${HAPROXY_VERSION}.tar.gz
+rm haproxy-${HAPROXY_VERSION}.tar.gz
+sudo -u pi mv `ls | grep haproxy | head -n 1` haproxy-ss
+pushd haproxy-ss
+    sudo -u pi make TARGET=linux2628 USE_LINUX_SPLICE=1 USE_LINUX_TPROXY=1 USE_PCRE=1 USE_OPENSSL=1
+    mkdir -p /usr/local/share/man/man1 /usr/local/doc /usr/local/doc/haproxy
+    sudo checkinstall --default --pkgname haproxy --pkgversion 1.5
+popd
+rm -rf haproxy-ss
+
+adduser --system --disabled-password --disabled-login --home /var/lib/haproxy \
+        --no-create-home --quiet --force-badname --group haproxy
+
 popd
 
 sed -i 's@exit 0@@' /etc/rc.local
@@ -68,12 +88,12 @@ sed -i 's@exit 0@@' /etc/rc.local
 echo "Make Octoprint avilable on port 80"
 echo "echo \"1\" > /proc/sys/net/ipv4/conf/all/forwarding" >> /etc/rc.local
 echo "iptables -t nat -A POSTROUTING -o all -j MASQUERADE" >> /etc/rc.local
-echo "iptables -t nat -A PREROUTING -p tcp -i wlan0 --dport 80 -j REDIRECT --to-port 5000" >> /etc/rc.local
-echo "iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 80 -j REDIRECT --to-port 5000" >> /etc/rc.local
 echo "" >> /etc/rc.local
 
+echo "/home/pi/scripts/genCert" >> /etc/rc.local
 echo "sudo -u pi /home/pi/scripts/octoPrintStart" >> /etc/rc.local
 echo "sudo -u pi /home/pi/scripts/webcamDaemon &" >> /etc/rc.local
+echo "/usr/local/sbin/haproxy -f /etc/haproxy/haproxy.cfg" >> /etc/rc.local
 echo "exit 0" >> /etc/rc.local
 
 #automatic startup
@@ -88,6 +108,9 @@ sed -i 's@raspberrypi@octopi@' /etc/hosts
 echo "# enable raspicam" >> /boot/config.txt
 echo "start_x=1" >> /boot/config.txt
 echo "gpu_mem=128" >> /boot/config.txt
+
+#unpack root in the end, so etc file are not overwritten, might need to add two roots int he future
+unpackRoot
 
 #cleanup
 fixLd
