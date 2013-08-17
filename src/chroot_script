@@ -55,6 +55,16 @@ pushd /home/pi
     sudo -u pi make
   popd
   
+  #Add pyserial that can handle non-standard baud rates
+  sudo -u pi svn co http://pyserial.svn.sourceforge.net/svnroot/pyserial/trunk pyserial
+  pushd pyserial
+      sudo -u pi wget http://sourceforge.net/p/pyserial/patches/_discuss/thread/ed3fb0de/f4fd/attachment/pyserial.patch
+      sudo -u pi patch -p0 < pyserial.patch
+      pushd pyserial
+          sudo -u pi /home/pi/oprint/bin/python setup.py install
+      popd
+  popd
+  
   #make autostart scripts
   pushd scripts
     chmod 755 octoPrintStart
