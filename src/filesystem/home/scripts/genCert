@@ -1,0 +1,6 @@
+#!/bin/bash
+if [ ! -f /etc/ssl/private/ssl-cert-snakeoil.key ]; then
+    echo "Generating SSL certificate"
+    sudo make-ssl-cert generate-default-snakeoil --force-overwrite 
+    sudo cat /etc/ssl/private/ssl-cert-snakeoil.key /etc/ssl/certs/ssl-cert-snakeoil.pem > /etc/ssl/snakeoil.pem
+fi

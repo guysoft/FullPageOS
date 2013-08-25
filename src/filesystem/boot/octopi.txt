@@ -1,0 +1,28 @@
+### Configure which camera to use
+#
+# Available options are:
+# - auto: tries first usb webcam, if that's not available tries raspi cam
+# - usb: only tries usb webcam
+# - raspi: only tries raspi cam
+#
+# Defaults to auto
+#
+#camera="auto"
+
+### Additional options to supply to MJPG Streamer for the USB camera
+#
+# See https://github.com/foosel/OctoPrint/wiki/MJPG-Streamer-configuration
+# for available options
+#
+# Defaults to a resolution of 640x480 px and a framerate of 10 fps
+#
+#camera_usb_options="-r 640x480 -f 10"
+
+### additional options to supply to MJPG Streamer for the RasPi Cam
+#
+# See https://github.com/foosel/OctoPrint/wiki/MJPG-Streamer-configuration
+# for available options
+#
+# Defaults to a delay between pictures of 100 ms == 10fps
+#
+#camera_raspi_options="-d 100"

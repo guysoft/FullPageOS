@@ -1,5 +1,5 @@
 export SCRIPT_PATH=$(dirname $(realpath -s $0))
 export ZIP_IMG=$SCRIPT_PATH/2013-07-26-wheezy-raspbian.zip
-export OCTOPI_WORKSPCE=$SCRIPT_PATH/workspace
-export CHTOOT_SCRIPT_PATH=$SCRIPT_PATH/chroot_script
-export MOUNT_PATH=$OCTOPI_WORKSPCE/mount
+export OCTOPI_WORKSPACE=$SCRIPT_PATH/workspace
+export CHROOT_SCRIPT_PATH=$SCRIPT_PATH/chroot_script
+export MOUNT_PATH=$OCTOPI_WORKSPACE/mount
