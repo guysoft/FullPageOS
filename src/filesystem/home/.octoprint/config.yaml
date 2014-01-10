@@ -1,5 +1,5 @@
 webcam:
-  stream: http://octopi.local:8080/?action=stream
+  stream: /webcam/?action=stream
   snapshot: http://127.0.0.1:8080/?action=snapshot
   ffmpeg: /usr/bin/avconv
 system:

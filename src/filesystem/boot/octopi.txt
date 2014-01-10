@@ -23,6 +23,6 @@
 # See https://github.com/foosel/OctoPrint/wiki/MJPG-Streamer-configuration
 # for available options
 #
-# Defaults to a delay between pictures of 100 ms == 10fps
+# Defaults to 10fps
 #
-#camera_raspi_options="-d 100"
+#camera_raspi_options="-fps 10"
