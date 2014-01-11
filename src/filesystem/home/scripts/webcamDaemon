@@ -7,7 +7,7 @@ MJPGSTREAMER_INPUT_RASPICAM="input_raspicam.so"
 # init configuration
 camera="auto"
 camera_usb_options="-r 640x480 -f 10"
-camera_raspi_options="-d 100"
+camera_raspi_options="-fps 10"
 
 if [ -e "/boot/octopi.txt" ]; then
     source "/boot/octopi.txt"
@@ -49,6 +49,8 @@ while true; do
         startUsb
     elif [ "`vcgencmd get_camera`" = "supported=1 detected=1" ] && { [ "$camera" = "auto" ] || [ "$camera" = "raspi" ] ; }; then
         startRaspi
+    else
+        echo "No camera detected, trying again in two minutes"
     fi
 
     sleep 120
