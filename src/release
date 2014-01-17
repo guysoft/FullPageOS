@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+pushd workspace
+	
+FILENAME=$(basename `ls . |  grep .img | tail -n 1` .img)  
+OCTOPI_FILENAME=$(echo $FILENAME-`cat ../filesystem/root/etc/octopi_version` | sed 's/raspbian/octopi/')
+mv ${FILENAME}.img $OCTOPI_FILENAME.img
+zip $OCTOPI_FILENAME.zip $OCTOPI_FILENAME.img
+
+popd
