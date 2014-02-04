@@ -1,5 +1,7 @@
 OctoPi
 ======
+![OctoPi logo](https://raw2.github.com/guysoft/OctoPi/master/media/OctoPi.png "OctoPi logo")
+
 A `Raspberry Pi <http://www.raspberrypi.org/>`_ distribution for 3d printers. It includes the `Octoprint <http://octoprint.org>`_
 ,  3d printer out of the box, and `mjpg-streamer with rapicam support <https://github.com/jacksonliam/mjpg-streamer>`_ for live viewing of prints and stop motion video creation.
 
