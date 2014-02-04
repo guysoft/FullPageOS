@@ -2,6 +2,7 @@ OctoPi
 ======
 
 .. image:: https://raw2.github.com/guysoft/OctoPi/master/media/OctoPi.png
+.. :scale: 50 %
 .. :alt: OctoPi logo
 
 A `Raspberry Pi <http://www.raspberrypi.org/>`_ distribution for 3d printers. It includes the `Octoprint <http://octoprint.org>`_
