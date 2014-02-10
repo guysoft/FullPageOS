@@ -14,6 +14,7 @@ Where to get it?
 ----------------
 
 Official mirror is `here <http://docstech.net/OctoPiMirror/>`_
+Alternatively, there's a torrent active `here <https://mega.co.nz/#!GZsiDL4a!PQm2IrsfswbfcLYJZGQBDrMxzLh_TC47SU_Z7w1zgI0>`_ which could have higher download speed, if theres sufficient seeders (so seed :))
 
 How to use it?
 --------------
