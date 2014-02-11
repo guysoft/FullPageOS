@@ -15,7 +15,7 @@ Where to get it?
 
 Official mirror is `here <http://docstech.net/OctoPiMirror/>`_
 
-Alternatively, there's a torrent active `here <https://mega.co.nz/#!TcMCBbIT!ozleOYetgCDGMgVPjuMNTtFGspBQlVYwqllSsnEJVis>`_ which could have higher download speed, if theres sufficient seeders (so seed :))
+Alternatively, there's a torrent active `here <http://dns3.snuletek.org/share/2014-01-07-wheezy-octopi-0.8.0.torrent>`_ which could have higher download speed, if theres sufficient seeders (so seed :))
 
 How to use it?
 --------------
