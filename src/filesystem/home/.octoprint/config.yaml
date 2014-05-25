@@ -12,3 +12,7 @@ system:
     command: sudo shutdown -r now
     action: reboot
     confirm: You are about to reboot the system
+  - name: Restart OctoPrint
+    command: sudo service octoprint restart
+    action: restart
+    confirm: You are about to restart OctoPrint

@@ -1,7 +1,0 @@
-#!/bin/sh
-OCTOPRINT_HOME=/home/pi/OctoPrint
-VIRTUALENV_HOME=/home/pi/oprint
-
-# start the webui
-#$OCTOPRINT_HOME/run --daemon start
-$VIRTUALENV_HOME/bin/python $OCTOPRINT_HOME/run --daemon start

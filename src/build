@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 OCTOPI_PATH=$(dirname $(realpath -s $0))
-. $OCTOPI_PATH/config
-$OCTOPI_PATH/octopi
+source $OCTOPI_PATH/config
+source $OCTOPI_PATH/octopi
