@@ -28,7 +28,7 @@ unpackHome
 unpackBoot
 apt-get update
 
-apt-get remove -y --purge scratch squeak-plugins-scratch squeak-vm
+apt-get remove -y --purge scratch squeak-plugins-scratch squeak-vm wolfram-engine
 
 #apt-get octoprint virtualenv
 apt-get -y install python-virtualenv python-dev git python-numpy
