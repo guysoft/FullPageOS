@@ -1,0 +1,8 @@
+<?xml version="1.0" standalone="no"?>
+<service-group>
+<name replace-wildcards="yes">Octoprint on %h</name>
+<service>
+        <type>_http._tcp</type>
+        <port>80</port>
+</service>
+</service-group>
