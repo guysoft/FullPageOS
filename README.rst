@@ -14,6 +14,8 @@ Where to get it?
 
 Official mirror is `here <http://docstech.net/OctoPiMirror/>`_
 
+There is also a torrent for 0.9.0 `here <https://www.dropbox.com/s/jhkdqzuseva75zt/2014-06-20-wheezy-octopi-0.9.0.zip.torrent>`_
+
 How to use it?
 --------------
 
