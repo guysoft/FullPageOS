@@ -46,7 +46,7 @@ You can build it by issuing the following commands::
     sudo apt-get install realpath qemu-user-static
     git clone https://github.com/guysoft/OctoPi.git
     cd OctoPi/src/image
-    wget http://files.velocix.com/c1410/images/raspbian/2013-07-26-wheezy-raspbian/2013-07-26-wheezy-raspbian.zip
+    curl -J -O -L  http://downloads.raspberrypi.org/raspbian_latest
     cd ..
     sudo bash -x ./build
 
