@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "Enabling RPi-Display on this installation of OctoPi, do not turn off your Pi during this process!"
-sudo sed -i 's/blacklist spi-bcm2708/#blacklist spi-bcm2708/g' /etc/modprobe.d/raspi-blacklist.conf
+sudo sed -i 's/^blacklist spi-bcm2708/#blacklist spi-bcm2708/g' /etc/modprobe.d/raspi-blacklist.conf
 sudo REPO_URI=https://github.com/notro/rpi-firmware BRANCH=builtin rpi-update
 
 if [ ! -f /boot/cmdline.txt.bak ]; then
