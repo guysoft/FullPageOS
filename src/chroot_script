@@ -9,18 +9,22 @@ fixLd(){
 }
 
 unpackHome(){
-  chown -hR pi /filesystem/home
-  chgrp -hR pi /filesystem/home
+  shopt -s dotglob
   cp -av /filesystem/home/* /home/pi
-  cp -av /filesystem/home/.* /home/pi
+  shopt -u dotglob
+  chown -hR pi:pi /home/pi
 }
 
 unpackRoot(){
+  shopt -s dotglob
   cp -av /filesystem/root/* /
+  shopt -u dotglob
 }
 
 unpackBoot(){
+  shopt -s dotglob
   cp -av /filesystem/boot/* /boot
+  shopt -u dotglob
 }
 
 fixLd
