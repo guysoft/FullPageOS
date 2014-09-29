@@ -1,0 +1,2 @@
+#!/bin/bash
+sudo /home/pi/oprint/bin/python /home/pi/OctoPiPanel/OctoPiPanel.py

@@ -49,7 +49,7 @@ pushd /home/pi
   popd
 
   #OctoPiPanel
-  git clone https://github.com/jonaslorander/OctoPiPanel.git
+  sudo -u pi git clone https://github.com/jonaslorander/OctoPiPanel.git
   pushd OctoPiPanel
     sudo -u pi /home/pi/oprint/bin/pip install -r requirements.txt
   popd
