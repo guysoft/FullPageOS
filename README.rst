@@ -35,6 +35,7 @@ Requirements
 #. root privileges for chroot
 #. Bash
 #. realpath
+#. sudo (the script itself calls it, running as root without sudo won't work)
 
 Build OctoPi From within OctoPi / Raspbian / Debian / Ubuntu
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -44,10 +45,12 @@ Build requires about 2.5 GB of free space available.
 You can build it by issuing the following commands::
 
     sudo apt-get install realpath qemu-user-static
+    
     git clone https://github.com/guysoft/OctoPi.git
     cd OctoPi/src/image
     curl -J -O -L  http://downloads.raspberrypi.org/raspbian_latest
     cd ..
+    sudo modprobe loop
     sudo bash -x ./build
 
 Usage
