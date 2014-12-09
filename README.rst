@@ -1,7 +1,7 @@
 OctoPi
 ======
 
-.. image:: https://raw2.github.com/guysoft/OctoPi/master/media/OctoPi.png
+.. image:: https://raw.githubusercontent.com/guysoft/OctoPi/devel/media/OctoPi.png
 .. :scale: 50 %
 .. :alt: OctoPi logo
 
