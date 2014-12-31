@@ -81,10 +81,10 @@ pushd /home/pi
   popd
   
   #setup haproxy for http and https, and webcam
-  export HAPROXY_VERSION=1.5-dev19
+  export HAPROXY_VERSION=1.5.8
   sudo apt-get -y install ssl-cert libssl-dev libpcre3-dev checkinstall
   rm /etc/ssl/private/ssl-cert-snakeoil.key /etc/ssl/certs/ssl-cert-snakeoil.pem
-  sudo -u pi wget http://haproxy.1wt.eu/download/1.5/src/devel/haproxy-${HAPROXY_VERSION}.tar.gz
+  sudo -u pi wget http://www.haproxy.org/download/1.5/src/haproxy-${HAPROXY_VERSION}.tar.gz
   sudo -u pi tar xzvf haproxy-${HAPROXY_VERSION}.tar.gz
   rm haproxy-${HAPROXY_VERSION}.tar.gz
   sudo -u pi mv `ls | grep haproxy | head -n 1` haproxy-ss
