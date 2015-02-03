@@ -35,7 +35,7 @@ apt-get update
 apt-get remove -y --purge scratch squeak-plugins-scratch squeak-vm wolfram-engine python-minecraftpi minecraft-pi sonic-pi oracle-java8-jdk
 
 #apt-get octoprint virtualenv
-apt-get -y install python-virtualenv python-dev git python-numpy screen libts-bin
+apt-get -y --force-yes install python-virtualenv python-dev git python-numpy screen libts-bin
 
 pushd /home/pi
   
@@ -59,7 +59,7 @@ pushd /home/pi
   sudo usermod -a -G dialout pi
       
   #mjpg-streamer
-  sudo apt-get -y install subversion libjpeg8-dev imagemagick libav-tools cmake
+  sudo apt-get -y --force-yes install subversion libjpeg8-dev imagemagick libav-tools cmake
   sudo -u pi git clone --depth 1 https://github.com/jacksonliam/mjpg-streamer.git
   pushd mjpg-streamer
     mv mjpg-streamer-experimental/* .
@@ -82,7 +82,7 @@ pushd /home/pi
   
   #setup haproxy for http and https, and webcam
   export HAPROXY_VERSION=1.5.8
-  sudo apt-get -y install ssl-cert libssl-dev libpcre3-dev checkinstall
+  sudo apt-get -y --force-yes install ssl-cert libssl-dev libpcre3-dev checkinstall
   rm /etc/ssl/private/ssl-cert-snakeoil.key /etc/ssl/certs/ssl-cert-snakeoil.pem
   sudo -u pi wget http://www.haproxy.org/download/1.5/src/haproxy-${HAPROXY_VERSION}.tar.gz
   sudo -u pi tar xzvf haproxy-${HAPROXY_VERSION}.tar.gz
@@ -123,7 +123,7 @@ echo "pi ALL=NOPASSWD: /sbin/shutdown" > /etc/sudoers.d/octoprint-shutdown
 echo "pi ALL=NOPASSWD: /sbin/service" > /etc/sudoers.d/octoprint-service
 
 #reach printer by name
-sudo apt-get -y install avahi-daemon
+sudo apt-get -y --force-yes install avahi-daemon
 echo octopi > /etc/hostname
 sed -i 's@raspberrypi@octopi@' /etc/hosts
 
