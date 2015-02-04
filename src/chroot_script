@@ -8,6 +8,15 @@ fixLd(){
   sed -i 's@/usr/lib/arm-linux-gnueabihf/libcofi_rpi.so@\#/usr/lib/arm-linux-gnueabihf/libcofi_rpi.so@' /etc/ld.so.preload
 }
 
+gitclone(){
+if [ $GIT_REPO_OVERRIDE != "" ] ; then
+    REPO=$GIT_REPO_OVERRIDE`echo $1 | awk -F '/' '{print $(NF)}'`
+    sudo -u pi git clone $REPO
+else
+    sudo -u pi git clone $1
+fi
+}
+
 unpackHome(){
   shopt -s dotglob
   cp -av /filesystem/home/* /home/pi
@@ -43,13 +52,13 @@ pushd /home/pi
   sudo -u pi virtualenv --system-site-packages oprint
   
   #OctoPrint
-  sudo -u pi git clone --depth 1 https://github.com/foosel/OctoPrint.git
+  gitclone https://github.com/foosel/OctoPrint.git
   pushd OctoPrint
     sudo -u pi /home/pi/oprint/bin/python setup.py install
   popd
 
   #OctoPiPanel
-  sudo -u pi git clone --depth 1 https://github.com/jonaslorander/OctoPiPanel.git
+  gitclone https://github.com/jonaslorander/OctoPiPanel.git
   pushd OctoPiPanel
     sudo -u pi /home/pi/oprint/bin/pip install -r requirements.txt
   popd
@@ -60,7 +69,7 @@ pushd /home/pi
       
   #mjpg-streamer
   sudo apt-get -y --force-yes install subversion libjpeg8-dev imagemagick libav-tools cmake
-  sudo -u pi git clone --depth 1 https://github.com/jacksonliam/mjpg-streamer.git
+  gitclone https://github.com/jacksonliam/mjpg-streamer.git
   pushd mjpg-streamer
     mv mjpg-streamer-experimental/* .
     sudo -u pi make
@@ -99,7 +108,7 @@ pushd /home/pi
           --no-create-home --quiet --force-badname --group haproxy
 
   #Add fbcp for TFT screens
-  git clone --depth 1 https://github.com/tasanakorn/rpi-fbcp
+  gitclone https://github.com/tasanakorn/rpi-fbcp
   pushd rpi-fbcp
     mkdir build
     pushd build
