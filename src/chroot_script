@@ -12,6 +12,7 @@ gitclone(){
 if [ $GIT_REPO_OVERRIDE != "" ] ; then
     REPO=$GIT_REPO_OVERRIDE`echo $1 | awk -F '/' '{print $(NF)}'`
     sudo -u pi git clone $REPO
+    sudo -u pi git remote set-url $1
 else
     sudo -u pi git clone $1
 fi
