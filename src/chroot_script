@@ -69,7 +69,7 @@ pushd /home/pi
   sudo usermod -a -G dialout pi
       
   #mjpg-streamer
-  sudo apt-get -y --force-yes install subversion libjpeg8-dev imagemagick libav-tools cmake
+  sudo apt-get -y --force-yes install subversion libjpeg8-dev imagemagick libav-tools cmake libv4l-dev
   gitclone https://github.com/jacksonliam/mjpg-streamer.git
   pushd mjpg-streamer
     mv mjpg-streamer-experimental/* .
