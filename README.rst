@@ -15,9 +15,6 @@ Official mirror is `here <http://docstech.net/OctoPiMirror/>`_
 
 Alternative mirror is `here <http://mariogrip.com/OctoPiMirror/>`_
 
-
-There is also a torrent for 0.10.0 `here <http://dns3.snuletek.org/share/2014-06-20-wheezy-octopi-0.10.0.zip.torrent>`_ .
-
 Nightly builds are avilable `here <http://docstech.net/OctoPiMirror/nightly/>`_
 
 How to use it?
