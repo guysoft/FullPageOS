@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+source /util.sh
+
+# exit script on any error
+install_fail_on_error_trap
+
+#change the hostname 
+sudo sed -i 's@octopi@example@' /etc/hosts
+
+# install dhclient.conf and possibly other files
+unpackRoot
+
+#cleanup
+fixLd
+sudo apt-get clean

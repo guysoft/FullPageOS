@@ -4,38 +4,8 @@ set -x
 # Helper script that runs in a Raspbian chroot to create the OctoPI distro
 # Written by Guy Sheffer <guysoft at gmail dot com>
 # GPL V3
-fixLd(){
-  sed -i 's@/usr/lib/arm-linux-gnueabihf/libcofi_rpi.so@\#/usr/lib/arm-linux-gnueabihf/libcofi_rpi.so@' /etc/ld.so.preload
-}
 
-gitclone(){
-if [ $GIT_REPO_OVERRIDE != "" ] ; then
-    REPO=$GIT_REPO_OVERRIDE`echo $1 | awk -F '/' '{print $(NF)}'`
-    sudo -u pi git clone $REPO
-    sudo -u pi git remote set-url $1
-else
-    sudo -u pi git clone $1
-fi
-}
-
-unpackHome(){
-  shopt -s dotglob
-  cp -av /filesystem/home/* /home/pi
-  shopt -u dotglob
-  chown -hR pi:pi /home/pi
-}
-
-unpackRoot(){
-  shopt -s dotglob
-  cp -av /filesystem/root/* /
-  shopt -u dotglob
-}
-
-unpackBoot(){
-  shopt -s dotglob
-  cp -av /filesystem/boot/* /boot
-  shopt -u dotglob
-}
+source /util.sh
 
 fixLd
 unpackHome
@@ -52,11 +22,14 @@ pushd /home/pi
   #build virtualenv
   sudo -u pi virtualenv --system-site-packages oprint
   
-  #OctoPrint
-  gitclone https://github.com/foosel/OctoPrint.git
-  pushd OctoPrint
-    sudo -u pi /home/pi/oprint/bin/python setup.py install
-  popd
+  if [ -n $OVERRIDE_OCTOPRINT ]
+  then
+    #OctoPrint
+    gitclone https://github.com/foosel/OctoPrint.git
+    pushd OctoPrint
+      sudo -u pi /home/pi/oprint/bin/python setup.py install
+    popd
+  fi
 
   #OctoPiPanel
   gitclone https://github.com/jonaslorander/OctoPiPanel.git

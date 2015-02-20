@@ -3,6 +3,26 @@
 # This script takes a Raspbian image and adds to it octoprint and verions addons
 # Written by Guy Sheffer <guysoft at gmail dot com>
 # GPL V3
+
+function execute_chroot_script() {
+  #move OctoPi filesystem files
+  cp -av $1/filesystem .
+
+  #black magic of qemu-arm-static
+  cp `which qemu-arm-static` usr/bin
+  
+  cp $2 chroot_script
+  chmod 755 chroot_script
+  cp $SCRIPT_PATH/util.sh util.sh
+  chmod 755 util.sh
+  
+  chroot . usr/bin/qemu-arm-static /bin/bash /chroot_script
+  
+  #cleanup
+  rm chroot_script
+  rm -rfv filesystem
+}
+
 mkdir -p $OCTOPI_WORKSPACE
 mkdir -p $MOUNT_PATH
 
@@ -21,19 +41,13 @@ pushd $OCTOPI_WORKSPACE
     #make QEMU boot (remember to return)
     #sed -i 's@include /etc/ld.so.conf.d/\*.conf@\#include /etc/ld.so.conf.d/\*.conf@' etc/ld.so.conf
 
-    #move OctoPi filesystem files
-    cp -av $SCRIPT_PATH/filesystem . 
-
-    #black magic of qemu-arm-static
-    cp `which qemu-arm-static` usr/bin
-    cp $CHROOT_SCRIPT_PATH chroot_script
-    chmod 755 chroot_script
+    # execute the base chroot script
+    #execute_chroot_script $SCRIPT_PATH $CHROOT_SCRIPT_PATH
     
-    chroot . usr/bin/qemu-arm-static /bin/bash /chroot_script
-    
-    #cleanup
-    rm chroot_script
-    rm -rfv filesystem
+    # if building a variant, execute its chroot script
+    if [ -n $VARIANT_BASE ]; then
+      execute_chroot_script $VARIANT_BASE $VARIANT_BASE/chroot_script
+    fi
   popd
   
   # unmount first boot, then root partition
