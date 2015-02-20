@@ -12,5 +12,4 @@ sudo sed -i 's@octopi@example@' /etc/hosts
 unpackRoot
 
 #cleanup
-fixLd
 sudo apt-get clean

@@ -39,6 +39,8 @@ pushd $OCTOPI_WORKSPACE
   pushd $MOUNT_PATH
 
     #make QEMU boot (remember to return)
+    source util.sh
+    fixLd
     #sed -i 's@include /etc/ld.so.conf.d/\*.conf@\#include /etc/ld.so.conf.d/\*.conf@' etc/ld.so.conf
 
     # execute the base chroot script
@@ -48,6 +50,8 @@ pushd $OCTOPI_WORKSPACE
     if [ -n $VARIANT_BASE ]; then
       execute_chroot_script $VARIANT_BASE $VARIANT_BASE/chroot_script
     fi
+    
+    restoreLd
   popd
   
   # unmount first boot, then root partition

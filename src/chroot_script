@@ -7,7 +7,6 @@ set -x
 
 source /util.sh
 
-fixLd
 unpackHome
 unpackBoot
 apt-get update
@@ -122,7 +121,4 @@ unpackRoot
 sudo update-rc.d octoprint defaults 99
 
 #cleanup
-fixLd
 sudo apt-get clean
-
-sed -i 's@\#/usr/lib/arm-linux-gnueabihf/libcofi_rpi.so@/usr/lib/arm-linux-gnueabihf/libcofi_rpi.so@' /etc/ld.so.preload
