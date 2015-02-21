@@ -55,12 +55,14 @@ pushd /home/pi
   #OctoPrint
   gitclone https://github.com/foosel/OctoPrint.git
   pushd OctoPrint
+    git checkout $OCTOPRINT_BRANCH
     sudo -u pi /home/pi/oprint/bin/python setup.py install
   popd
 
   #OctoPiPanel
   gitclone https://github.com/jonaslorander/OctoPiPanel.git
   pushd OctoPiPanel
+    git checkout $OCTOPIPANEL_BRANCH
     sudo -u pi /home/pi/oprint/bin/pip install -r requirements.txt
   popd
 

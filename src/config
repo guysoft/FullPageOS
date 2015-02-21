@@ -1,4 +1,6 @@
 CONFIG_DIR=$(dirname $(realpath -s $BASH_SOURCE))
+export OCTOPRINT_BRANCH=devel
+export OCTOPIPANEL_BRANCH=devel
 
 if [ -f $CONFIG_DIR/config.local ]; then
   source $CONFIG_DIR/config.local
