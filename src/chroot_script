@@ -5,7 +5,7 @@ set -x
 # Written by Guy Sheffer <guysoft at gmail dot com>
 # GPL V3
 
-source /util.sh
+source /common.sh
 
 unpackHome
 unpackBoot

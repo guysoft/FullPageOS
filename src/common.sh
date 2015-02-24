@@ -45,5 +45,5 @@ function unpackBoot(){
 function install_fail_on_error_trap() {
   set -e
   trap 'previous_command=$this_command; this_command=$BASH_COMMAND' DEBUG
-  trap 'echo -e "\nexit $? due to $previous_command \nBUILD FAILED!"' EXIT
+  trap 'if [ $? -ne 0 ]; then echo -e "\nexit $? due to $previous_command \nBUILD FAILED!"; fi' EXIT
 }

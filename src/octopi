@@ -4,6 +4,9 @@
 # Written by Guy Sheffer <guysoft at gmail dot com>
 # GPL V3
 
+source $SCRIPT_PATH/common.sh
+install_fail_on_error_trap
+
 function execute_chroot_script() {
   #move OctoPi filesystem files
   cp -av $1/filesystem .
@@ -13,8 +16,8 @@ function execute_chroot_script() {
   
   cp $2 chroot_script
   chmod 755 chroot_script
-  cp $SCRIPT_PATH/util.sh util.sh
-  chmod 755 util.sh
+  cp $SCRIPT_PATH/common.sh common.sh
+  chmod 755 common.sh
   
   chroot . usr/bin/qemu-arm-static /bin/bash /chroot_script
   
@@ -27,7 +30,9 @@ mkdir -p $OCTOPI_WORKSPACE
 mkdir -p $MOUNT_PATH
 
 pushd $OCTOPI_WORKSPACE
-  rm *.img
+  if [ -e *.img ]; then  
+    rm *.img
+  fi
   unzip $ZIP_IMG
   IMG_PATH=`ls | grep .img`
 
@@ -39,12 +44,11 @@ pushd $OCTOPI_WORKSPACE
   pushd $MOUNT_PATH
 
     #make QEMU boot (remember to return)
-    source util.sh
     fixLd
     #sed -i 's@include /etc/ld.so.conf.d/\*.conf@\#include /etc/ld.so.conf.d/\*.conf@' etc/ld.so.conf
 
     # execute the base chroot script
-    #execute_chroot_script $SCRIPT_PATH $CHROOT_SCRIPT_PATH
+    execute_chroot_script $SCRIPT_PATH $CHROOT_SCRIPT_PATH
     
     # if building a variant, execute its chroot script
     if [ -n $VARIANT_BASE ]; then

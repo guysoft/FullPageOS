@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
 
-source ./util.sh
+source ./common.sh
 
 OCTOPI_PATH=$(dirname $(realpath -s $0))
 
 BUILD_VARIANT=default
 BUILD_FLAVOR=default
 
-if [ "$#" -eq 1 ]; then
+if [ "$#" -gt 0 ]; then
   BUILD_VARIANT=$1
-elif [ "$#" -eq 2 ]; then
-  BUILD_VARIANT=$1
+fi
+if [ "$#" -gt 1 ]; then
   BUILD_FLAVOR=$2
 fi
 
@@ -23,10 +23,9 @@ if [ $BUILD_VARIANT != 'default' ]; then
     FLAVOR_CONFIG=$VARIANT_BASE/config.$BUILD_FLAVOR
   fi
   source $FLAVOR_CONFIG || die "Could not find config file $FLAVOR_CONFIG"
-
-  echo "Building VARIANT $BUILD_VARIANT, FLAVOR $BUILD_FLAVOR"
 fi
 
+echo -e "--> Building VARIANT $BUILD_VARIANT, FLAVOR $BUILD_FLAVOR"
 
 source $OCTOPI_PATH/config
 source $OCTOPI_PATH/octopi
