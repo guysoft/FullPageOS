@@ -25,20 +25,20 @@ fi
 
 function unpackHome(){
   shopt -s dotglob
-  cp -av /filesystem/home/* /home/pi
+  cp -v -r --preserve=mode,timestamps /filesystem/home/* /home/pi
   shopt -u dotglob
   chown -hR pi:pi /home/pi
 }
 
 function unpackRoot(){
   shopt -s dotglob
-  cp -av /filesystem/root/* /
+  cp -v -r --preserve=mode,timestamps /filesystem/root/* /
   shopt -u dotglob
 }
 
 function unpackBoot(){
   shopt -s dotglob
-  cp -av /filesystem/boot/* /boot
+  cp -v -r --preserve=mode,timestamps /filesystem/boot/* /boot
   shopt -u dotglob
 }
 

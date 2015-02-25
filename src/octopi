@@ -9,7 +9,7 @@ install_fail_on_error_trap
 
 function execute_chroot_script() {
   #move OctoPi filesystem files
-  cp -av $1/filesystem .
+  cp -vr --preserve=mode,timestamps $1/filesystem .
 
   #black magic of qemu-arm-static
   cp `which qemu-arm-static` usr/bin
