@@ -12,6 +12,7 @@ fi
 [ -n "$OCTOPI_WORKSPACE" ] || OCTOPI_WORKSPACE=$SCRIPT_PATH/workspace
 [ -n "$CHROOT_SCRIPT_PATH" ] || CHROOT_SCRIPT_PATH=$SCRIPT_PATH/chroot_script
 [ -n "$MOUNT_PATH" ] || MOUNT_PATH=$OCTOPI_WORKSPACE/mount
+[ -n "$OVERRIDE_HOSTNAME" ] || OVERRIDE_HOSTNAME=octopi
 
 echo "================================================================"
 echo "Using the following config:"
@@ -21,4 +22,5 @@ echo "ZIP_IMG = $ZIP_IMG"
 echo "OCTOPI_WORKSPACE = $OCTOPI_WORKSPACE"
 echo "CHROOT_SCRIPT_PATH = $CHROOT_SCRIPT_PATH"
 echo "MOUNT_PATH = $MOUNT_PATH"
+echo "OVERRIDE_HOSTNAME = $OVERRIDE_HOSTNAME"
 echo "================================================================"

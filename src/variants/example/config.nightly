@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
 
+export OVERRIDE_HOSTNAME=blueberrypi
 export OVERRIDE_OCTOPRINT=no

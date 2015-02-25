@@ -106,8 +106,8 @@ echo "pi ALL=NOPASSWD: /sbin/service" > /etc/sudoers.d/octoprint-service
 
 #reach printer by name
 sudo apt-get -y --force-yes install avahi-daemon
-echo octopi > /etc/hostname
-sed -i 's@raspberrypi@octopi@' /etc/hosts
+echo "$OVERRIDE_HOSTNAME" > /etc/hostname
+sed -i -e "s@raspberrypi@$OVERRIDE_HOSTNAME@g" /etc/hosts
 
 # enable raspicam
 echo "# enable raspicam" >> /boot/config.txt
