@@ -6,15 +6,15 @@ if [ -f $CONFIG_DIR/config.local ]; then
   source $CONFIG_DIR/config.local
 fi
 
-[ -n "$SCRIPT_PATH" ] || SCRIPT_PATH=$CONFIG_DIR
-[ -n "$IMAGE_PATH" ] || IMAGE_PATH=$SCRIPT_PATH/image
+[ -n "$SCRIPT_PATH" ] || export SCRIPT_PATH=$CONFIG_DIR
+[ -n "$IMAGE_PATH" ] || export IMAGE_PATH=$SCRIPT_PATH/image
 
-[ -n "$ZIP_IMG" ] || ZIP_IMG=`ls -t $IMAGE_PATH/*-raspbian*.zip | head -n 1`
+[ -n "$ZIP_IMG" ] || export ZIP_IMG=`ls -t $IMAGE_PATH/*-raspbian*.zip | head -n 1`
 
-[ -n "$OCTOPI_WORKSPACE" ] || OCTOPI_WORKSPACE=$SCRIPT_PATH/workspace
-[ -n "$CHROOT_SCRIPT_PATH" ] || CHROOT_SCRIPT_PATH=$SCRIPT_PATH/chroot_script
-[ -n "$MOUNT_PATH" ] || MOUNT_PATH=$OCTOPI_WORKSPACE/mount
-[ -n "$OVERRIDE_HOSTNAME" ] || OVERRIDE_HOSTNAME=octopi
+[ -n "$OCTOPI_WORKSPACE" ] || export OCTOPI_WORKSPACE=$SCRIPT_PATH/workspace
+[ -n "$CHROOT_SCRIPT_PATH" ] || export CHROOT_SCRIPT_PATH=$SCRIPT_PATH/chroot_script
+[ -n "$MOUNT_PATH" ] || export MOUNT_PATH=$OCTOPI_WORKSPACE/mount
+[ -n "$OVERRIDE_HOSTNAME" ] || export OVERRIDE_HOSTNAME=octopi
 
 echo "================================================================"
 echo "Using the following config:"
