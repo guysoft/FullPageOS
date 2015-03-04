@@ -9,7 +9,7 @@ fi
 [ -n "$SCRIPT_PATH" ] || SCRIPT_PATH=$CONFIG_DIR
 [ -n "$IMAGE_PATH" ] || IMAGE_PATH=$SCRIPT_PATH/image
 
-[ -n "$ZIP_IMG" ] || ZIP_IMG=`ls -t $IMAGE_PATH/*-raspbian-*.zip | head -n 1`
+[ -n "$ZIP_IMG" ] || ZIP_IMG=`ls -t $IMAGE_PATH/*-raspbian*.zip | head -n 1`
 
 [ -n "$OCTOPI_WORKSPACE" ] || OCTOPI_WORKSPACE=$SCRIPT_PATH/workspace
 [ -n "$CHROOT_SCRIPT_PATH" ] || CHROOT_SCRIPT_PATH=$SCRIPT_PATH/chroot_script
