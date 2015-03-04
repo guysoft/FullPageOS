@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-source ./common.sh
+BUILD_SCRIPT__PATH=$(dirname $(realpath -s $BASH_SOURCE))
+source ${BUILD_SCRIPT__PATH}/common.sh
 
 OCTOPI_PATH=$(dirname $(realpath -s $0))
 
