@@ -46,13 +46,17 @@ pushd $OCTOPI_WORKSPACE
     #make QEMU boot (remember to return)
     fixLd
     #sed -i 's@include /etc/ld.so.conf.d/\*.conf@\#include /etc/ld.so.conf.d/\*.conf@' etc/ld.so.conf
-
+    # if building a variant, execute its pre-chroot script
+    if [ -n $VARIANT_BASE ]; then
+      execute_chroot_script $VARIANT_BASE $VARIANT_BASE/pre_chroot_script
+    fi
+ 
     # execute the base chroot script
     execute_chroot_script $SCRIPT_PATH $CHROOT_SCRIPT_PATH
     
-    # if building a variant, execute its chroot script
+    # if building a variant, execute its post-chroot script
     if [ -n $VARIANT_BASE ]; then
-      execute_chroot_script $VARIANT_BASE $VARIANT_BASE/chroot_script
+      execute_chroot_script $VARIANT_BASE $VARIANT_BASE/post_chroot_script
     fi
     
     restoreLd
