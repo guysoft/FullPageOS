@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+source /common.sh
+
+# exit script on any error
+install_fail_on_error_trap
+
+# install dhclient.conf and possibly other files
+unpackRoot
+
+#cleanup
+apt-get clean
