@@ -47,7 +47,7 @@ pushd $OCTOPI_WORKSPACE
     fixLd
     #sed -i 's@include /etc/ld.so.conf.d/\*.conf@\#include /etc/ld.so.conf.d/\*.conf@' etc/ld.so.conf
     # if building a variant, execute its pre-chroot script
-    if [ -n $VARIANT_BASE ]; then
+    if [ -n $VARIANT_BASE ] && [ -f $VARIANT_BASE $VARIANT_BASE/pre_chroot_script ]; then
       execute_chroot_script $VARIANT_BASE $VARIANT_BASE/pre_chroot_script
     fi
  
@@ -55,7 +55,7 @@ pushd $OCTOPI_WORKSPACE
     execute_chroot_script $SCRIPT_PATH $CHROOT_SCRIPT_PATH
     
     # if building a variant, execute its post-chroot script
-    if [ -n $VARIANT_BASE ]; then
+    if [ -n $VARIANT_BASE ] && [ -f $VARIANT_BASE $VARIANT_BASE/post_chroot_script ]; then
       execute_chroot_script $VARIANT_BASE $VARIANT_BASE/post_chroot_script
     fi
     
