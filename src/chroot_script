@@ -11,7 +11,7 @@ unpackHome
 unpackBoot
 apt-get update
 
-apt-get remove -y --purge scratch squeak-plugins-scratch squeak-vm wolfram-engine python-minecraftpi minecraft-pi sonic-pi oracle-java8-jdk
+apt-get remove -y --purge scratch squeak-plugins-scratch squeak-vm wolfram-engine python-minecraftpi minecraft-pi sonic-pi oracle-java8-jdk python-serial
 
 #apt-get octoprint virtualenv
 apt-get -y --force-yes install python-virtualenv python-dev git python-numpy screen libts-bin
