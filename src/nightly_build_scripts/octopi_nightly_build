@@ -15,9 +15,9 @@ pushd ${OCTOPIPATH}
     umount ${OCTOPIPATH}/src/workspace/mount
     git pull origin devel
     export GIT_REPO_OVERRIDE='http://gnet.homelinux.com/git/'
-    ${OCTOPIPATH}/src/build
+    ${OCTOPIPATH}/src/build $1
     pushd src
-    ${OCTOPIPATH}/src/release
+    ${OCTOPIPATH}/src/release $1
     popd
     chmod 777 ${OCTOPIPATH}/src/*
 popd
