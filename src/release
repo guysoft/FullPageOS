@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
-pushd workspace
-	
+if [ -z "$1" ];then
+    pushd workspace
+else
+    pushd workspace-$1
+fi
+
 FILENAME=$(basename `ls . |  grep .img | tail -n 1` .img)  
 OCTOPI_FILENAME=$(echo $FILENAME-`cat ../filesystem/root/etc/octopi_version` | sed 's/raspbian/octopi/')
 mv ${FILENAME}.img $OCTOPI_FILENAME.img
