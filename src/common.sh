@@ -14,10 +14,13 @@ function restoreLd(){
 }
 
 function gitclone(){
-if [ $GIT_REPO_OVERRIDE != "" ] ; then
+if [ "$GIT_REPO_OVERRIDE" != "" ] ; then
     REPO=$GIT_REPO_OVERRIDE`echo $1 | awk -F '/' '{print $(NF)}'`
     sudo -u pi git clone $REPO
-    sudo -u pi git remote set-url $1
+    REPO_DIR_NAME=$(echo ${REPO} | 's%^.*/\([^/]*\)\.git$%\1%g')
+    pushd ${REPO_DIR_NAME}
+        sudo -u pi git remote set-url $1
+    popd
 else
     sudo -u pi git clone $1
 fi
