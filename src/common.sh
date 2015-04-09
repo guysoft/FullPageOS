@@ -19,7 +19,7 @@ if [ "$GIT_REPO_OVERRIDE" != "" ] ; then
     sudo -u pi git clone $REPO
     REPO_DIR_NAME=$(echo ${REPO} | sed 's%^.*/\([^/]*\)\.git$%\1%g')
     pushd ${REPO_DIR_NAME}
-        sudo -u pi git remote set-url $1
+        sudo -u pi git remote set-url origin $1
     popd
 else
     sudo -u pi git clone $1
