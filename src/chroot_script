@@ -98,7 +98,7 @@ popd
 sed -i 's@exit 0@@' /etc/rc.local
 
 echo "/home/pi/scripts/genCert" >> /etc/rc.local
-echo "sudo -u pi /home/pi/scripts/webcamDaemon &" >> /etc/rc.local
+echo "sudo -u pi -s /bin/bash -c \"exec /home/pi/scripts/webcamDaemon > /home/pi/.octoprint/logs/webcam.log 2>&1\" &" >> /etc/rc.local
 echo "/usr/local/sbin/haproxy -f /etc/haproxy/haproxy.cfg" >> /etc/rc.local
 echo "exit 0" >> /etc/rc.local
 
