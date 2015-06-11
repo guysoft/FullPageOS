@@ -37,8 +37,7 @@ pushd $OCTOPI_WORKSPACE
   IMG_PATH=`ls | grep .img`
 
   # mount root and boot partition
-  sudo mount -o loop,offset=$((512*122880)) $IMG_PATH $MOUNT_PATH
-  sudo mount -o loop,offset=$((512*8192)) $IMG_PATH $MOUNT_PATH/boot
+  mount_image $IMG_PATH $MOUNT_PATH
 
   #Edit pi filesystem
   pushd $MOUNT_PATH
@@ -63,8 +62,7 @@ pushd $OCTOPI_WORKSPACE
   popd
   
   # unmount first boot, then root partition
-  sudo umount $MOUNT_PATH/boot
-  sudo umount $MOUNT_PATH
+  unmount_image $MOUNT_PATH
   chmod 777 $IMG_PATH
 popd
 

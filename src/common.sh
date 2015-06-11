@@ -50,3 +50,20 @@ function install_fail_on_error_trap() {
   trap 'previous_command=$this_command; this_command=$BASH_COMMAND' DEBUG
   trap 'if [ $? -ne 0 ]; then echo -e "\nexit $? due to $previous_command \nBUILD FAILED!"; fi' EXIT
 }
+
+function mount_image() {
+  image_path=$1
+  mount_path=$2
+
+  # mount root and boot partition
+  sudo mount -o loop,offset=$((512*122880)) $image_path $mount_path
+  sudo mount -o loop,offset=$((512*8192)) $image_path $mount_path/boot
+}
+
+function unmount_image() {
+  mount_path=$1
+
+  # unmount first boot, then root partition
+  sudo umount $mount_path/boot
+  sudo umount $mount_path
+}
