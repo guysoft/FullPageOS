@@ -5,7 +5,8 @@ webcam:
 plugins:
   softwareupdate:
     checks:
-      update_folder: /home/pi/OctoPrint
+      octoprint:
+        update_folder: /home/pi/OctoPrint
     octoprint_restart_command: sudo service octoprint restart
     environment_restart_command: sudo shutdown -r now
 system:
