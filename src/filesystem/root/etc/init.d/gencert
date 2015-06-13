@@ -1,0 +1,41 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          gencert
+# Required-Start:    $local_fs
+# Required-Stop:
+# Default-Start:     S
+# Default-Stop:
+# Short-Description: Make sure an SSL certificate is generated for haproxy on first boot
+# Description:       
+### END INIT INFO
+
+. /lib/lsb/init-functions
+
+do_start () {
+  keyfile=/etc/ssl/private/ssl-cert-snakeoil.key
+  pemfile=/etc/ssl/certs/ssl-cert-snakeoil.pem
+  certfile=/etc/ssl/snakeoil.pem
+
+  if [ ! -f $keyfile ] || [ ! -s $keyfile ] || [ ! -f $pemfile ] || [ ! -s $pemfile ] || [ ! -f $certfile ] || [ ! -s $certfile ]; then
+      echo "Generating SSL certificate"
+      sudo make-ssl-cert generate-default-snakeoil --force-overwrite 
+      sudo cat $keyfile $pemfile > $certfile
+  fi
+}
+
+case "$1" in
+  start|"")
+        do_start
+        ;;
+  restart|reload|force-reload)
+        echo "Error: argument '$1' not supported" >&2
+        exit 3
+        ;;
+  stop)
+        # No-op
+        ;;
+  *)
+        echo "Usage: octopi_first_boot [start|stop]" >&2
+        exit 3
+        ;;
+esac

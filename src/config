@@ -1,28 +1,109 @@
 CONFIG_DIR=$(dirname $(realpath -s $BASH_SOURCE))
-export OCTOPRINT_BRANCH=devel
-export OCTOPIPANEL_BRANCH=devel
 
-if [ -f $CONFIG_DIR/config.local ]; then
+# Import the variant config if we have one
+
+if [ -n "$VARIANT_CONFIG" ] && [ -f $VARIANT_CONFIG ]
+then
+  echo "Sourceing variant config $VARIANT_CONFIG..."
+  source $VARIANT_CONFIG
+fi
+
+# Import the flavor config if we have one
+
+if [ -n "$FLAVOR_CONFIG" ] && [ -f $FLAVOR_CONFIG ]
+then
+  echo "Sourcing flavor config $FLAVOR_CONFIG..."
+  source $FLAVOR_CONFIG
+fi
+
+# Import the local config if we have one
+
+if [ -f $CONFIG_DIR/config.local ]
+then
+  echo "Sourcing config.local..."
   source $CONFIG_DIR/config.local
 fi
 
-[ -n "$SCRIPT_PATH" ] || export SCRIPT_PATH=$CONFIG_DIR
-[ -n "$IMAGE_PATH" ] || export IMAGE_PATH=$SCRIPT_PATH/image
+###############################################################################
+# All our config settings must start with OCTOPI_
 
-[ -n "$ZIP_IMG" ] || export ZIP_IMG=`ls -t $IMAGE_PATH/*-raspbian*.zip | head -n 1`
+[ -n "$OCTOPI_SCRIPT_PATH" ] || OCTOPI_SCRIPT_PATH=$CONFIG_DIR
+[ -n "$OCTOPI_IMAGE_PATH" ] || OCTOPI_IMAGE_PATH=$OCTOPI_SCRIPT_PATH/image
 
-[ -n "$OCTOPI_WORKSPACE" ] || export OCTOPI_WORKSPACE=$SCRIPT_PATH/workspace
-[ -n "$CHROOT_SCRIPT_PATH" ] || export CHROOT_SCRIPT_PATH=$SCRIPT_PATH/chroot_script
-[ -n "$MOUNT_PATH" ] || export MOUNT_PATH=$OCTOPI_WORKSPACE/mount
-[ -n "$OVERRIDE_HOSTNAME" ] || export OVERRIDE_HOSTNAME=octopi
+[ -n "$OCTOPI_ZIP_IMG" ] || OCTOPI_ZIP_IMG=`ls -t $OCTOPI_IMAGE_PATH/*-raspbian*.zip | head -n 1`
+
+[ -n "$OCTOPI_WORKSPACE" ] || OCTOPI_WORKSPACE=$OCTOPI_SCRIPT_PATH/workspace$WORKSPACE_POSTFIX
+[ -n "$OCTOPI_CHROOT_SCRIPT_PATH" ] || OCTOPI_CHROOT_SCRIPT_PATH=$OCTOPI_SCRIPT_PATH/chroot_script
+[ -n "$OCTOPI_MOUNT_PATH" ] || OCTOPI_MOUNT_PATH=$OCTOPI_WORKSPACE/mount
+
+[ -n "$OCTOPI_OVERRIDE_HOSTNAME" ] || OCTOPI_OVERRIDE_HOSTNAME=octopi
+
+[ -n "$OCTOPI_BUILD_REPO_MIRROR" ] || OCTOPI_BUILD_REPO_MIRROR=
+
+# OctoPrint repo & branch
+[ -n "$OCTOPI_OCTOPRINT_REPO_SHIP" ] || OCTOPI_OCTOPRINT_REPO_SHIP=https://github.com/foosel/OctoPrint.git
+[ -n "$OCTOPI_OCTOPRINT_REPO_BUILD" ] || OCTOPI_OCTOPRINT_REPO_BUILD=
+[ -n "$OCTOPI_OCTOPRINT_REPO_BRANCH" ] || OCTOPI_OCTOPRINT_REPO_BRANCH=master
+[ -n "$OCTOPI_INCLUDE_OCTOPRINT" ] || OCTOPI_INCLUDE_OCTOPRINT=yes
+
+# OctoPiPanel repo & branch
+[ -n "$OCTOPI_OCTOPIPANEL_REPO_SHIP" ] || OCTOPI_OCTOPIPANEL_REPO_SHIP=https://github.com/jonaslorander/OctoPiPanel.git
+[ -n "$OCTOPI_OCTOPIPANEL_REPO_BUILD" ] || OCTOPI_OCTOPIPANEL_REPO_BUILD=
+[ -n "$OCTOPI_OCTOPIPANEL_REPO_BRANCH" ] || OCTOPI_OCTOPIPANEL_REPO_BRANCH=master
+[ -n "$OCTOPI_FBCP_REPO_SHIP" ] || OCTOPI_FBCP_REPO_SHIP=https://github.com/tasanakorn/rpi-fbcp
+[ -n "$OCTOPI_FBCP_REPO_BUILD" ] || OCTOPI_FBCP_REPO_BUILD=$OCTOPI_FBCP_REPO_SHIP
+[ -n "$OCTOPI_FBCP_REPO_BRANCH" ] || OCTOPI_FBCP_REPO_BRANCH=
+[ -n "$OCTOPI_INCLUDE_OCTOPIPANEL" ] || OCTOPI_INCLUDE_OCTOPIPANEL=yes
+
+# CuraEngine archive & version
+[ -n "$OCTOPI_CURAENGINE_VERSION" ] || OCTOPI_CURAENGINE_VERSION=15.04
+[ -n "$OCTOPI_CURAENGINE_ARCHIVE" ] || OCTOPI_CURAENGINE_ARCHIVE=https://github.com/Ultimaker/CuraEngine/archive/$OCTOPI_CURAENGINE_VERSION.zip
+[ -n "$OCTOPI_INCLUDE_CURAENGINE" ] || OCTOPI_INCLUDE_CURAENGINE=yes
+
+# mjpg streamer
+[ -n "$OCTOPI_MJPGSTREAMER_REPO_SHIP" ] || OCTOPI_MJPGSTREAMER_REPO_SHIP=https://github.com/jacksonliam/mjpg-streamer.git
+[ -n "$OCTOPI_MJPGSTREAMER_REPO_BUILD" ] || OCTOPI_MJPGSTREAMER_REPO_BUILD=
+[ -n "$OCTOPI_MJPGSTREAMER_REPO_BRANCH" ] || OCTOPI_MJPGSTREAMER_REPO_BRANCH=master
+[ -n "$OCTOPI_INCLUDE_MJPGSTREAMER" ] || OCTOPI_INCLUDE_MJPGSTREAMER=yes
+
+# HAProxy
+[ -n "$OCTOPI_HAPROXY_VERSION" ] || OCTOPI_HAPROXY_VERSION=1.5.8
+[ -n "$OCTOPI_HAPROXY_ARCHIVE" ] || OCTOPI_HAPROXY_ARCHIVE=http://www.haproxy.org/download/1.5/src/haproxy-$OCTOPI_HAPROXY_VERSION.tar.gz
+[ -n "$OCTOPI_INCLUDE_HAPROXY" ] || OCTOPI_INCLUDE_HAPROXY=yes
+
+
+###############################################################################
+# Rewrite any build urls that are not yet set if we have a repository mirror
+# configured.
+
+if [ -n "$OCTOPI_BUILD_REPO_MIRROR" ]
+then
+	vars=`compgen -A variable | grep '^OCTOPI_' | grep 'REPO_BUILD'`
+	for var in $vars
+	do
+		if [ ! -n "${!var}" ]
+		then
+			repo_ship_var=${var%_BUILD}_SHIP
+			original=${!repo_ship_var}
+			rewritten=$OCTOPI_BUILD_REPO_MIRROR`echo $original | awk -F '/' '{print $(NF)}'`
+
+			echo "Rewriting build repo for $var from $original to $rewritten"
+			eval $var=$rewritten
+		fi
+	done
+fi
+
+###############################################################################
+# Print and export the final configuration.
 
 echo "================================================================"
 echo "Using the following config:"
-echo "SCRIPT_PATH = $SCRIPT_PATH"
-echo "IMAGE_PATH = $IMAGE_PATH"
-echo "ZIP_IMG = $ZIP_IMG"
-echo "OCTOPI_WORKSPACE = $OCTOPI_WORKSPACE"
-echo "CHROOT_SCRIPT_PATH = $CHROOT_SCRIPT_PATH"
-echo "MOUNT_PATH = $MOUNT_PATH"
-echo "OVERRIDE_HOSTNAME = $OVERRIDE_HOSTNAME"
+
+vars=`compgen -A variable | grep '^OCTOPI_'`
+for var in $vars
+do
+	echo "$var = ${!var}"
+	eval export $var
+done
+
 echo "================================================================"

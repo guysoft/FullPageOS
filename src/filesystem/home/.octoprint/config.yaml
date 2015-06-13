@@ -3,6 +3,8 @@ webcam:
   snapshot: http://127.0.0.1:8080/?action=snapshot
   ffmpeg: /usr/bin/avconv
 plugins:
+  cura:
+    cura_engine: /usr/local/bin/cura_engine
   softwareupdate:
     checks:
       octoprint:

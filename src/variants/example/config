@@ -1,9 +1,4 @@
-#!/usr/bin/env bash
+# variant example, flavor default: override hostname & custom config setting
 
-# make sure to export all the variables to make them available to the chroot scripts as well
-
-# customize the hostname 
-export OVERRIDE_HOSTNAME=blueberrypi
-
-# skip octoprint installation in main build script 
-export OVERRIDE_OCTOPRINT=yes
+OCTOPI_OVERRIDE_HOSTNAME=blueberrypi
+OCTOPI_EXAMPLE_CUSTOM="Hello there"

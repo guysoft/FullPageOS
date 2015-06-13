@@ -14,41 +14,73 @@ function restoreLd(){
 }
 
 function gitclone(){
-if [ "$GIT_REPO_OVERRIDE" != "" ] ; then
-    REPO=$GIT_REPO_OVERRIDE`echo $1 | awk -F '/' '{print $(NF)}'`
-    sudo -u pi git clone $REPO
-    REPO_DIR_NAME=$(echo ${REPO} | sed 's%^.*/\([^/]*\)\.git$%\1%g')
-    pushd ${REPO_DIR_NAME}
-        sudo -u pi git remote set-url origin $1
+  # call like this: gitclone OCTOPI_OCTOPRINT_REPO someDirectory -- this will do:
+  #
+  #   sudo -u pi git clone -b $OCTOPI_OCTOPRINT_REPO_BRANCH $OCTOPI_OCTOPRINT_REPO_BUILD someDirectory
+  # 
+  # and if $OCTOPI_OCTOPRINT_REPO_BUILD != $OCTOPI_OCTOPRINT_REPO_SHIP also:
+  #
+  #   pushd someDirectory
+  #     sudo -u pi git remote set-url origin $OCTOPI_OCTOPRINT_REPO_SHIP
+  #   popd
+  # 
+  # if second parameter is not provided last URL segment of the BUILD repo URL
+  # minus the optional .git postfix will be used
+
+  repo_build_var=$1_BUILD
+  repo_ship_var=$1_SHIP
+  repo_branch_var=$1_BRANCH
+  
+  repo_dir=$2
+  if [ ! -n "$repo_dir" ]
+  then
+    repo_dir=$(echo ${REPO} | sed 's%^.*/\([^/]*\)\(\.git\)?$%\1%g')
+  fi
+
+  build_repo=${!repo_build_var}
+  ship_repo=${!repo_ship_var}
+  branch=${!repo_branch_var}
+
+  if [ ! -n "$build_repo" ]
+  then
+    build_repo=$ship_repo
+  fi
+
+  if [ -n "$branch" ]
+  then
+    sudo -u pi git clone -b $branch "$build_repo" "$repo_dir"
+  else
+    sudo -u pi git clone "$build_repo" "$repo_dir"
+  fi
+
+  if [  "$build_repo" == "$ship_repo" ]
+  then
+    pushd "$repo_dir"
+      sudo -u pi git remote set-url origin "$ship_repo"
     popd
-else
-    sudo -u pi git clone $1
-fi
+  fi
 }
 
-function unpackHome(){
+function unpack() {
+  # call like this: unpack /path/to/source /target user -- this will copy
+  # all files & folders from source to target, preserving mode and timestamps
+  # and chown to user. If user is not provided, no chown will be performed
+
+  from=$1
+  to=$2
+  owner=
+  if [ "$#" -gt 2 ]
+  then
+    owner=$3
+  fi
+
   shopt -s dotglob
-  cp -v -r --preserve=mode,timestamps /filesystem/home/* /home/pi
+  cp -v -r --preserve=mode,timestamps $from/* $to
   shopt -u dotglob
-  chown -hR pi:pi /home/pi
-}
-
-function unpackRoot(){
-  shopt -s dotglob
-  cp -v -r --preserve=mode,timestamps /filesystem/root/* /
-  shopt -u dotglob
-}
-
-function unpackBoot(){
-  shopt -s dotglob
-  cp -v -r --preserve=mode,timestamps /filesystem/boot/* /boot
-  shopt -u dotglob
-}
-
-function install_fail_on_error_trap() {
-  set -e
-  trap 'previous_command=$this_command; this_command=$BASH_COMMAND' DEBUG
-  trap 'if [ $? -ne 0 ]; then echo -e "\nexit $? due to $previous_command \nBUILD FAILED!"; fi' EXIT
+  if [ -n "$owner" ]
+  then
+    chown -hR $owner:$owner $to
+  fi
 }
 
 function mount_image() {
@@ -66,4 +98,16 @@ function unmount_image() {
   # unmount first boot, then root partition
   sudo umount $mount_path/boot
   sudo umount $mount_path
+}
+
+function install_fail_on_error_trap() {
+  set -e
+  trap 'previous_command=$this_command; this_command=$BASH_COMMAND' DEBUG
+  trap 'if [ $? -ne 0 ]; then echo -e "\nexit $? due to $previous_command \nBUILD FAILED!" && echo "unmounting image..." && ( unmount_image $OCTOPI_MOUNT_PATH || true ); fi;' EXIT
+}
+
+function install_chroot_fail_on_error_trap() {
+  set -e
+  trap 'previous_command=$this_command; this_command=$BASH_COMMAND' DEBUG
+  trap 'if [ $? -ne 0 ]; then echo -e "\nexit $? due to $previous_command \nBUILD FAILED!"; fi;' EXIT
 }

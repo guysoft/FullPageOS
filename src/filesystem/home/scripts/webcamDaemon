@@ -24,13 +24,13 @@ function runMjpgStreamer {
 
 # starts up the RasPiCam
 function startRaspi {
-    logger "Starting Raspberry Pi camera"
+    logger -s "Starting Raspberry Pi camera"
     runMjpgStreamer "$MJPGSTREAMER_INPUT_RASPICAM $camera_raspi_options"
 }
 
 # starts up the USB webcam
 function startUsb {
-    logger "Starting USB webcam"
+    logger -s "Starting USB webcam"
     runMjpgStreamer "$MJPGSTREAMER_INPUT_USB $camera_usb_options"
 }
 
@@ -39,9 +39,14 @@ function startUsb {
 vcgencmd version
 
 # echo configuration
-echo camera: $camera
-echo usb options: $camera_usb_options
-echo raspi options: $camera_raspi_options
+echo "Starting up webcamDaemon..."
+echo ""
+echo "--- Configuration: -----------------------------"
+echo "camera:        $camera"
+echo "usb options:   $camera_usb_options"
+echo "raspi options: $camera_raspi_options"
+echo "-----------------------------------------------"
+echo ""
 
 # keep mjpg streamer running if some camera is attached
 while true; do
@@ -56,3 +61,5 @@ while true; do
     sleep 120
 done
 
+echo "Goodbye..."
+echo ""
