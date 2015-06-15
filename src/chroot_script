@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -x
+set -e
 # OctoPI generation script
 # Helper script that runs in a Raspbian chroot to create the OctoPI distro
 # Written by Guy Sheffer <guysoft at gmail dot com>
@@ -7,109 +8,136 @@ set -x
 
 source /common.sh
 
-unpackHome
-unpackBoot
+unpack /filesystem/home/pi /home/pi pi
+unpack /filesystem/boot /boot
 apt-get update
 
-apt-get remove -y --purge scratch squeak-plugins-scratch squeak-vm wolfram-engine python-minecraftpi minecraft-pi sonic-pi oracle-java8-jdk python-serial
+apt-get remove -y --purge scratch squeak-plugins-scratch squeak-vm wolfram-engine python-minecraftpi minecraft-pi sonic-pi oracle-java8-jdk
 
 #apt-get octoprint virtualenv
-apt-get -y --force-yes install python-virtualenv python-dev git python-numpy screen libts-bin
+apt-get -y --force-yes install python2.7 python-virtualenv python-dev git screen libts-bin subversion cmake checkinstall
 
 pushd /home/pi
-  
+
   #build virtualenv
   sudo -u pi virtualenv --system-site-packages oprint
   
-  if [ -n $OVERRIDE_OCTOPRINT ]
+  # OctoPrint & pyserial
+  if [ "$OCTOPI_INCLUDE_OCTOPRINT" == "yes" ]
   then
-    #OctoPrint
-    gitclone https://github.com/foosel/OctoPrint.git
-    pushd OctoPrint
-      git checkout $OCTOPRINT_BRANCH
+    echo "--- Installing OctoPrint"
+    apt-get install -y --force-yes python-numpy python-netifaces
+    apt-get remove -y python-serial
+
+    #pyserial that can handle non-standard baud rates
+    sudo -u pi svn co http://pyserial.svn.sourceforge.net/svnroot/pyserial/trunk pyserial
+    pushd pyserial/pyserial
       sudo -u pi /home/pi/oprint/bin/python setup.py install
+    popd
+    
+    #OctoPrint
+    gitclone OCTOPI_OCTOPRINT_REPO OctoPrint
+    pushd OctoPrint
+      PIP_DEFAULT_TIMEOUT=60 sudo -u pi /home/pi/oprint/bin/python setup.py install
     popd
   fi
 
   #OctoPiPanel
-  gitclone https://github.com/jonaslorander/OctoPiPanel.git
-  pushd OctoPiPanel
-    git checkout $OCTOPIPANEL_BRANCH
-    sudo -u pi /home/pi/oprint/bin/pip install -r requirements.txt
-  popd
+  if [ "$OCTOPI_INCLUDE_OCTOPIPANEL" == "yes" ]
+  then
+    echo "--- Installing OctoPiPanel"
+    gitclone OCTOPI_OCTOPIPANEL_REPO OctoPiPanel
+    pushd OctoPiPanel
+      sudo -u pi /home/pi/oprint/bin/pip install -r requirements.txt
+    popd
 
-  #Make sure user pi has access to serial ports
-  sudo usermod -a -G tty pi
-  sudo usermod -a -G dialout pi
-      
-  #mjpg-streamer
-  sudo apt-get -y --force-yes install subversion libjpeg8-dev imagemagick libav-tools cmake libv4l-dev
-  gitclone https://github.com/jacksonliam/mjpg-streamer.git
-  pushd mjpg-streamer
-    mv mjpg-streamer-experimental/* .
-    sudo -u pi make
-  popd
-  
-  #Add pyserial that can handle non-standard baud rates
-  sudo -u pi svn co http://pyserial.svn.sourceforge.net/svnroot/pyserial/trunk pyserial
-  pushd pyserial
-      pushd pyserial
-          sudo -u pi /home/pi/oprint/bin/python setup.py install
+    #Add fbcp for TFT screens
+    gitclone OCTOPI_FBCP_REPO rpi-fbcp
+    pushd rpi-fbcp
+      sudo -u pi mkdir build
+      pushd build
+        sudo -u pi cmake ..
+        sudo -u pi make
+        install fbcp /usr/local/bin/fbcp
+        sudo -u pi make clean
       popd
-  popd
+    popd
+  fi
+
+  #mjpg-streamer
+  if [ "$OCTOPI_INCLUDE_MJPGSTREAMER" == "yes" ]
+  then
+    echo "--- Installing mjpg-streamer"
+    apt-get -y --force-yes install libjpeg8-dev imagemagick libav-tools libv4l-dev
+    gitclone OCTOPI_MJPGSTREAMER_REPO mjpg-streamer
+    pushd mjpg-streamer
+      mv mjpg-streamer-experimental/* .
+      sudo -u pi make
+    popd
+  fi
   
-  #make autostart scripts
+  #CuraEngine
+  if [ "$OCTOPI_INCLUDE_CURAENGINE" == "yes" ]
+  then
+    echo "--- Installing CuraEngine"
+    folder=CuraEngine-$OCTOPI_CURAENGINE_VERSION
+    zipfile=$folder.zip
+    apt-get -y install gcc-4.7 g++-4.7
+    sudo -u pi wget -O$zipfile $OCTOPI_CURAENGINE_ARCHIVE
+    sudo -u pi unzip $zipfile
+    pushd $folder
+      sudo -u pi wget https://gist.githubusercontent.com/foosel/f86d6a729c0187ff8a82/raw/3d4f152b924080f502d887d11269f27a2389d64d/CuraEngine.patch
+      sudo -u pi patch < CuraEngine.patch
+      sudo -u pi make CXX=g++-4.7 VERSION=$OCTOPI_CURAENGINE_VERSION
+      cp build/CuraEngine /usr/local/bin/cura_engine
+    popd
+    sudo -u pi rm -r $folder $zipfile
+  fi
+
+  #setup haproxy for http and https, and webcam
+  if [ "$OCTOPI_INCLUDE_HAPROXY" == "yes" ]
+  then
+    echo "--- Installing haproxy"
+    export HAPROXY_VERSION=OCTOPI_HAPROXY_VERSION
+    sudo apt-get -y --force-yes install ssl-cert libssl-dev libpcre3-dev
+    rm /etc/ssl/private/ssl-cert-snakeoil.key /etc/ssl/certs/ssl-cert-snakeoil.pem
+    sudo -u pi wget $OCTOPI_HAPROXY_ARCHIVE
+    sudo -u pi tar xzvf haproxy-$OCTOPI_HAPROXY_VERSION.tar.gz
+    rm haproxy-$OCTOPI_HAPROXY_VERSION.tar.gz
+    sudo -u pi mv `ls | grep haproxy | head -n 1` haproxy-ss
+    pushd haproxy-ss
+      sudo -u pi make TARGET=linux2628 USE_LINUX_SPLICE=1 USE_LINUX_TPROXY=1 USE_PCRE=1 USE_OPENSSL=1
+      mkdir -p /usr/local/share/man/man1 /usr/local/doc /usr/local/doc/haproxy
+      sudo checkinstall --default --pkgname haproxy --pkgversion 1.5
+    popd
+    rm -rf haproxy-ss
+
+    adduser --system --disabled-password --disabled-login --home /var/lib/haproxy \
+            --no-create-home --quiet --force-badname --group haproxy
+  fi
+
+  #make script executable
   pushd scripts
     chmod 755 webcamDaemon
-    chmod 755 genCert
   popd
   
-  #setup haproxy for http and https, and webcam
-  export HAPROXY_VERSION=1.5.8
-  sudo apt-get -y --force-yes install ssl-cert libssl-dev libpcre3-dev checkinstall
-  rm /etc/ssl/private/ssl-cert-snakeoil.key /etc/ssl/certs/ssl-cert-snakeoil.pem
-  sudo -u pi wget http://www.haproxy.org/download/1.5/src/haproxy-${HAPROXY_VERSION}.tar.gz
-  sudo -u pi tar xzvf haproxy-${HAPROXY_VERSION}.tar.gz
-  rm haproxy-${HAPROXY_VERSION}.tar.gz
-  sudo -u pi mv `ls | grep haproxy | head -n 1` haproxy-ss
-  pushd haproxy-ss
-    sudo -u pi make TARGET=linux2628 USE_LINUX_SPLICE=1 USE_LINUX_TPROXY=1 USE_PCRE=1 USE_OPENSSL=1
-    mkdir -p /usr/local/share/man/man1 /usr/local/doc /usr/local/doc/haproxy
-    sudo checkinstall --default --pkgname haproxy --pkgversion 1.5
-  popd
-  rm -rf haproxy-ss
-
-  adduser --system --disabled-password --disabled-login --home /var/lib/haproxy \
-          --no-create-home --quiet --force-badname --group haproxy
-
-  #Add fbcp for TFT screens
-  gitclone https://github.com/tasanakorn/rpi-fbcp
-  pushd rpi-fbcp
-    mkdir build
-    pushd build
-      cmake ..
-      make
-      install fbcp /usr/local/bin/fbcp
-      make clean
-    popd
-  popd
 popd
 
-sed -i 's@exit 0@@' /etc/rc.local
+#Make sure user pi has access to serial ports
+usermod -a -G tty pi
+usermod -a -G dialout pi
 
-echo "/home/pi/scripts/genCert" >> /etc/rc.local
-echo "sudo -u pi -s /bin/bash -c \"exec /home/pi/scripts/webcamDaemon > /home/pi/.octoprint/logs/webcam.log 2>&1\" &" >> /etc/rc.local
-echo "/usr/local/sbin/haproxy -f /etc/haproxy/haproxy.cfg" >> /etc/rc.local
-echo "exit 0" >> /etc/rc.local
+# store octopi commit used to build this image
+echo "$OCTOPI_COMMIT" > /etc/octopi_commit
 
-#automatic startup
+# allow pi user to run shutdown and service commands
 echo "pi ALL=NOPASSWD: /sbin/shutdown" > /etc/sudoers.d/octoprint-shutdown
 echo "pi ALL=NOPASSWD: /sbin/service" > /etc/sudoers.d/octoprint-service
 
 #reach printer by name
 sudo apt-get -y --force-yes install avahi-daemon
-echo "$OVERRIDE_HOSTNAME" > /etc/hostname
-sed -i -e "s@raspberrypi@$OVERRIDE_HOSTNAME@g" /etc/hosts
+echo "$OCTOPI_OVERRIDE_HOSTNAME" > /etc/hostname
+sed -i -e "s@raspberrypi@$OCTOPI_OVERRIDE_HOSTNAME@g" /etc/hosts
 
 # enable raspicam
 echo "# enable raspicam" >> /boot/config.txt
@@ -117,10 +145,78 @@ echo "start_x=1" >> /boot/config.txt
 echo "gpu_mem=128" >> /boot/config.txt
 
 #unpack root in the end, so etc file are not overwritten, might need to add two roots int he future
-unpackRoot
+unpack /filesystem/root /
 
-#setup runlevels for initscripts
-sudo update-rc.d octoprint defaults 99
+#####################################################################
+### setup services
+
+### OctoPrint
+
+if [ "$OCTOPI_INCLUDE_OCTOPRINT" == "yes" ]
+then
+  update-rc.d octoprint defaults 95
+else
+  # let's remove the configs for system services we don't need
+  rm /etc/init.d/octoprint
+  rm /etc/default/octoprint
+fi
+
+### haproxy
+
+if [ "$OCTOPI_INCLUDE_HAPROXY" == "yes" ]
+then
+  update-rc.d gencert defaults
+  update-rc.d haproxy defaults 99
+else
+  # let's remove the configs for system services we don't need
+  rm /etc/init.d/gencert
+  rm /etc/init.d/haproxy
+  rm /etc/default/haproxy
+  rm /etc/logrotate.d/haproxy
+  rm /etc/rsyslog.d/49-haproxy.conf
+
+  # also we need to make OctoPrint bind to all interfaces because otherwise
+  # it will be unaccessible...
+  [ -f /etc/default/octoprint ] && sed -i "s@HOST=127.0.0.1@HOST=0.0.0.0@" /etc/default/octoprint 
+fi
+
+### CuraEngine
+
+if [ ! "$OCTOPI_INCLUDE_CURAENGINE" == "yes" ]
+then
+  # unconfigure the cura engine path in octoprint's config.yaml
+  sudo -u pi sed -i -e "s@cura_engine: /usr/local/bin/cura_engine@cura_engine:@g" /home/pi/.octoprint/config.yaml
+fi
+
+### mjpg_streamer
+
+if [ "$OCTOPI_INCLUDE_MJPGSTREAMER" == "yes" ]
+then
+  # create logging directory for webcam service
+  mkdir -p /var/log/webcamd
+  chown pi:pi /var/log/webcamd
+
+  # add webcamDaemon script to rc.local
+  sed -i 's@exit 0@@' /etc/rc.local
+  echo "sudo -u pi -s /bin/bash -c \"exec /home/pi/scripts/webcamDaemon > /var/log/webcamd/webcam.log 2>&1\" &" >> /etc/rc.local
+  echo "exit 0" >> /etc/rc.local
+else
+  rm /etc/logrotate.d/webcamDaemon
+fi
+
+### OctoPiPanel
+
+if [ ! "$OCTOPI_INCLUDE_OCTOPIPANEL" == "yes" ]
+then
+  # we don't need the tft setup stuff
+  rm /home/pi/scripts/OctoPiPanel
+  rm /home/pi/scripts/calibrate-rpi-display
+  rm /home/pi/scripts/enable-adafruit-pitft
+  rm /home/pi/scripts/enable-rpi-display
+  rm /boot/cmdline-pi-tft.txt
+  rm /etc/udev/rules.d/95-ads7846.rules
+fi
 
 #cleanup
-sudo apt-get clean
+apt-get clean
+apt-get autoremove -y

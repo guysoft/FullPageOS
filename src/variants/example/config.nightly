@@ -1,4 +1,3 @@
-#!/usr/bin/env bash
+# variant example, flavor nightly: override hostname & octoprint branch
 
-export OVERRIDE_HOSTNAME=blueberrypi
-export OVERRIDE_OCTOPRINT=no
+OCTOPI_OCTOPRINT_REPO_BRANCH=devel
