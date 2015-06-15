@@ -59,7 +59,7 @@ function gitclone(){
     sudo -u pi git clone "$build_repo" "$repo_dir"
   fi
 
-  if [  "$build_repo" == "$ship_repo" ]
+  if [ "$build_repo" != "$ship_repo" ]
   then
     pushd "$repo_dir"
       sudo -u pi git remote set-url origin "$ship_repo"
