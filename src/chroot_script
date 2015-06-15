@@ -8,7 +8,7 @@ set -e
 
 source /common.sh
 
-unpack /filesystem/home /home/pi pi
+unpack /filesystem/home/pi /home/pi pi
 unpack /filesystem/boot /boot
 apt-get update
 
