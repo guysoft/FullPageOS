@@ -9,6 +9,7 @@ set -e
 source /common.sh
 
 unpack /filesystem/home/pi /home/pi pi
+unpack /filesystem/home/root /root root
 unpack /filesystem/boot /boot
 apt-get update
 
@@ -138,6 +139,11 @@ echo "pi ALL=NOPASSWD: /sbin/service" > /etc/sudoers.d/octoprint-service
 sudo apt-get -y --force-yes install avahi-daemon
 echo "$OCTOPI_OVERRIDE_HOSTNAME" > /etc/hostname
 sed -i -e "s@raspberrypi@$OCTOPI_OVERRIDE_HOSTNAME@g" /etc/hosts
+
+#make sure users don't run git with sudo, thus breaking permissions, by adding /root/bin to the
+#default sudo path and placing a git wrapper script there that checks if it's run as root
+sed -i "s@secure_path=\"@secure_path=\"/root/bin:@g" /etc/sudoers
+chmod +x /root/bin/git
 
 # enable raspicam
 echo "# enable raspicam" >> /boot/config.txt
