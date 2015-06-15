@@ -13,6 +13,12 @@ function restoreLd(){
   sed -i 's@\#/usr/lib/arm-linux-gnueabihf/libcofi_rpi.so@/usr/lib/arm-linux-gnueabihf/libcofi_rpi.so@' etc/ld.so.preload
 }
 
+function pause() {
+  # little debug helper, will pause until enter is pressed and display provided
+  # message
+  read -p "$*"
+}
+
 function gitclone(){
   # call like this: gitclone OCTOPI_OCTOPRINT_REPO someDirectory -- this will do:
   #
@@ -74,9 +80,10 @@ function unpack() {
     owner=$3
   fi
 
-  shopt -s dotglob
-  cp -v -r --preserve=mode,timestamps $from/* $to
-  shopt -u dotglob
+  # $from/. may look funny, but does exactly what we want, copy _contents_
+  # from $from to $to, but not $from itself, without the need to glob -- see 
+  # http://stackoverflow.com/a/4645159/2028598
+  cp -v -r --preserve=mode,timestamps $from/. $to
   if [ -n "$owner" ]
   then
     chown -hR $owner:$owner $to
