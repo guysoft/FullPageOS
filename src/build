@@ -2,6 +2,11 @@
 
 set -e
 
+[ -n "$LOG" ] || LOG="build.log"
+
+define(){ IFS='\n' read -r -d '' ${1} || true; }
+
+define SCRIPT <<'EOF'
 BUILD_SCRIPT__PATH=$(dirname $(realpath -s $BASH_SOURCE))
 source ${BUILD_SCRIPT__PATH}/common.sh
 
@@ -46,3 +51,6 @@ echo -e "--> Building VARIANT $BUILD_VARIANT, FLAVOR $BUILD_FLAVOR"
 
 source $OCTOPI_PATH/config
 [ "$CONFIG_ONLY" == "yes" ] || source $OCTOPI_PATH/octopi
+EOF
+
+[ "$LOG" != "no" ] && (eval "$SCRIPT" 2>&1 | tee "$LOG") || eval "$SCRIPT"
