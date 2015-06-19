@@ -5,6 +5,8 @@ webcam:
 plugins:
   cura:
     cura_engine: /usr/local/bin/cura_engine
+  discovery:
+    publicPort: 80
   softwareupdate:
     checks:
       octoprint:

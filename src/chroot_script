@@ -16,7 +16,7 @@ apt-get update
 apt-get remove -y --purge scratch squeak-plugins-scratch squeak-vm wolfram-engine python-minecraftpi minecraft-pi sonic-pi oracle-java8-jdk
 
 #apt-get octoprint virtualenv
-apt-get -y --force-yes install python2.7 python-virtualenv python-dev git screen libts-bin subversion cmake checkinstall
+apt-get -y --force-yes install python2.7 python-virtualenv python-dev git screen libts-bin subversion cmake checkinstall avahi-daemon libavahi-compat-libdnssd1
 
 pushd /home/pi
 
@@ -36,6 +36,9 @@ pushd /home/pi
       sudo -u pi /home/pi/oprint/bin/python setup.py install
     popd
     
+    #pybonjour (for mdns discovery)
+    sudo -u pi /home/pi/oprint/bin/pip install pybonjour
+
     #OctoPrint
     gitclone OCTOPI_OCTOPRINT_REPO OctoPrint
     pushd OctoPrint
@@ -136,7 +139,6 @@ echo "pi ALL=NOPASSWD: /sbin/shutdown" > /etc/sudoers.d/octoprint-shutdown
 echo "pi ALL=NOPASSWD: /sbin/service" > /etc/sudoers.d/octoprint-service
 
 #reach printer by name
-sudo apt-get -y --force-yes install avahi-daemon
 echo "$OCTOPI_OVERRIDE_HOSTNAME" > /etc/hostname
 sed -i -e "s@raspberrypi@$OCTOPI_OVERRIDE_HOSTNAME@g" /etc/hosts
 
