@@ -8,10 +8,13 @@ MJPGSTREAMER_INPUT_RASPICAM="input_raspicam.so"
 camera="auto"
 camera_usb_options="-r 640x480 -f 10"
 camera_raspi_options="-fps 10"
+additional_brokenfps_usb_devices=()
 
 if [ -e "/boot/octopi.txt" ]; then
     source "/boot/octopi.txt"
 fi
+
+brokenfps_usb_devices=("046d:082b" "${additional_brokenfps_usb_devices[@]}")
 
 # runs MJPG Streamer, using the provided input plugin + configuration
 function runMjpgStreamer {
@@ -30,8 +33,39 @@ function startRaspi {
 
 # starts up the USB webcam
 function startUsb {
+    options="$camera_usb_options"
+    device="video0"
+    
+    extracted_device=`echo $options | sed 's@.*-d /dev/\(video[0-9]+\).*@\1@'`
+    if [ "$extracted_device" != "$options" ]
+    then
+        # the camera options refer to another device, use that for determining product
+        device=$extracted_device
+    fi
+
+    uevent_file="/sys/class/video4linux/$device/device/uevent"
+    if [ -e $uevent_file ]; then
+        # let's see what kind of webcam we have here, fetch vid and pid...
+        product=`cat $uevent_file | grep PRODUCT | cut -d"=" -f2`
+        vid=`echo $product | cut -d"/" -f1`
+        pid=`echo $product | cut -d"/" -f2`
+        vidpid=`printf "%04x:%04x" "0x$vid" "0x$pid"` 
+
+        # ... then look if it is in our list of known broken-fps-devices and if so remove
+        # the -f parameter from the options (if it's in there, else that's just a no-op)
+        for identifier in ${brokenfps_usb_devices[@]};
+        do
+            if [ "$vidpid" = "$identifier" ]; then
+                echo
+                echo "Camera model $vidpid is known to not work with -f parameter, stripping it out"
+                echo
+                options=`echo $options | sed -e "s/\(\s\+\|^\)-f\s\+[0-9]\+//g"`
+            fi
+        done
+    fi
+
     logger -s "Starting USB webcam"
-    runMjpgStreamer "$MJPGSTREAMER_INPUT_USB $camera_usb_options"
+    runMjpgStreamer "$MJPGSTREAMER_INPUT_USB $options"
 }
 
 # we need this to prevent the later calls to vcgencmd from blocking
