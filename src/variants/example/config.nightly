@@ -1,0 +1,3 @@
+# variant example, flavor nightly: override hostname & octoprint branch
+
+OCTOPI_OCTOPRINT_REPO_BRANCH=devel

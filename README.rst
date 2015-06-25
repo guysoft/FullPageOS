@@ -13,8 +13,6 @@ Where to get it?
 
 Official mirror is `here <http://docstech.net/OctoPiMirror/>`_
 
-Alternative mirror is `here <http://mariogrip.com/OctoPiMirror/>`_
-
 Nightly builds are avilable `here <http://docstech.net/OctoPiMirror/nightly/>`_
 
 How to use it?
