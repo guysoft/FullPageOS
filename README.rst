@@ -28,6 +28,7 @@ Features
 * `OctoPrint <http://octoprint.org>`_ host software for 3d printers out of the box
 * `Raspbian <http://www.raspbian.org/>`_ tweaked for maximum preformance for printing out of the box
 * `mjpg-streamer with RaspiCam support <https://github.com/jacksonliam/mjpg-streamer>`_ for live viewing of prints and timelapse video creation.
+* `CuraEngine <https://github.com/Ultimaker/CuraEngine>`_ pre-installed for slicing directly on the Raspberry Pi
 * `OctoPiPanel <https://github.com/jonaslorander/OctoPiPanel>`_, which is an LCD display app that works with OctoPrint
 * Configuration scripts for verious LCD displays
 
@@ -59,6 +60,15 @@ You can build it by issuing the following commands::
     cd ..
     sudo modprobe loop
     sudo bash -x ./build
+    
+Building OctoPi Variants
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+OctoPi supports building variants, which are builds with changes from the main relesae build. An example and other variants are avilable in the folder ``src/variants/example``.
+
+To build a variant use:
+
+sudo bash -x ./build [Variant]
 
 Usage
 ~~~~~
