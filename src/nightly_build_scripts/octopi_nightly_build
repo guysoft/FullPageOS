@@ -14,7 +14,11 @@ pushd ${OCTOPIPATH}
     umount ${OCTOPIPATH}/src/workspace/mount/boot
     umount ${OCTOPIPATH}/src/workspace/mount
     git pull origin devel
-    export GIT_REPO_OVERRIDE='http://gnet.homelinux.com/git/'
+    export OCTOPI_OCTOPRINT_REPO_BUILD='http://localhost/git/OctoPrint.git/'
+    export OCTOPI_OCTOPIPANEL_REPO_BUILD='http://localhost/git/OctoPiPanel.git/'
+    export OCTOPI_FBCP_REPO_BUILD='http://localhost/git/rpi-fbcp.git/'
+    export OCTOPI_MJPGSTREAMER_REPO_BUILD='http://localhost/git/mjpg-streamer.git/'
+    
     ${OCTOPIPATH}/src/build $1
     pushd src
     ${OCTOPIPATH}/src/release $1
