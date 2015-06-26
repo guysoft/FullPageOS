@@ -16,13 +16,30 @@ fi
 
 brokenfps_usb_devices=("046d:082b" "${additional_brokenfps_usb_devices[@]}")
 
+# cleans up when the script receives a SIGINT or SIGTERM
+function cleanup() {
+    # make sure that all child processed die when we die
+    local pids=$(jobs -pr)
+    [ -n "$pids" ] && kill $pids
+    exit 0
+}
+
+# says goodbye when the script shuts down
+function goodbye() {
+    # say goodbye
+    echo ""
+    echo "Goodbye..."
+    echo ""
+}
+
 # runs MJPG Streamer, using the provided input plugin + configuration
 function runMjpgStreamer {
     input=$1
-    pushd $MJPGSTREAMER_HOME
-    echo Running ./mjpg_streamer -o "output_http.so -w ./www" -i "$input"
-    LD_LIBRARY_PATH=. ./mjpg_streamer -o "output_http.so -w ./www" -i "$input"
-    popd
+    pushd $MJPGSTREAMER_HOME > /dev/null 2>&1
+        echo Running ./mjpg_streamer -o "output_http.so -w ./www" -i "$input"
+        LD_LIBRARY_PATH=. ./mjpg_streamer -o "output_http.so -w ./www" -i "$input" &
+        wait
+    popd > /dev/null 2>&1
 }
 
 # starts up the RasPiCam
@@ -68,32 +85,38 @@ function startUsb {
     runMjpgStreamer "$MJPGSTREAMER_INPUT_USB $options"
 }
 
-# we need this to prevent the later calls to vcgencmd from blocking
-# I have no idea why, but that's how it is...
-vcgencmd version
+# make sure our cleanup function gets called when we receive SIGINT, SIGTERM
+trap "cleanup" SIGINT SIGTERM
+# say goodbye when we EXIT
+trap "goodbye" EXIT
 
 # echo configuration
 echo "Starting up webcamDaemon..."
 echo ""
-echo "--- Configuration: -----------------------------"
+echo "--- Configuration: ----------------------------"
 echo "camera:        $camera"
 echo "usb options:   $camera_usb_options"
 echo "raspi options: $camera_raspi_options"
 echo "-----------------------------------------------"
 echo ""
 
+# we need this to prevent the later calls to vcgencmd from blocking
+# I have no idea why, but that's how it is...
+vcgencmd version > /dev/null 2>&1
+
 # keep mjpg streamer running if some camera is attached
 while true; do
     if [ -e "/dev/video0" ] && { [ "$camera" = "auto" ] || [ "$camera" = "usb" ] ; }; then
         startUsb
+        sleep 30 &
+        wait
     elif [ "`vcgencmd get_camera`" = "supported=1 detected=1" ] && { [ "$camera" = "auto" ] || [ "$camera" = "raspi" ] ; }; then
         startRaspi
+        sleep 30 &
+        wait
     else
         echo "No camera detected, trying again in two minutes"
+        sleep 120 &
+        wait
     fi
-
-    sleep 120
 done
-
-echo "Goodbye..."
-echo ""

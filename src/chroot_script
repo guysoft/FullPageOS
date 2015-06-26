@@ -119,11 +119,6 @@ pushd /home/pi
     adduser --system --disabled-password --disabled-login --home /var/lib/haproxy \
             --no-create-home --quiet --force-badname --group haproxy
   fi
-
-  #make script executable
-  pushd scripts
-    chmod 755 webcamDaemon
-  popd
   
 popd
 
@@ -205,16 +200,13 @@ fi
 
 if [ "$OCTOPI_INCLUDE_MJPGSTREAMER" == "yes" ]
 then
-  # create logging directory for webcam service
-  mkdir -p /var/log/webcamd
-  chown pi:pi /var/log/webcamd
-
-  # add webcamDaemon script to rc.local
-  sed -i 's@exit 0@@' /etc/rc.local
-  echo "sudo -u pi -s /bin/bash -c \"exec /home/pi/scripts/webcamDaemon > /var/log/webcamd/webcam.log 2>&1\" &" >> /etc/rc.local
-  echo "exit 0" >> /etc/rc.local
+  # make webcamd autostart
+  update-rc.d webcamd defaults
 else
-  rm /etc/logrotate.d/webcamDaemon
+  rm /etc/logrotate.d/webcamd
+  rm /etc/init.d/webcamd
+  rm /etc/default/webcamd
+  rm /root/bin/webcamd
 fi
 
 ### OctoPiPanel
