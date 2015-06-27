@@ -1,4 +1,4 @@
-/var/log/webcamd/webcam.log
+/var/log/webcam.log
 {
     rotate 4
     weekly
