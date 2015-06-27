@@ -19,11 +19,17 @@ system:
     command: sudo shutdown -h now
     action: shutdown
     confirm: You are about to shutdown the system.
+    async: true
+    ignore: true
   - name: Reboot
     command: sudo shutdown -r now
     action: reboot
     confirm: You are about to reboot the system
+    async: true
+    ignore: true
   - name: Restart OctoPrint
     command: sudo service octoprint restart
     action: restart
     confirm: You are about to restart OctoPrint
+    async: true
+    ignore: true
