@@ -73,7 +73,7 @@ Building OctoPi Variants
 
 OctoPi supports building variants, which are builds with changes from the main relesae build. An example and other variants are avilable in the folder ``src/variants/example``.
 
-To build a variant use:
+To build a variant use::
 
     sudo bash -x ./build [Variant]
 
