@@ -75,7 +75,7 @@ OctoPi supports building variants, which are builds with changes from the main r
 
 To build a variant use:
 
-sudo bash -x ./build [Variant]
+    sudo bash -x ./build [Variant]
 
 Usage
 ~~~~~
