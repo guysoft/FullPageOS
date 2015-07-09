@@ -1,0 +1,10 @@
+/var/log/map_iface.log
+{
+    rotate 1
+    daily
+    missingok
+    notifempty
+    compress
+    delaycompress
+    sharedscripts
+}
