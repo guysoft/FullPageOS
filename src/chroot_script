@@ -148,8 +148,12 @@ echo "start_x=1" >> /boot/config.txt
 echo "gpu_mem=128" >> /boot/config.txt
 
 # allow network configuration via /boot/octopi-network.txt
-sed -i "s@wpa-conf@# wpa-conf@g" /etc/network/interfaces
-sed -i "s@iface wlan@# iface wlan@g" /etc/network/interfaces
+sed -i "s@iface wlan0 @iface wlan0-raspbian @g" /etc/network/interfaces
+sed -i "s@iface wlan1 @iface wlan1-raspbian @g" /etc/network/interfaces
+echo "mapping wlan0" >> /etc/network/interfaces
+echo "  script /root/bin/map_iface" >> /etc/network/interfaces
+echo "mapping wlan1" >> /etc/network/interfaces
+echo "  script /root/bin/map_iface" >> /etc/network/interfaces
 echo "source /boot/octopi-network.txt" >> /etc/network/interfaces
 
 #unpack root in the end, so etc file are not overwritten, might need to add two roots int he future

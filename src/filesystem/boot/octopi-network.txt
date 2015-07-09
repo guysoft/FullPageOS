@@ -11,17 +11,17 @@
 # that matches your wifi setup and fill in SSID and passphrase.
 
 ## WPA/WPA2 secured
-#iface wlan0 inet manual
+#iface wlan0-octopi inet manual
 #    wpa-ssid "put SSID here"
 #    wpa-psk "put password here"
 
 ## WEP secured
-#iface wlan0 inet manual
+#iface wlan0-octopi inet manual
 #    wireless-essid "put SSID here"
 #    wireless-key "put password here"
 
 ## Open/unsecured
-#iface wlan0 inet manual
+#iface wlan0-octopi inet manual
 #    wireless-essid "put SSID here"
 #    wireless-mode managed
 
