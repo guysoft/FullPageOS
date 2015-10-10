@@ -19,7 +19,7 @@ apt-get remove -y --purge scratch squeak-plugins-scratch squeak-vm wolfram-engin
 apt-get -y --force-yes install python2.7 git screen checkinstall avahi-daemon libavahi-compat-libdnssd1 
 
 apt-get install -y --force-yes chromium-browser xdotool matchbox-window-manager
-apt-get install vim
+apt-get install -y --force-yes vim
 
 #reach pi by name
 echo "$OCTOPI_OVERRIDE_HOSTNAME" > /etc/hostname
