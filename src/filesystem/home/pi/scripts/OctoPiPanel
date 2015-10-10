@@ -1,7 +1,0 @@
-#!/bin/bash
-
-#Set API key of OctoPiPanel
-KEY=$(grep key /home/pi/.octoprint/config.yaml | awk -F " " '{ print $2}')
-sed -i 's/API_KEY_GOES_HERE/'"${KEY}"'/g' /home/pi/OctoPiPanel/OctoPiPanel.cfg
-
-sudo /home/pi/oprint/bin/python /home/pi/OctoPiPanel/OctoPiPanel.py

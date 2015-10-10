@@ -1,6 +1,0 @@
-pushd /var/www/git
-git clone --mirror https://github.com/foosel/OctoPrint
-git clone --mirror https://github.com/jonaslorander/OctoPiPanel.git
-git clone --mirror https://github.com/jacksonliam/mjpg-streamer.git
-git clone --mirror https://github.com/tasanakorn/rpi-fbcp
-popd

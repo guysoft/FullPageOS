@@ -1,43 +1,29 @@
-OctoPi
-======
+FullPageOS
+==========
 
-.. image:: https://raw.githubusercontent.com/guysoft/OctoPi/devel/media/OctoPi.png
-.. :scale: 50 %
-.. :alt: OctoPi logo
-
-A `Raspberry Pi <http://www.raspberrypi.org/>`_ distribution for 3d printers. It includes the `OctoPrint <http://octoprint.org>`_ host software for 3d printers out of the box and `mjpg-streamer with RaspiCam support <https://github.com/jacksonliam/mjpg-streamer>`_ for live viewing of prints and timelapse video creation. OctoPi also includes `OctoPiPanel <https://github.com/jonaslorander/OctoPiPanel>`_, which is an LCD display app that works with OctoPrint, and scripts to configure supported display.s
+A `Raspberry Pi <http://www.raspberrypi.org/>`_ distribution to display a one webpage at full screen. It includes the `Chromium <https://www.chromium.org/>`_ out of the box and scripts to load it at the start.
 This repository contains the source script to generate the distribution out of an existing `Raspbian <http://www.raspbian.org/>`_ distro image.
+
+FullPageOS is a fork of `OctoPi <https://github.com/guysoft/OctoPi>`_
 
 Where to get it?
 ----------------
 
-Official mirror is `here <http://docstech.net/OctoPiMirror/>`_
-
-Nightly builds are available `here <http://docstech.net/OctoPiMirror/nightly/>`_
+No mirros yet, if you can host one please open an issue or contact me.
 
 How to use it?
 --------------
 
 #. Unzip the image and install it to an sd card `like any other Raspberry Pi image <https://www.raspberrypi.org/documentation/installation/installing-images/README.md>`_
-#. Configure your WiFi by editing ``octopi-network.txt`` on the root of the flashed card when using it like a thumb drive
+#. Configure your WiFi by editing ``fullpageos-network.txt`` on the root of the flashed card when using it like a thumb drive
 #. Boot the Pi from the card
-#. Log into your Pi via SSH (it is located at ``octopi.local`` `if your computer supports bonjour <https://learn.adafruit.com/bonjour-zeroconf-networking-for-windows-and-linux/overview>`_ or the IP address assigned by your router), default username is "pi", default password is "raspberry", change the password using the ``passwd`` command and expand the filesystem of the SD card through the corresponding option when running ``sudo raspi-config``.
-
-OctoPrint is located at `http://octopi.local <http://octopi.local>`_ and also at `https://octopi.local <https://octopi.local>`_. Since the SSL certificate is self signed (and generated upon first boot), you will get a certificate warning at the latter location, please ignore it.
-
-If a USB webcam or the Raspberry Pi camera is detected, MJPG-streamer will be started automatically as webcam server. OctoPrint on OctoPi ships with correctly configured stream and snapshot URLs pointing at it. If necessary, you can reach it under `http://octopi.local/webcam/?action=stream <octopi.local/webcam/?action=stream>`_ and SSL respectively, or directly on its configured port 8080: `http://octopi.local:8080/?action=stream <octopi.local:8080/?action=stream>`_.
-
-CuraEngine is installed and OctoPrint ships pre-configured with the correct path to utilize it for on-board-slicing. Just import a Cura Slicing Profile in OctoPrint's settings and start slicing directly on your Pi.
+#. Log into your Pi via SSH (it is located at ``fullpageos.local`` `if your computer supports bonjour <https://learn.adafruit.com/bonjour-zeroconf-networking-for-windows-and-linux/overview>`_ or the IP address assigned by your router), default username is "pi", default password is "raspberry", change the password using the ``passwd`` command and expand the filesystem of the SD card through the corresponding option when running ``sudo raspi-config``.
 
 Features
 --------
 
-* `OctoPrint <http://octoprint.org>`_ host software for 3d printers out of the box
-* `Raspbian <http://www.raspbian.org/>`_ tweaked for maximum preformance for printing out of the box
-* `mjpg-streamer with RaspiCam support <https://github.com/jacksonliam/mjpg-streamer>`_ for live viewing of prints and timelapse video creation.
-* `CuraEngine <https://github.com/Ultimaker/CuraEngine>`_ pre-installed for slicing directly on the Raspberry Pi
-* `OctoPiPanel <https://github.com/jonaslorander/OctoPiPanel>`_, which is an LCD display app that works with OctoPrint
-* Configuration scripts for verious LCD displays
+* Loads Chromium at boot on full screen
+* Webpage can be changed from /boot/fullpageos.txt
 
 Developing
 ----------
@@ -52,26 +38,26 @@ Requirements
 #. realpath
 #. sudo (the script itself calls it, running as root without sudo won't work)
 
-Build OctoPi From within OctoPi / Raspbian / Debian / Ubuntu
+Build FullPageOS From within FullPageOS / Raspbian / Debian / Ubuntu
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-OctoPi can be built from Debian, Ubuntu, Raspbian, or even OctoPi.
+FullPageOS can be built from Debian, Ubuntu, Raspbian, or even FullPageOS.
 Build requires about 2.5 GB of free space available.
 You can build it by issuing the following commands::
 
     sudo apt-get install realpath qemu-user-static
     
-    git clone https://github.com/guysoft/OctoPi.git
+    git clone https://github.com/guysoft/FullPageOS.git
     cd OctoPi/src/image
     curl -J -O -L  http://downloads.raspberrypi.org/raspbian_latest
     cd ..
     sudo modprobe loop
     sudo bash -x ./build
     
-Building OctoPi Variants
+Building FullPageOS Variants
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-OctoPi supports building variants, which are builds with changes from the main relesae build. An example and other variants are avilable in the folder ``src/variants/example``.
+FullPageOS supports building variants, which are builds with changes from the main relesae build. An example and other variants are avilable in the folder ``src/variants/example``.
 
 To build a variant use::
 

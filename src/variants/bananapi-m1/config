@@ -1,1 +1,0 @@
-OCTOPI_ZIP_IMG=`ls -t $IMAGE_PATH/*-raspbian-bpi-R1-M1*.zip | head -n 1`
