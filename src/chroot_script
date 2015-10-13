@@ -49,8 +49,8 @@ unpack /filesystem/root /
 
 
 sed -i 's@exit 0@@' /etc/rc.local
-echo "sudo -u pi X &" >> /etc/rc.local
-echo "sudo -u pi /home/pi/scripts/run_onepageos &" >> /etc/rc.local
+echo "sudo -u pi startx /home/pi/scripts/run_onepageos &" >> /etc/rc.local
+echo "(sleep 15 ; sudo -u pi /home/pi/scripts/fullscreen) &" >> /etc/rc.local
 echo "exit 0" >> /etc/rc.local
 
 #####################################################################

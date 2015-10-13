@@ -1,2 +1,3 @@
 #!/bin/bash
-((sleep 15 ; DISPLAY=:0 sudo -u pi chromium-browser --kiosk --app=$(head -n 1 /boot/fullpageos.txt) >> /tmp/log_file 2>> /tmp/err_file& sleep 15; sudo -u pi /home/pi/scripts/fullscreen 2> /tmp/fullscreen_log) & (sleep 10 ; sudo -u pi DISPLAY=:0 matchbox-window-manager &))
+matchbox-window-manager &
+chromium-browser --kiosk --app=$(head -n 1 /boot/fullpageos.txt) 
