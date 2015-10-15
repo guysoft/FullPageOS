@@ -13,7 +13,7 @@ FullPageOS is a fork of `OctoPi <https://github.com/guysoft/OctoPi>`_
 Where to get it?
 ----------------
 
-No mirros yet, if you can host one please open an issue or contact me.
+Official mirror is `here <http://docstech.net/FullPageOS/>`_
 
 How to use it?
 --------------
