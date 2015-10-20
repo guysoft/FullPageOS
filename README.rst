@@ -5,7 +5,7 @@ FullPageOS
 .. :scale: 50 %
 .. :alt: FullPageOS logo
 
-A `Raspberry Pi <http://www.raspberrypi.org/>`_ distribution to display a one webpage at full screen. It includes the `Chromium <https://www.chromium.org/>`_ out of the box and scripts to load it at the start.
+A `Raspberry Pi <http://www.raspberrypi.org/>`_ distribution to display one webpage in full screen. It includes `Chromium <https://www.chromium.org/>`_ out of the box and the scripts necessary to load it at boot.
 This repository contains the source script to generate the distribution out of an existing `Raspbian <http://www.raspbian.org/>`_ distro image.
 
 FullPageOS is a fork of `OctoPi <https://github.com/guysoft/OctoPi>`_
@@ -18,15 +18,15 @@ Official mirror is `here <http://docstech.net/FullPageOS/>`_
 How to use it?
 --------------
 
-#. Unzip the image and install it to an sd card `like any other Raspberry Pi image <https://www.raspberrypi.org/documentation/installation/installing-images/README.md>`_
-#. Configure your WiFi by editing ``fullpageos-network.txt`` on the root of the flashed card when using it like a thumb drive
-#. Boot the Pi from the card
+#. Unzip the image and install it to an SD card `like any other Raspberry Pi image <https://www.raspberrypi.org/documentation/installation/installing-images/README.md>`_
+#. Configure your WiFi by editing ``fullpageos-network.txt`` on the root of the flashed card when using it like a flash drive
+#. Boot the Pi from the SD card
 #. Log into your Pi via SSH (it is located at ``fullpageos.local`` `if your computer supports bonjour <https://learn.adafruit.com/bonjour-zeroconf-networking-for-windows-and-linux/overview>`_ or the IP address assigned by your router), default username is "pi", default password is "raspberry", change the password using the ``passwd`` command and expand the filesystem of the SD card through the corresponding option when running ``sudo raspi-config``.
 
 Features
 --------
 
-* Loads Chromium at boot on full screen
+* Loads Chromium at boot in full screen
 * Webpage can be changed from /boot/fullpageos.txt
 
 Developing
@@ -70,8 +70,8 @@ To build a variant use::
 Usage
 ~~~~~
 
-#. If needed, override existing config settings by creating a new file ``src/config.local``. You can override all settings found in ``src/config``. If you need to override the path to the Raspbian image to use for building OctoPi, override the path to be used in ``ZIP_IMG``. By default the most recent file matching ``*-raspbian.zip`` found in ``src/image`` will be used.
+#. If needed, override existing config settings by creating a new file ``src/config.local``. You can override all settings found in ``src/config``. If you need to override the path to the Raspbian image to use for building OctoPi, override the path to be used in ``ZIP_IMG``. By default, the most recent file matching ``*-raspbian.zip`` found in ``src/image`` will be used.
 #. Run ``src/build`` as root.
-#. The final image will be created at the ``src/workspace``
+#. The final image will be created in ``src/workspace``
 
 Code contribution would be appreciated!
