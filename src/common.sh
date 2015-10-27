@@ -7,10 +7,12 @@ function die () {
 
 function fixLd(){
   sed -i 's@/usr/lib/arm-linux-gnueabihf/libcofi_rpi.so@\#/usr/lib/arm-linux-gnueabihf/libcofi_rpi.so@' etc/ld.so.preload
+  sed -i 's@/usr/lib/arm-linux-gnueabihf/libarmmem.so@\#/usr/lib/arm-linux-gnueabihf/libarmmem.so@' etc/ld.so.preload
 }
 
 function restoreLd(){
   sed -i 's@\#/usr/lib/arm-linux-gnueabihf/libcofi_rpi.so@/usr/lib/arm-linux-gnueabihf/libcofi_rpi.so@' etc/ld.so.preload
+  sed -i 's@\#/usr/lib/arm-linux-gnueabihf/libarmmem.so@/usr/lib/arm-linux-gnueabihf/libarmmem.so@' etc/ld.so.preload
 }
 
 function pause() {
@@ -97,6 +99,7 @@ function mount_image() {
   # mount root and boot partition
   sudo mount -o loop,offset=$((512*122880)) $image_path $mount_path
   sudo mount -o loop,offset=$((512*8192)) $image_path $mount_path/boot
+  sudo mount -o bind /dev $mount_path/dev
 }
 
 function unmount_image() {
@@ -104,6 +107,7 @@ function unmount_image() {
 
   # unmount first boot, then root partition
   sudo umount $mount_path/boot
+  sudo umount $mount_path/dev
   sudo umount $mount_path
 }
 
