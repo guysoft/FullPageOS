@@ -1,0 +1,6 @@
+[Desktop Entry]
+Version=1.0
+Name=FullPageOS
+Exec=/home/pi/scripts/run_onepageos
+Comment=FullPageOS startup
+Type=Application

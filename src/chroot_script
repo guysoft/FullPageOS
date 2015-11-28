@@ -11,6 +11,10 @@ source /common.sh
 unpack /filesystem/home/pi /home/pi pi
 unpack /filesystem/home/root /root root
 unpack /filesystem/boot /boot
+unpack /filesystem/root_init /
+
+apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 5B393194
+
 apt-get update
 
 apt-get remove -y --purge scratch squeak-plugins-scratch squeak-vm wolfram-engine python-minecraftpi minecraft-pi sonic-pi oracle-java8-jdk bluej greenfoot libreoffice-common libreoffice-core freepats
@@ -22,9 +26,25 @@ apt-get -y --force-yes install python2.7 git screen checkinstall avahi-daemon li
 apt-get install -y --force-yes chromium-browser xdotool matchbox-window-manager
 apt-get install -y --force-yes vim
 
+#Install web stack
+apt-get install -y lighttpd php5-common php5-cgi php5
+lighty-enable-mod fastcgi-php
+#service lighttpd force-reload
+chown -R www-data:www-data /var/www/html
+chmod 775 /var/www/html
+usermod -a -G www-data pi
+pushd /var/www/html
+    gitclone FULLPAGEOS_DASHBOARD_REPO FullPageDashboard
+    chown -R www-data:www-data FullPageDashboard
+    chmod 775 FullPageDashboard
+    pushd FullPageDashboard
+        sed -i "s@'INIT_URL_PATH', __DIR__ . '/init.txt'@'INIT_URL_PATH', '/boot/fullpagedashboard.txt'@g" config.php
+    popd
+popd
+
 #reach pi by name
-echo "$OCTOPI_OVERRIDE_HOSTNAME" > /etc/hostname
-sed -i -e "s@raspberrypi@$OCTOPI_OVERRIDE_HOSTNAME@g" /etc/hosts
+echo "$FULLPAGEOS_OVERRIDE_HOSTNAME" > /etc/hostname
+sed -i -e "s@raspberrypi@$FULLPAGEOS_OVERRIDE_HOSTNAME@g" /etc/hosts
 
 #make sure users don't run git with sudo, thus breaking permissions, by adding /root/bin to the
 #default sudo path and placing a git wrapper script there that checks if it's run as root
@@ -45,13 +65,15 @@ echo "mapping wlan1" >> /etc/network/interfaces
 echo "  script /root/bin/map_iface" >> /etc/network/interfaces
 echo "source /boot/fullpageos-network.txt" >> /etc/network/interfaces
 
-#unpack root in the end, so etc file are not overwritten, might need to add two roots int he future
+#unpack root in the end, so etc file are not overwritten, use root_init to unpack stuff that comes before
 unpack /filesystem/root /
 
 
-sed -i 's@exit 0@@' /etc/rc.local
+#set up gui service
+sed -i 's/#user-session=.*/user-session=fullpageos/g' /etc/lightdm/lightdm.conf
+
 echo "sudo -u pi startx /home/pi/scripts/run_onepageos &" >> /etc/rc.local
-echo "(sleep 15 ; sudo -u pi /home/pi/scripts/fullscreen) &" >> /etc/rc.local
+#echo "(sleep 15 ; sudo -u pi /home/pi/scripts/fullscreen) &" >> /etc/rc.local
 echo "exit 0" >> /etc/rc.local
 
 #####################################################################

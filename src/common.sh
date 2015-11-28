@@ -22,14 +22,14 @@ function pause() {
 }
 
 function gitclone(){
-  # call like this: gitclone OCTOPI_OCTOPRINT_REPO someDirectory -- this will do:
+  # call like this: gitclone FULLPAGEOS_OCTOPRINT_REPO someDirectory -- this will do:
   #
-  #   sudo -u pi git clone -b $OCTOPI_OCTOPRINT_REPO_BRANCH $OCTOPI_OCTOPRINT_REPO_BUILD someDirectory
+  #   sudo -u pi git clone -b $FULLPAGEOS_OCTOPRINT_REPO_BRANCH $FULLPAGEOS_OCTOPRINT_REPO_BUILD someDirectory
   # 
-  # and if $OCTOPI_OCTOPRINT_REPO_BUILD != $OCTOPI_OCTOPRINT_REPO_SHIP also:
+  # and if $FULLPAGEOS_OCTOPRINT_REPO_BUILD != $FULLPAGEOS_OCTOPRINT_REPO_SHIP also:
   #
   #   pushd someDirectory
-  #     sudo -u pi git remote set-url origin $OCTOPI_OCTOPRINT_REPO_SHIP
+  #     sudo -u pi git remote set-url origin $FULLPAGEOS_OCTOPRINT_REPO_SHIP
   #   popd
   # 
   # if second parameter is not provided last URL segment of the BUILD repo URL
@@ -97,7 +97,8 @@ function mount_image() {
   mount_path=$2
 
   # mount root and boot partition
-  sudo mount -o loop,offset=$((512*122880)) $image_path $mount_path
+  # dump the partition table, locate the line 7 with the sector of seond partition
+  sudo mount -o loop,offset=$(($(sfdisk -d $image_path | sed '7q;d' | awk '{print $4-0}') * 512)) $image_path $mount_path
   sudo mount -o loop,offset=$((512*8192)) $image_path $mount_path/boot
   sudo mount -o bind /dev $mount_path/dev
 }
@@ -114,7 +115,7 @@ function unmount_image() {
 function install_fail_on_error_trap() {
   set -e
   trap 'previous_command=$this_command; this_command=$BASH_COMMAND' DEBUG
-  trap 'if [ $? -ne 0 ]; then echo -e "\nexit $? due to $previous_command \nBUILD FAILED!" && echo "unmounting image..." && ( unmount_image $OCTOPI_MOUNT_PATH || true ); fi;' EXIT
+  trap 'if [ $? -ne 0 ]; then echo -e "\nexit $? due to $previous_command \nBUILD FAILED!" && echo "unmounting image..." && ( unmount_image $FULLPAGEOS_MOUNT_PATH || true ); fi;' EXIT
 }
 
 function install_chroot_fail_on_error_trap() {

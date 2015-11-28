@@ -4,4 +4,9 @@ xset -dpms         # disable DPMS (Energy Star) features.
 xset s noblank     # don't blank the video device
 
 matchbox-window-manager &
-chromium-browser --kiosk --app=$(head -n 1 /boot/fullpageos.txt) 
+while true
+do
+    (sleep 15 ; /home/pi/scripts/fullscreen) &
+    chromium-browser --kiosk --app=$(head -n 1 /boot/fullpageos.txt) 
+    sleep 1
+done

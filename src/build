@@ -10,9 +10,9 @@ define SCRIPT <<'EOF'
 BUILD_SCRIPT__PATH=$(dirname $(realpath -s $BASH_SOURCE))
 source ${BUILD_SCRIPT__PATH}/common.sh
 
-OCTOPI_PATH=$(dirname $(realpath -s $0))
-pushd $OCTOPI_PATH
-  export OCTOPI_COMMIT=`git rev-parse HEAD`
+FULLPAGEOS_PATH=$(dirname $(realpath -s $0))
+pushd $FULLPAGEOS_PATH
+  export FULLPAGEOS_COMMIT=`git rev-parse HEAD`
 popd
 
 BUILD_VARIANT=default
@@ -29,7 +29,7 @@ fi
 if [ $BUILD_VARIANT != 'default' ]; then
   WORKSPACE_POSTFIX=-$BUILD_VARIANT
 
-  export VARIANT_BASE="$OCTOPI_PATH/variants/$BUILD_VARIANT"
+  export VARIANT_BASE="$FULLPAGEOS_PATH/variants/$BUILD_VARIANT"
   [ -d $VARIANT_BASE ] || die "Could not find Variant $BUILD_VARIANT"
 
   if [ $BUILD_FLAVOR == '' ] || [ $BUILD_FLAVOR == 'default' ]
@@ -49,8 +49,8 @@ fi
 
 echo -e "--> Building VARIANT $BUILD_VARIANT, FLAVOR $BUILD_FLAVOR"
 
-source $OCTOPI_PATH/config
-[ "$CONFIG_ONLY" == "yes" ] || source $OCTOPI_PATH/fullpageos
+source $FULLPAGEOS_PATH/config
+[ "$CONFIG_ONLY" == "yes" ] || source $FULLPAGEOS_PATH/fullpageos
 EOF
 
 [ "$LOG" != "no" ] && (eval "$SCRIPT" 2>&1 | tee "$LOG") || eval "$SCRIPT"

@@ -4,7 +4,7 @@
 # Written by Guy Sheffer <guysoft at gmail dot com>
 # GPL V3
 
-source $OCTOPI_SCRIPT_PATH/common.sh
+source $FULLPAGEOS_SCRIPT_PATH/common.sh
 
 function execute_chroot_script() {
   #move OctoPi filesystem files
@@ -15,7 +15,7 @@ function execute_chroot_script() {
   
   cp $2 chroot_script
   chmod 755 chroot_script
-  cp $OCTOPI_SCRIPT_PATH/common.sh common.sh
+  cp $FULLPAGEOS_SCRIPT_PATH/common.sh common.sh
   chmod 755 common.sh
   
   chroot . usr/bin/qemu-arm-static /bin/bash /chroot_script
@@ -25,24 +25,24 @@ function execute_chroot_script() {
   rm -rfv filesystem
 }
 
-mkdir -p $OCTOPI_WORKSPACE
-mkdir -p $OCTOPI_MOUNT_PATH
+mkdir -p $FULLPAGEOS_WORKSPACE
+mkdir -p $FULLPAGEOS_MOUNT_PATH
 
-install_fail_on_error_trap $OCTOPI_MOUNT_PATH
-unmount_image $OCTOPI_MOUNT_PATH || true
+install_fail_on_error_trap $FULLPAGEOS_MOUNT_PATH
+unmount_image $FULLPAGEOS_MOUNT_PATH || true
 
-pushd $OCTOPI_WORKSPACE
+pushd $FULLPAGEOS_WORKSPACE
   if [ -e *.img ]; then  
     rm *.img
   fi
-  unzip $OCTOPI_ZIP_IMG
-  OCTOPI_IMG_PATH=`ls | grep .img`
+  unzip $FULLPAGEOS_ZIP_IMG
+  FULLPAGEOS_IMG_PATH=`ls | grep .img`
 
   # mount root and boot partition
-  mount_image $OCTOPI_IMG_PATH $OCTOPI_MOUNT_PATH
+  mount_image $FULLPAGEOS_IMG_PATH $FULLPAGEOS_MOUNT_PATH
 
   #Edit pi filesystem
-  pushd $OCTOPI_MOUNT_PATH
+  pushd $FULLPAGEOS_MOUNT_PATH
 
     #make QEMU boot (remember to return)
     fixLd
@@ -53,7 +53,7 @@ pushd $OCTOPI_WORKSPACE
     fi
  
     # execute the base chroot script
-    execute_chroot_script $OCTOPI_SCRIPT_PATH $OCTOPI_CHROOT_SCRIPT_PATH
+    execute_chroot_script $FULLPAGEOS_SCRIPT_PATH $FULLPAGEOS_CHROOT_SCRIPT_PATH
     
     # if building a variant, execute its post-chroot script
     if [ -n "$VARIANT_BASE" ] && [ -f $VARIANT_BASE/post_chroot_script ]; then
@@ -64,7 +64,7 @@ pushd $OCTOPI_WORKSPACE
   popd
   
   # unmount first boot, then root partition
-  unmount_image $OCTOPI_MOUNT_PATH
-  chmod 777 $OCTOPI_IMG_PATH
+  unmount_image $FULLPAGEOS_MOUNT_PATH
+  chmod 777 $FULLPAGEOS_IMG_PATH
 popd
 
