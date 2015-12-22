@@ -5,7 +5,7 @@ IFACE=$1
 
 if grep -q "^\s*iface $IFACE-fullpageos " /boot/fullpageos-network.txt
 then
-	echo "$IFACE-octopi"
+	echo "$IFACE-fullpageos"
 	echo "Using /boot/fullpageos-network.txt for configuring $IFACE..." >> /var/log/map_iface.log
 else
 	echo "$IFACE-raspbian"
