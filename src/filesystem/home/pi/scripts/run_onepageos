@@ -4,6 +4,7 @@ xset -dpms         # disable DPMS (Energy Star) features.
 xset s noblank     # don't blank the video device
 
 matchbox-window-manager &
+x11vnc -many -rfbauth /home/pi/.vnc/passwd &
 while true
 do
     (sleep 15 ; /home/pi/scripts/fullscreen) &

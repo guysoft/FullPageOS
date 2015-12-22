@@ -1,0 +1,10 @@
+#!/usr/bin/env expect
+set pass [lindex $argv 0]
+spawn x11vnc -storepasswd;
+expect "*?assword:*"
+send -- "$pass\r";
+expect "*?assword:*"
+send -- "$pass\r";
+expect "*?assword*"
+send -- "y\n\r";
+interact
