@@ -15,6 +15,8 @@ Where to get it?
 
 Official mirror is `here <http://docstech.net/FullPageOS/>`_
 
+Nightly builds are available `here <http://docstech.net/FullPageOS/nightly/>`_ (currenlty built on demand)
+
 How to use it?
 --------------
 
