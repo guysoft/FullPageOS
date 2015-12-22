@@ -84,6 +84,9 @@ echo "exit 0" >> /etc/rc.local
 #####################################################################
 ### setup services
 
+echo "server time.nist.gov" >> /etc/ntp.conf
+echo "server ntp.ubuntu.com" >> /etc/ntp.conf
+
 #cleanup
 apt-get clean
 apt-get autoremove -y
