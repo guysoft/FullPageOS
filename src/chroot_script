@@ -40,6 +40,9 @@ pushd /var/www/html
     pushd FullPageDashboard
         sed -i "s@'INIT_URL_PATH', __DIR__ . '/init.txt'@'INIT_URL_PATH', '/boot/fullpagedashboard.txt'@g" config.php
     popd
+    
+    #Set Welcome screen
+    chown -R www-data:www-data welcome
 popd
 
 #reach pi by name

@@ -1,1 +1,1 @@
-http://github.com/guysoft/FullPageOS
+http://localhost/welcome
