@@ -42,6 +42,7 @@ pushd /var/www/html
     popd
     
     #Set Welcome screen
+    gitclone FULLPAGEOS_WELCOME_REPO welcome
     chown -R www-data:www-data welcome
 popd
 

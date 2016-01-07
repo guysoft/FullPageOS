@@ -45,6 +45,12 @@ fi
 [ -n "$FULLPAGEOS_DASHBOARD_REPO_BRANCH" ] || FULLPAGEOS_DASHBOARD_REPO_BRANCH=master
 [ -n "$FULLPAGEOS_INCLUDE_DASHBOARD" ] || FULLPAGEOS_INCLUDE_DASHBOARD=yes
 
+# FullPageDashboard repo & branch
+[ -n "$FULLPAGEOS_WELCOME_REPO_SHIP" ] || FULLPAGEOS_WELCOME_REPO_SHIP=https://github.com/tailorvj/FullPageOSWelcome.git
+[ -n "$FULLPAGEOS_WELCOME_REPO_BUILD" ] || FULLPAGEOS_WELCOME_REPO_BUILD=
+[ -n "$FULLPAGEOS_WELCOME_REPO_BRANCH" ] || FULLPAGEOS_WELCOME_REPO_BRANCH=master
+[ -n "$FULLPAGEOS_INCLUDE_WELCOME" ] || FULLPAGEOS_INCLUDE_WELCOME=yes
+
 ###############################################################################
 # Rewrite any build urls that are not yet set if we have a repository mirror
 # configured.
