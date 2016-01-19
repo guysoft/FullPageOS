@@ -97,8 +97,8 @@ function mount_image() {
   mount_path=$2
 
   # mount root and boot partition
-  # dump the partition table, locate the line 7 with the sector of seond partition
-  sudo mount -o loop,offset=$(($(sfdisk -d $image_path | sed '7q;d' | awk '{print $4-0}') * 512)) $image_path $mount_path
+  # dump the partition table, locate the line 5 with the sector of seond partition
+  sudo mount -o loop,offset=$(($(sfdisk -d $image_path | sed '5q;d' | awk '{print $4-0}') * 512)) $image_path $mount_path
   sudo mount -o loop,offset=$((512*8192)) $image_path $mount_path/boot
   sudo mount -o bind /dev $mount_path/dev
 }
