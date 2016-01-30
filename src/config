@@ -36,6 +36,22 @@ fi
 [ -n "$FULLPAGEOS_CHROOT_SCRIPT_PATH" ] || FULLPAGEOS_CHROOT_SCRIPT_PATH=$FULLPAGEOS_SCRIPT_PATH/chroot_script
 [ -n "$FULLPAGEOS_MOUNT_PATH" ] || FULLPAGEOS_MOUNT_PATH=$FULLPAGEOS_WORKSPACE/mount
 
+# if set will enlarge root parition prior to build by provided size in MB
+[ -n "$FULLPAGEOS_IMAGE_ENLARGEROOT" ] || FULLPAGEOS_IMAGE_ENLARGEROOT=1000
+
+# if set will resize root partition on image after build to minimum size + 
+# provided size in MB
+[ -n "$FULLPAGEOS_IMAGE_RESIZEROOT" ] || FULLPAGEOS_IMAGE_RESIZEROOT=200
+
+# a local directory on the build server to bind mount under /var/cache/apt
+[ -n "$FULLPAGEOS_APT_CACHE" ] || FULLPAGEOS_APT_CACHE=$FULLPAGEOS_WORKSPACE/aptcache
+
+# a host:port combo for a apt-proxy (such as apt-cacher-ng) to use
+[ -n "$FULLPAGEOS_APT_PROXY" ] || FULLPAGEOS_APT_PROXY=
+
+# an alternative pypi index url to use, e.g. a proxy such as devpi
+[ -n "$FULLPAGEOS_PYPI_INDEX" ] || FULLPAGEOS_PYPI_INDEX=
+
 [ -n "$FULLPAGEOS_OVERRIDE_HOSTNAME" ] || FULLPAGEOS_OVERRIDE_HOSTNAME=fullpageos
 
 
