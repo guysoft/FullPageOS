@@ -7,7 +7,9 @@ matchbox-window-manager &
 x11vnc -many -rfbauth /home/pi/.vnc/passwd &
 while true
 do
-    (sleep 15 ; /home/pi/scripts/fullscreen) &
-    chromium-browser --kiosk --app=$(head -n 1 /boot/fullpageos.txt) 
+    if [ $(curl -sL -w "%{http_code}\\n" "http://localhost/FullPageDashboard" -o /dev/null) == "200" ]; then
+      (sleep 15 ; /home/pi/scripts/fullscreen) &
+      chromium-browser --kiosk --app=$(head -n 1 /boot/fullpageos.txt) 
+    fi
     sleep 1
 done
