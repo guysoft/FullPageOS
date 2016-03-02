@@ -1,0 +1,8 @@
+[Unit]
+Description=Clear the cache of lighttpd when the system starts
+[Service]
+ExecStart=rm -rf /var/cache/lighttpd/*
+ExecReload=rm -rf /var/cache/lighttpd/*
+ExecStop=
+[Install]
+WantedBy=multi-user.target

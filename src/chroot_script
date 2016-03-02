@@ -33,6 +33,7 @@ lighty-enable-mod fastcgi-php
 chown -R www-data:www-data /var/www/html
 chmod 775 /var/www/html
 usermod -a -G www-data pi
+update-rc.d clear_lighttpd_cache defaults
 pushd /var/www/html
     chown -R pi:pi FullPageDashboard
     chown -R www-data:www-data FullPageDashboard
