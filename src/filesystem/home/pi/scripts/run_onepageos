@@ -9,7 +9,7 @@ while true
 do
     if [ $(curl -sL -w "%{http_code}\\n" "http://localhost/FullPageDashboard" -o /dev/null) == "200" ]; then
       (sleep 15 ; /home/pi/scripts/fullscreen) &
-      chromium-browser --kiosk --app=$(head -n 1 /boot/fullpageos.txt) 
+      chromium-browser --kiosk --app=$(head -n 1 /boot/fullpageos.txt) &
 	  (sleep 15 ; /home/pi/scripts/mousemove)
     fi
     sleep 1
