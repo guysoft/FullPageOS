@@ -22,14 +22,14 @@ function pause() {
 }
 
 function gitclone(){
-  # call like this: gitclone FULLPAGEOS_OCTOPRINT_REPO someDirectory -- this will do:
+  # call like this: gitclone FULLPAGEOS_REPO someDirectory -- this will do:
   #
-  #   sudo -u pi git clone -b $FULLPAGEOS_OCTOPRINT_REPO_BRANCH --depth $FULLPAGEOS_OCTOPRINT_REPO_DEPTH $FULLPAGEOS_OCTOPRINT_REPO_BUILD someDirectory
+  #   sudo -u pi git clone -b $FULLPAGEOS_REPO_BRANCH --depth $FULLPAGEOS_REPO_DEPTH $FULLPAGEOS_REPO_BUILD someDirectory
   # 
-  # and if $FULLPAGEOS_OCTOPRINT_REPO_BUILD != $FULLPAGEOS_OCTOPRINT_REPO_SHIP also:
+  # and if $FULLPAGEOS_REPO_BUILD != $FULLPAGEOS_REPO_SHIP also:
   #
   #   pushd someDirectory
-  #     sudo -u pi git remote set-url origin $FULLPAGEOS_OCTOPRINT_REPO_SHIP
+  #     sudo -u pi git remote set-url origin $FULLPAGEOS_REPO_SHIP
   #   popd
   # 
   # if second parameter is not provided last URL segment of the BUILD repo URL
@@ -77,12 +77,12 @@ function gitclone(){
     clone_params="$clone_params --depth $depth"
   fi
 
-  git clone $clone_params "$build_repo" "$repo_dir"
+  sudo -u pi git clone $clone_params "$build_repo" "$repo_dir"
 
   if [ "$build_repo" != "$ship_repo" ]
   then
     pushd "$repo_dir"
-      git remote set-url origin "$ship_repo"
+      sudo -u pi git remote set-url origin "$ship_repo"
     popd
   fi
 }
@@ -131,6 +131,20 @@ function mount_image() {
 
 function unmount_image() {
   mount_path=$1
+  force=
+  if [ "$#" -gt 1 ]
+  then
+    force=$2
+  fi
+
+  if [ -n "$force" ]
+  then
+    for process in $(sudo lsof $mount_path | awk '{print $2}')
+    do
+      echo "Killing process id $process..."
+      sudo kill -9 $process
+    done
+  fi
 
   # Unmount everything that is mounted
   # 
@@ -150,10 +164,24 @@ function unmount_image() {
   done
 }
 
+function cleanup() {
+    # make sure that all child processed die when we die
+    local pids=$(jobs -pr)
+    [ -n "$pids" ] && kill $pids && sleep 5 && kill -9 $pids
+    exit 0
+}
+
+function cleanup() {
+    # make sure that all child processed die when we die
+    local pids=$(jobs -pr)
+    [ -n "$pids" ] && kill $pids
+    exit 0
+}
+
 function install_fail_on_error_trap() {
   set -e
   trap 'previous_command=$this_command; this_command=$BASH_COMMAND' DEBUG
-  trap 'if [ $? -ne 0 ]; then echo -e "\nexit $? due to $previous_command \nBUILD FAILED!" && echo "unmounting image..." && ( unmount_image $FULLPAGEOS_MOUNT_PATH || true ); fi;' EXIT
+  trap 'if [ $? -ne 0 ]; then echo -e "\nexit $? due to $previous_command \nBUILD FAILED!" && echo "unmounting image..." && ( unmount_image $FULLPAGEOS_MOUNT_PATH force || true ); fi;' EXIT
 }
 
 function install_chroot_fail_on_error_trap() {
@@ -161,6 +189,11 @@ function install_chroot_fail_on_error_trap() {
   trap 'previous_command=$this_command; this_command=$BASH_COMMAND' DEBUG
   trap 'if [ $? -ne 0 ]; then echo -e "\nexit $? due to $previous_command \nBUILD FAILED!"; fi;' EXIT
 }
+
+function install_cleanup_trap() {
+  set -e
+  trap "cleanup" SIGINT SIGTERM
+ }
 
 function enlarge_ext() {
   # call like this: enlarge_ext /path/to/image partition size
@@ -174,7 +207,19 @@ function enlarge_ext() {
   start=$(sfdisk -d $image | grep "$image$partition" | awk '{print $4-0}')
   offset=$(($start*512))
   dd if=/dev/zero bs=1M count=$size >> $image
-  echo ",+," | sfdisk -N$partition $image
+  fdisk $image <<FDISK
+p
+d
+$partition
+n
+p
+$partition
+$start
+
+p
+w
+FDISK
+
   LODEV=$(losetup -f --show -o $offset $image)
   trap 'losetup -d $LODEV' EXIT
 
@@ -214,8 +259,19 @@ function shrink_ext() {
   new_end=$(($start + $e2ftarget_blocks))
 
   echo "Resizing partition to end at $start + $e2ftarget_blocks = $new_end blocks..."
-  echo "$start,$new_end" | sfdisk -N$partition $image
-  
+  fdisk $image <<FDISK
+p
+d
+$partition
+n
+p
+$partition
+$start
+$new_end
+p
+w
+FDISK
+
   new_size=$((($new_end + 1) * 512))
   echo "Truncating image to $new_size bytes..."
   truncate --size=$new_size $image

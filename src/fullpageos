@@ -28,11 +28,11 @@ function execute_chroot_script() {
 mkdir -p $FULLPAGEOS_WORKSPACE
 mkdir -p $FULLPAGEOS_MOUNT_PATH
 
+install_cleanup_trap
 install_fail_on_error_trap $FULLPAGEOS_MOUNT_PATH
-unmount_image $FULLPAGEOS_MOUNT_PATH || true
+unmount_image $FULLPAGEOS_MOUNT_PATH force || true
 
 pushd $FULLPAGEOS_WORKSPACE
-  
   if [ -e *.img ]; then  
     rm *.img
   fi
@@ -56,12 +56,6 @@ pushd $FULLPAGEOS_WORKSPACE
 
   #Edit pi filesystem
   pushd $FULLPAGEOS_MOUNT_PATH
-    #Put git clones in place
-    mkdir -p var/www/html
-    pushd var/www/html 
-        gitclone FULLPAGEOS_DASHBOARD_REPO FullPageDashboard
-        gitclone FULLPAGEOS_WELCOME_REPO welcome
-    popd
 
     #make QEMU boot (remember to return)
     fixLd

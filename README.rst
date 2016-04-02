@@ -68,6 +68,23 @@ FullPageOS supports building variants, which are builds with changes from the ma
 To build a variant use::
 
     sudo bash -x ./build [Variant]
+    
+Building Using Vagrant
+~~~~~~~~~~~~~~~~~~~~~~
+There is a vagrant machine configuration to let build OctoPi in case your build enviroment behaves diffrently. Unless you do extra configuration, vagrant must run as root to have nfs folder sync working.
+
+To use it::
+
+    sudo apt-get install vagrant nfs-kernel-server
+    sudo vagrant plugin install vagrant-nfs_guest
+    sudo modprobe nfs
+    cd OctoPi/src/vagrant
+    sudo vagrant up
+
+After provisioning the machine, its also possible to run a nightly build which updates from devel using::
+
+    cd OctoPi/src/vagrant
+    run_vagrant_build.sh
 
 Usage
 ~~~~~
