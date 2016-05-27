@@ -33,8 +33,11 @@ lighty-enable-mod fastcgi-php
 chown -R www-data:www-data /var/www/html
 chmod 775 /var/www/html
 usermod -a -G www-data pi
-update-rc.d clear_lighttpd_cache defaults
+systemctl enable clear_lighttpd_cache.service
 pushd /var/www/html
+    #Put git clones in place
+    gitclone FULLPAGEOS_DASHBOARD_REPO FullPageDashboard
+    gitclone FULLPAGEOS_WELCOME_REPO welcome
     chown -R pi:pi FullPageDashboard
     chown -R www-data:www-data FullPageDashboard
     chmod 775 FullPageDashboard
