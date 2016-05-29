@@ -30,7 +30,7 @@ Features
 
 * Loads Chromium at boot in full screen
 * Webpage can be changed from /boot/fullpageos.txt
-* Default app is `FullPageDashboard <https://github.com/amitdar/FullPageDashboard>`_, which lets you add mulitple tabs changes that switch automatically.
+* Default app is `FullPageDashboard <https://github.com/amitdar/FullPageDashboard>`_, which lets you add multiple tabs changes that switch automatically.
 * Shipp with preconfigured `X11VNC <http://www.karlrunge.com/x11vnc/>`_, for remote connection (password 'raspberry')
 
 Developing
