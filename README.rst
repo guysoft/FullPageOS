@@ -56,7 +56,7 @@ You can build it by issuing the following commands::
     sudo apt-get install realpath qemu-user-static
     
     git clone https://github.com/guysoft/FullPageOS.git
-    cd OctoPi/src/image
+    cd FullPageOS/src/image
     curl -J -O -L  http://downloads.raspberrypi.org/raspbian_latest
     cd ..
     sudo modprobe loop
@@ -73,19 +73,19 @@ To build a variant use::
     
 Building Using Vagrant
 ~~~~~~~~~~~~~~~~~~~~~~
-There is a vagrant machine configuration to let build OctoPi in case your build environment behaves differently. Unless you do extra configuration, vagrant must run as root to have nfs folder sync working.
+There is a vagrant machine configuration to let build FullPageOS in case your build environment behaves differently. Unless you do extra configuration, vagrant must run as root to have nfs folder sync working.
 
 To use it::
 
     sudo apt-get install vagrant nfs-kernel-server
     sudo vagrant plugin install vagrant-nfs_guest
     sudo modprobe nfs
-    cd OctoPi/src/vagrant
+    cd FullPageOS/src/vagrant
     sudo vagrant up
 
 After provisioning the machine, its also possible to run a nightly build which updates from devel using::
 
-    cd OctoPi/src/vagrant
+    cd FullPageOS/src/vagrant
     run_vagrant_build.sh
 
 Usage
