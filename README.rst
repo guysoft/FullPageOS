@@ -15,7 +15,7 @@ Where to get it?
 
 Official mirror is `here <http://docstech.net/FullPageOS/>`_
 
-Nightly builds are available `here <http://docstech.net/FullPageOS/nightly/>`_ (currenlty built on demand)
+Nightly builds are available `here <http://docstech.net/FullPageOS/nightly/>`_ (currently built on demand)
 
 How to use it?
 --------------
@@ -65,7 +65,7 @@ You can build it by issuing the following commands::
 Building FullPageOS Variants
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-FullPageOS supports building variants, which are builds with changes from the main relesae build. An example and other variants are avilable in the folder ``src/variants/example``.
+FullPageOS supports building variants, which are builds with changes from the main release build. An example and other variants are available in the folder ``src/variants/example``.
 
 To build a variant use::
 
@@ -73,7 +73,7 @@ To build a variant use::
     
 Building Using Vagrant
 ~~~~~~~~~~~~~~~~~~~~~~
-There is a vagrant machine configuration to let build OctoPi in case your build enviroment behaves diffrently. Unless you do extra configuration, vagrant must run as root to have nfs folder sync working.
+There is a vagrant machine configuration to let build OctoPi in case your build environment behaves differently. Unless you do extra configuration, vagrant must run as root to have nfs folder sync working.
 
 To use it::
 
