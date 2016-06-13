@@ -3,4 +3,4 @@ export DISPLAY=:0
 WID=$(xdotool search --onlyvisible --class chromium|head -1)
 xdotool windowactivate ${WID}
 xdotool key F11
-xdotool movemouse 9000 9000
+xdotool mousemove 9000 9000
