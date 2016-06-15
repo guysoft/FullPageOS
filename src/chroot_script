@@ -82,6 +82,14 @@ sed -i 's/#autologin-user=.*/autologin-user=pi/g' /etc/lightdm/lightdm.conf
 
 #set up x11vnc
 sudo -u pi /home/pi/scripts/setX11vncPass raspberry
+if [ ! -f /home/pi/.vnc/passwd ]; then
+  echo "/home/pi/.vnc/passwd was not created"
+  sudo -u pi /home/pi/scripts/setX11vncPass raspberry
+  if [ ! -f /home/pi/.vnc/passwd ]; then
+    echo "failed again"
+    exit 1
+  fi
+fi
 
 #echo "sudo -u pi startx /home/pi/scripts/run_onepageos &" >> /etc/rc.local
 #echo "(sleep 15 ; sudo -u pi /home/pi/scripts/fullscreen) &" >> /etc/rc.local
