@@ -23,7 +23,13 @@ apt-get autoremove -y
 #apt-get tools
 apt-get -y --force-yes install python2.7 git screen checkinstall avahi-daemon libavahi-compat-libdnssd1 xterm
 
-apt-get install -y --force-yes chromium-browser xdotool matchbox-window-manager xorg lightdm
+if [ "$FULLPAGEOS_INCLUDE_CHROMIUM" == "yes" ]
+then
+    apt-get install -y --force-yes chromium-browser
+    sudo -u pi sed -i 's@%BROWSER_START_SCRIPT%@/home/pi/scripts/start_chromium_browser@g' /home/pi/scripts/run_onepageos
+fi
+
+apt-get install -y --force-yes xdotool matchbox-window-manager xorg lightdm
 apt-get install -y --force-yes vim x11vnc expect
 
 #Install web stack

@@ -1,0 +1,2 @@
+#!/bin/bash
+chromium-browser --kiosk --app=$(head -n 1 /boot/fullpageos.txt)

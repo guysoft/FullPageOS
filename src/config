@@ -54,6 +54,7 @@ fi
 
 [ -n "$FULLPAGEOS_OVERRIDE_HOSTNAME" ] || FULLPAGEOS_OVERRIDE_HOSTNAME=fullpageos
 
+[ -n "$FULLPAGEOS_INCLUDE_CHROMIUM" ] || FULLPAGEOS_INCLUDE_CHROMIUM=yes
 
 # FullPageDashboard repo & branch
 [ -n "$FULLPAGEOS_DASHBOARD_REPO_SHIP" ] || FULLPAGEOS_DASHBOARD_REPO_SHIP=https://github.com/amitdar/FullPageDashboard.git

@@ -10,7 +10,7 @@ do
     if [ $(curl -sL -w "%{http_code}\\n" "http://localhost/FullPageDashboard" -o /dev/null) == "200" ]; then
       (sleep 15 ; /home/pi/scripts/fullscreen) &
       xdotool mousemove 9000 9000
-      chromium-browser --kiosk --app=$(head -n 1 /boot/fullpageos.txt)
+      %BROWSER_START_SCRIPT%
     fi
     sleep 1
 done
