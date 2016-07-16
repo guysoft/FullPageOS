@@ -80,13 +80,14 @@ unpack /filesystem/root /
 sed -i 's/#user-session=.*/user-session=fullpageos/g' /etc/lightdm/lightdm.conf
 sed -i 's/#autologin-user=.*/autologin-user=pi/g' /etc/lightdm/lightdm.conf
 
-#set up x11vnc
+# Set up x11vnc
 sudo -u pi /home/pi/scripts/setX11vncPass raspberry
 if [ ! -f /home/pi/.vnc/passwd ]; then
-  echo "/home/pi/.vnc/passwd was not created"
+  echo "/home/pi/.vnc/passwd was not created. Trying again."
   sudo -u pi /home/pi/scripts/setX11vncPass raspberry
   if [ ! -f /home/pi/.vnc/passwd ]; then
-    echo "failed again"
+    echo "/home/pi/.vnc/passwd was not created again. Giving up."
+    echo "Failed to set a VNC password. You will have to set one manually."
     exit 1
   fi
 fi
