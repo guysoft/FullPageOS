@@ -39,6 +39,7 @@ Developing
 Requirements
 ~~~~~~~~~~~~
 
+#. Older Rasperry Pis are not currently supported.  See `Raspberry Pi <https://github.com/guysoft/FullPageOS/issues/12>`_ and `Raspberry Pi <https://github.com/guysoft/FullPageOS/issues/43>`_.
 #. `qemu-arm-static <http://packages.debian.org/sid/qemu-user-static>`_
 #. Downloaded `Raspbian <http://www.raspbian.org/>`_ image.
 #. root privileges for chroot
