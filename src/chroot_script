@@ -32,28 +32,38 @@ fi
 apt-get install -y --force-yes xdotool matchbox-window-manager xorg lightdm
 apt-get install -y --force-yes vim x11vnc expect
 
+
 #Install web stack
-apt-get install -y lighttpd php5-common php5-cgi php5
-lighty-enable-mod fastcgi-php
-#service lighttpd force-reload
-chown -R www-data:www-data /var/www/html
-chmod 775 /var/www/html
-usermod -a -G www-data pi
-systemctl enable clear_lighttpd_cache.service
-pushd /var/www/html
-    #Put git clones in place
-    gitclone FULLPAGEOS_DASHBOARD_REPO FullPageDashboard
-    gitclone FULLPAGEOS_WELCOME_REPO welcome
-    chown -R pi:pi FullPageDashboard
-    chown -R www-data:www-data FullPageDashboard
-    chmod 775 FullPageDashboard
-    pushd FullPageDashboard
-        sed -i "s@'INIT_URL_PATH', __DIR__ . '/init.txt'@'INIT_URL_PATH', '/boot/fullpagedashboard.txt'@g" config.php
+if [ "$FULLPAGEOS_INCLUDE_LIGHTTPD" == "yes" ]
+then
+    apt-get install -y lighttpd php5-common php5-cgi php5
+    lighty-enable-mod fastcgi-php
+    #service lighttpd force-reload
+    chown -R www-data:www-data /var/www/html
+    chmod 775 /var/www/html
+    usermod -a -G www-data pi
+    systemctl enable clear_lighttpd_cache.service
+    pushd /var/www/html
+        #Put git clones in place
+        if [ "$FULLPAGEOS_INCLUDE_DASHBOARD" == "yes" ]
+        then
+        gitclone FULLPAGEOS_DASHBOARD_REPO FullPageDashboard
+            chown -R pi:pi FullPageDashboard
+            chown -R www-data:www-data FullPageDashboard
+            chmod 775 FullPageDashboard
+            pushd FullPageDashboard
+                sed -i "s@'INIT_URL_PATH', __DIR__ . '/init.txt'@'INIT_URL_PATH', '/boot/fullpagedashboard.txt'@g" config.php
+            popd
+        fi
+        #Set Welcome screen
+        if [ "$FULLPAGEOS_INCLUDE_WELCOME" == "yes" ]
+        then        
+            gitclone FULLPAGEOS_WELCOME_REPO welcome
+            chown -R www-data:www-data welcome
+        fi
     popd
-    
-    #Set Welcome screen
-    chown -R www-data:www-data welcome
-popd
+fi
+
 
 #reach pi by name
 echo "$FULLPAGEOS_OVERRIDE_HOSTNAME" > /etc/hostname
