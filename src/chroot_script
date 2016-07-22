@@ -62,6 +62,9 @@ then
             chown -R www-data:www-data welcome
         fi
     popd
+    echo "enabled" > /boot/check_for_httpd
+else
+    echo "disabled" > /boot/check_for_httpd
 fi
 
 
