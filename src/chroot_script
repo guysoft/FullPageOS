@@ -30,8 +30,10 @@ then
 fi
 
 apt-get install -y --force-yes xdotool matchbox-window-manager xorg lightdm
+if [ "$FULLPAGEOS_INCLUDE_XVNC" == "yes" ]
+then
 apt-get install -y --force-yes vim x11vnc expect
-
+fi
 
 #Install web stack
 if [ "$FULLPAGEOS_INCLUDE_LIGHTTPD" == "yes" ]
@@ -67,6 +69,25 @@ else
     echo "disabled" > /boot/check_for_httpd
 fi
 
+#override timezone
+if [ "$FULLPAGEOS_OVERRIDE_TIMEZONE" ]
+then
+	echo "$FULLPAGEOS_OVERRIDE_TIMEZONE" > /etc/timezone
+fi
+
+#override password
+if [ "$FULLPAGEOS_OVERRIDE_PASSWORD" ]
+then
+	echo "pi:$FULLPAGEOS_OVERRIDE_PASSWORD" | chpasswd
+fi
+
+#override locale
+if [ "$FULLPAGEOS_OVERRIDE_LOCALE" ]
+then
+	sed -i '/^#.* '"$FULLPAGEOS_OVERRIDE_LOCALE"' /s/^# //' /etc/locale.gen
+	locale-gen
+	update-locale LANG="$FULLPAGEOS_OVERRIDE_LOCALE"
+fi
 
 #reach pi by name
 echo "$FULLPAGEOS_OVERRIDE_HOSTNAME" > /etc/hostname
@@ -100,14 +121,17 @@ sed -i 's/#user-session=.*/user-session=fullpageos/g' /etc/lightdm/lightdm.conf
 sed -i 's/#autologin-user=.*/autologin-user=pi/g' /etc/lightdm/lightdm.conf
 
 # Set up x11vnc
-sudo -u pi /home/pi/scripts/setX11vncPass raspberry
-if [ ! -f /home/pi/.vnc/passwd ]; then
-  echo "/home/pi/.vnc/passwd was not created. Trying again."
+if [ "$FULLPAGEOS_INCLUDE_XVNC" == "yes" ]
+then
   sudo -u pi /home/pi/scripts/setX11vncPass raspberry
   if [ ! -f /home/pi/.vnc/passwd ]; then
-    echo "/home/pi/.vnc/passwd was not created again. Giving up."
-    echo "Failed to set a VNC password. Aborting build."
-    exit 1
+    echo "/home/pi/.vnc/passwd was not created"
+    sudo -u pi /home/pi/scripts/setX11vncPass raspberry
+    if [ ! -f /home/pi/.vnc/passwd ]; then
+      echo "/home/pi/.vnc/passwd was not created again. Giving up."
+      echo "Failed to set a VNC password. Aborting build."
+      exit 1
+    fi
   fi
 fi
 
