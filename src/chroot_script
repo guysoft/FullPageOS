@@ -68,6 +68,13 @@ else
 fi
 
 
+#override timezone
+if [ "$FULLPAGEOS_OVERRIDE_TIMEZONE" != "default" ]
+then
+    echo "$FULLPAGEOS_OVERRIDE_TIMEZONE" > /etc/timezone
+    dpkg-reconfigure -f noninteractive tzdata
+fi
+
 #reach pi by name
 echo "$FULLPAGEOS_OVERRIDE_HOSTNAME" > /etc/hostname
 sed -i -e "s@raspberrypi@$FULLPAGEOS_OVERRIDE_HOSTNAME@g" /etc/hosts
