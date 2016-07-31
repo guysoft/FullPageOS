@@ -75,6 +75,21 @@ then
     dpkg-reconfigure -f noninteractive tzdata
 fi
 
+#override locale
+if [ "$FULLPAGEOS_OVERRIDE_LOCALE" != "default" ]
+then
+    sed -i '/^#.* '"$FULLPAGEOS_OVERRIDE_LOCALE"' /s/^# //' /etc/locale.gen
+    locale-gen
+    update-locale LANG="$FULLPAGEOS_OVERRIDE_LOCALE"
+fi
+
+#override password
+if [ "$FULLPAGEOS_OVERRIDE_PASSWORD" != "default" ]
+then
+    echo "pi:$FULLPAGEOS_OVERRIDE_PASSWORD" | chpasswd
+fi
+
+
 #reach pi by name
 echo "$FULLPAGEOS_OVERRIDE_HOSTNAME" > /etc/hostname
 sed -i -e "s@raspberrypi@$FULLPAGEOS_OVERRIDE_HOSTNAME@g" /etc/hosts

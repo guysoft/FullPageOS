@@ -57,6 +57,12 @@ fi
 #override timezone, otherwise use image timezone
 [ -n "$FULLPAGEOS_OVERRIDE_TIMEZONE" ] || FULLPAGEOS_OVERRIDE_TIMEZONE=default
 
+#override locale, otherwise use image locale
+[ -n "$FULLPAGEOS_OVERRIDE_LOCALE" ] || FULLPAGEOS_OVERRIDE_LOCALE=default
+
+#override password, otherwise use image default
+[ -n "$FULLPAGEOS_OVERRIDE_PASSWORD" ] || FULLPAGEOS_OVERRIDE_PASSWORD=default
+
 [ -n "$FULLPAGEOS_INCLUDE_CHROMIUM" ] || FULLPAGEOS_INCLUDE_CHROMIUM=yes
 [ -n "$FULLPAGEOS_INCLUDE_LIGHTTPD" ] || FULLPAGEOS_INCLUDE_LIGHTTPD=yes
 
