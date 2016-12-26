@@ -25,7 +25,7 @@ apt-get -y --force-yes install python2.7 git screen checkinstall avahi-daemon li
 
 if [ "$FULLPAGEOS_INCLUDE_CHROMIUM" == "yes" ]
 then
-    apt-get install -y --force-yes chromium-browser
+    apt-get install -y --force-yes chromium-browser rpi-chromium-mods
     sudo -u pi sed -i 's@%BROWSER_START_SCRIPT%@/home/pi/scripts/start_chromium_browser@g' /home/pi/scripts/run_onepageos
 fi
 
