@@ -1,0 +1,12 @@
+#!/bin/bash
+if [ ! -f /etc/gpu_enabled ]; then
+    sudo sed 's@matchbox-window-manager \&@xcompmgr -a \&\nmatchbox-window-manager \&@g' -i /home/pi/scripts/run_onepageos
+    sudo sed -i /boot/cmdline.txt -e "s/ quiet//"
+    sudo sed -i /boot/cmdline.txt -e "s/ splash//"
+    sudo sed -i /boot/cmdline.txt -e "s/ plymouth.ignore-serial-consoles//"
+    sudo sed -i /boot/config.txt -e "s/^\#dtoverlay=vc4-kms-v3d/dtoverlay=vc4-kms-v3d/"
+    sudo sed -i /boot/config.txt -e "s/^gpu_mem/\#gpu_mem/"
+    printf "dtoverlay=vc4-kms-v3d\n" | sudo tee -a /boot/config.txt
+    touch /etc/gpu_enabled
+    sudo shutdown -r now
+fi

@@ -78,6 +78,10 @@ fi
 [ -n "$FULLPAGEOS_WELCOME_REPO_BRANCH" ] || FULLPAGEOS_WELCOME_REPO_BRANCH=master
 [ -n "$FULLPAGEOS_INCLUDE_WELCOME" ] || FULLPAGEOS_INCLUDE_WELCOME=yes
 
+# Add GPU acceleration
+[ -n "$FULLPAGEOS_INCLUDE_ACCELERATION" ] || FULLPAGEOS_INCLUDE_ACCELERATION=yes
+
+
 ###############################################################################
 # Rewrite any build urls that are not yet set if we have a repository mirror
 # configured.
