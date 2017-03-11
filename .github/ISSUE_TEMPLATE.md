@@ -6,8 +6,6 @@
 
 #### What happened instead?
 
-#### What happened instead?
-
 #### Was there an error message displayed? What did it say?
 
 #### Version of FullPageOS?
