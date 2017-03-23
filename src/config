@@ -30,7 +30,11 @@ fi
 [ -n "$FULLPAGEOS_SCRIPT_PATH" ] || FULLPAGEOS_SCRIPT_PATH=$CONFIG_DIR
 [ -n "$FULLPAGEOS_IMAGE_PATH" ] || FULLPAGEOS_IMAGE_PATH=$FULLPAGEOS_SCRIPT_PATH/image
 
-[ -n "$FULLPAGEOS_ZIP_IMG" ] || FULLPAGEOS_ZIP_IMG=`ls -t $FULLPAGEOS_IMAGE_PATH/*-raspbian*.zip | head -n 1`
+if [ -f ${FULLPAGEOS_IMAGE_PATH}/raspbian_latest ]; then
+  mv ${FULLPAGEOS_IMAGE_PATH}/raspbian_latest ${FULLPAGEOS_IMAGE_PATH}/latest-raspbian.zip
+fi
+
+[ -n "$FULLPAGEOS_ZIP_IMG" ] || FULLPAGEOS_ZIP_IMG=$(ls -t ${FULLPAGEOS_IMAGE_PATH}/*-raspbian*.zip | head -n 1)
 
 [ -n "$FULLPAGEOS_WORKSPACE" ] || FULLPAGEOS_WORKSPACE=$FULLPAGEOS_SCRIPT_PATH/workspace$WORKSPACE_POSTFIX
 [ -n "$FULLPAGEOS_CHROOT_SCRIPT_PATH" ] || FULLPAGEOS_CHROOT_SCRIPT_PATH=$FULLPAGEOS_SCRIPT_PATH/chroot_script
@@ -39,7 +43,7 @@ fi
 # if set will enlarge root parition prior to build by provided size in MB
 [ -n "$FULLPAGEOS_IMAGE_ENLARGEROOT" ] || FULLPAGEOS_IMAGE_ENLARGEROOT=1000
 
-# if set will resize root partition on image after build to minimum size + 
+# if set will resize root partition on image after build to minimum size +
 # provided size in MB
 [ -n "$FULLPAGEOS_IMAGE_RESIZEROOT" ] || FULLPAGEOS_IMAGE_RESIZEROOT=200
 

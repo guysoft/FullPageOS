@@ -60,14 +60,14 @@ Build requires about 2.5 GB of free space available.
 You can build it by issuing the following commands::
 
     sudo apt-get install realpath qemu-user-static
-    
+
     git clone https://github.com/guysoft/FullPageOS.git
     cd FullPageOS/src/image
-    curl -J -O -L  http://downloads.raspberrypi.org/raspbian_latest
+    curl -JLO http://downloads.raspberrypi.org/raspbian_latest
     cd ..
     sudo modprobe loop
     sudo bash -x ./build
-    
+
 Building FullPageOS Variants
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -76,7 +76,7 @@ FullPageOS supports building variants, which are builds with changes from the ma
 To build a variant use::
 
     sudo bash -x ./build [Variant]
-    
+
 Building Using Vagrant
 ~~~~~~~~~~~~~~~~~~~~~~
 There is a vagrant machine configuration to let build FullPageOS in case your build environment behaves differently. Unless you do extra configuration, vagrant must run as root to have nfs folder sync working.
@@ -93,7 +93,7 @@ After provisioning the machine, its also possible to run a nightly build which u
 
     cd FullPageOS/src/vagrant
     run_vagrant_build.sh
-    
+
 To build a variant on the machine simply run:
 
     cd FullPageOS/src/vagrant
