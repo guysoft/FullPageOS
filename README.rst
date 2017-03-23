@@ -61,7 +61,6 @@ You can build it by issuing the following commands::
 
     sudo apt-get install realpath qemu-user-static
 
-
     git clone https://github.com/guysoft/FullPageOS.git
     cd FullPageOS/src/image
     curl -JLO http://downloads.raspberrypi.org/raspbian_latest
@@ -77,7 +76,6 @@ FullPageOS supports building variants, which are builds with changes from the ma
 To build a variant use::
 
     sudo bash -x ./build [Variant]
-
 
 Building Using Vagrant
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -95,7 +93,6 @@ After provisioning the machine, its also possible to run a nightly build which u
 
     cd FullPageOS/src/vagrant
     run_vagrant_build.sh
-
 
 To build a variant on the machine simply run:
 
