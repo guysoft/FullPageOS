@@ -10,7 +10,7 @@
 
 #### Version of FullPageOS?
 
-[Can be found in /etc/octopi_version ALWAYS INCLUDE.]
+[Can be found in /etc/fullpageos_version ALWAYS INCLUDE.]
 
 #### Screenshot(s) showing the problem:
 
