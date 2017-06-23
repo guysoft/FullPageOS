@@ -1,6 +1,6 @@
 #!/bin/bash
 if [ ! -f /etc/gpu_enabled ]; then
-    sudo sed 's@matchbox-window-manager \&@xcompmgr -a \&\nmatchbox-window-manager \&@g' -i /home/pi/scripts/run_onepageos
+    sudo sed 's@matchbox-window-manager \&@compton --backend glx --unredir-if-possible --glx-swap-method buffer-age --glx-no-stencil --paint-on-overlay --vsync opengl &\nmatchbox-window-manager \&@g' -i /home/pi/scripts/run_onepageos
     sudo sed -i /boot/cmdline.txt -e "s/ quiet//"
     sudo sed -i /boot/cmdline.txt -e "s/ splash//"
     sudo sed -i /boot/cmdline.txt -e "s/ plymouth.ignore-serial-consoles//"

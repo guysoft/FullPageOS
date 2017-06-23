@@ -68,7 +68,7 @@ then
     if [ "$FULLPAGEOS_INCLUDE_ACCELERATION" == "yes" ]
     then
         #TODO enable_gpu
-        apt-get -y --force-yes install xcompmgr libgl1-mesa-dri mesa-utils
+        apt-get -y --force-yes install xcompmgr libgl1-mesa-dri mesa-utils compton libconfig9
         
         # Hack to pass non-interactive install
         mv /usr/bin/whiptail /usr/bin/whiptail.bak
@@ -78,6 +78,9 @@ then
         apt-get -y --force-yes install rpi-chromium-mods
         rm /usr/bin/whiptail
         mv /usr/bin/whiptail.bak /usr/bin/whiptail
+        if [ -e /usr/share/X11/xorg.conf.d/99-fbturbo.conf ]; then
+            mv /usr/share/X11/xorg.conf.d/99-fbturbo.conf /usr/share/X11/xorg.conf.d/99-fbturbo.~
+        fi
         
         systemctl enable enable_gpu_first_boot.service
         
