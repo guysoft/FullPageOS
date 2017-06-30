@@ -1,0 +1,7 @@
+[Unit]
+Description=on first boot set up GPU acceleration
+[Service]
+ExecStart=/home/pi/scripts/enable_gpu
+ExecStop=
+[Install]
+WantedBy=multi-user.target

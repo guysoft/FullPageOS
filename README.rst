@@ -25,6 +25,12 @@ How to use it?
 #. Boot the Pi from the SD card
 #. Log into your Pi via SSH (it is located at ``fullpageos.local`` `if your computer supports bonjour <https://learn.adafruit.com/bonjour-zeroconf-networking-for-windows-and-linux/overview>`_ or the IP address assigned by your router), default username is "pi", default password is "raspberry", change the password using the ``passwd`` command and expand the filesystem of the SD card through the corresponding option when running ``sudo raspi-config``.
 
+Requirements
+------------
+* Raspberrypi 2 and newser or device running Armbian, Older Rasperry Pis are not currently supported.  See `Raspberry Pi <https://github.com/guysoft/FullPageOS/issues/12>`_ and `Raspberry Pi <https://github.com/guysoft/FullPageOS/issues/43>`_.
+* 2A power supply
+
+
 Features
 --------
 
@@ -87,6 +93,11 @@ After provisioning the machine, its also possible to run a nightly build which u
 
     cd FullPageOS/src/vagrant
     run_vagrant_build.sh
+    
+To build a variant on the machine simply run::
+
+    cd FullPageOS/src/vagrant
+    run_vagrant_build.sh [Variant]
 
 Usage
 ~~~~~
