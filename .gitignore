@@ -1,2 +1,5 @@
 src/config.local
 src/image/*.zip
+src/custompios_path
+src/build.log
+src/vagrant/.vagrant/*

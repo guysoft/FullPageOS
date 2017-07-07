@@ -9,9 +9,12 @@ set -e
 source /common.sh
 
 unpack /filesystem/home/pi /home/pi pi
-unpack /filesystem/home/root /root root
 unpack /filesystem/boot /boot
 unpack /filesystem/root_init /
+
+# prevent any installed services from automatically starting (I'm looking at you lighttpd)
+echo exit 101 > /usr/sbin/policy-rc.d
+chmod +x /usr/sbin/policy-rc.d
 
 apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 5B393194
 
@@ -115,29 +118,6 @@ then
     echo "pi:$FULLPAGEOS_OVERRIDE_PASSWORD" | chpasswd
 fi
 
-
-#reach pi by name
-echo "$FULLPAGEOS_OVERRIDE_HOSTNAME" > /etc/hostname
-sed -i -e "s@raspberrypi@$FULLPAGEOS_OVERRIDE_HOSTNAME@g" /etc/hosts
-
-#make sure users don't run git with sudo, thus breaking permissions, by adding /root/bin to the
-#default sudo path and placing a git wrapper script there that checks if it's run as root
-sed -i "s@secure_path=\"@secure_path=\"/root/bin:@g" /etc/sudoers
-chmod +x /root/bin/git
-
-# enable raspicam
-echo "# enable raspicam" >> /boot/config.txt
-echo "start_x=1" >> /boot/config.txt
-
-# allow network configuration via /boot/fullpageos-network.txt
-sed -i "s@iface wlan0 @iface wlan0-raspbian @g" /etc/network/interfaces
-sed -i "s@iface wlan1 @iface wlan1-raspbian @g" /etc/network/interfaces
-echo "mapping wlan0" >> /etc/network/interfaces
-echo "  script /root/bin/map_iface" >> /etc/network/interfaces
-echo "mapping wlan1" >> /etc/network/interfaces
-echo "  script /root/bin/map_iface" >> /etc/network/interfaces
-echo "source /boot/fullpageos-network.txt" >> /etc/network/interfaces
-
 #unpack root in the end, so etc file are not overwritten, use root_init to unpack stuff that comes before
 unpack /filesystem/root /
 
@@ -167,6 +147,8 @@ echo "exit 0" >> /etc/rc.local
 
 echo "server time.nist.gov" >> /etc/ntp.conf
 echo "server ntp.ubuntu.com" >> /etc/ntp.conf
+
+rm -r /usr/sbin/policy-rc.d
 
 #cleanup
 apt-get clean

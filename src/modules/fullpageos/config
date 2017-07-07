@@ -1,0 +1,28 @@
+###############################################################################
+#override timezone, otherwise use image timezone
+[ -n "$FULLPAGEOS_OVERRIDE_TIMEZONE" ] || FULLPAGEOS_OVERRIDE_TIMEZONE=default
+
+#override locale, otherwise use image locale
+[ -n "$FULLPAGEOS_OVERRIDE_LOCALE" ] || FULLPAGEOS_OVERRIDE_LOCALE=default
+
+#override password, otherwise use image default
+[ -n "$FULLPAGEOS_OVERRIDE_PASSWORD" ] || FULLPAGEOS_OVERRIDE_PASSWORD=default
+
+[ -n "$FULLPAGEOS_INCLUDE_CHROMIUM" ] || FULLPAGEOS_INCLUDE_CHROMIUM=yes
+[ -n "$FULLPAGEOS_INCLUDE_LIGHTTPD" ] || FULLPAGEOS_INCLUDE_LIGHTTPD=yes
+
+# FullPageDashboard repo & branch
+[ -n "$FULLPAGEOS_DASHBOARD_REPO_SHIP" ] || FULLPAGEOS_DASHBOARD_REPO_SHIP=https://github.com/amitdar/FullPageDashboard.git
+[ -n "$FULLPAGEOS_DASHBOARD_REPO_BUILD" ] || FULLPAGEOS_DASHBOARD_REPO_BUILD=
+[ -n "$FULLPAGEOS_DASHBOARD_REPO_BRANCH" ] || FULLPAGEOS_DASHBOARD_REPO_BRANCH=master
+[ -n "$FULLPAGEOS_INCLUDE_DASHBOARD" ] || FULLPAGEOS_INCLUDE_DASHBOARD=yes
+
+# FullPageDashboard repo & branch
+[ -n "$FULLPAGEOS_WELCOME_REPO_SHIP" ] || FULLPAGEOS_WELCOME_REPO_SHIP=https://github.com/tailorvj/FullPageOSWelcome.git
+[ -n "$FULLPAGEOS_WELCOME_REPO_BUILD" ] || FULLPAGEOS_WELCOME_REPO_BUILD=
+[ -n "$FULLPAGEOS_WELCOME_REPO_BRANCH" ] || FULLPAGEOS_WELCOME_REPO_BRANCH=master
+[ -n "$FULLPAGEOS_INCLUDE_WELCOME" ] || FULLPAGEOS_INCLUDE_WELCOME=yes
+
+# Add GPU acceleration
+[ -n "$FULLPAGEOS_INCLUDE_ACCELERATION" ] || FULLPAGEOS_INCLUDE_ACCELERATION=yes
+
