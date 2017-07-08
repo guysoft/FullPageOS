@@ -3,3 +3,5 @@ src/image/*.zip
 src/custompios_path
 src/build.log
 src/vagrant/.vagrant/*
+src/vagrant/*.log
+src/workspace/*
