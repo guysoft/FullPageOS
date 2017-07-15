@@ -32,7 +32,7 @@ then
     sudo -u pi sed -i 's@%BROWSER_START_SCRIPT%@/home/pi/scripts/start_chromium_browser@g' /home/pi/scripts/run_onepageos
 fi
 
-apt-get install -y --force-yes xdotool matchbox-window-manager xorg lightdm
+apt-get install -y --force-yes xdotool
 apt-get install -y --force-yes vim x11vnc expect
 
 
@@ -67,30 +67,6 @@ then
         fi
     popd
     
-    
-    if [ "$FULLPAGEOS_INCLUDE_ACCELERATION" == "yes" ]
-    then
-        #TODO enable_gpu
-        apt-get -y --force-yes install xcompmgr libgl1-mesa-dri mesa-utils compton libconfig9
-        
-        # Hack to pass non-interactive install
-        mv /usr/bin/whiptail /usr/bin/whiptail.bak
-        echo "#!/bin/bash" > /usr/bin/whiptail
-        echo "exit 0" >> /usr/bin/whiptail
-        chmod 755 /usr/bin/whiptail
-        apt-get -y --force-yes install rpi-chromium-mods
-        rm /usr/bin/whiptail
-        mv /usr/bin/whiptail.bak /usr/bin/whiptail
-        if [ -e /usr/share/X11/xorg.conf.d/99-fbturbo.conf ]; then
-            mv /usr/share/X11/xorg.conf.d/99-fbturbo.conf /usr/share/X11/xorg.conf.d/99-fbturbo.~
-        fi
-        
-        systemctl enable enable_gpu_first_boot.service
-        
-    else
-        echo "gpu_mem=128" >> /boot/config.txt
-    fi
-    
     echo "enabled" > /boot/check_for_httpd
 else
     echo "disabled" > /boot/check_for_httpd
@@ -120,11 +96,6 @@ fi
 
 #unpack root in the end, so etc file are not overwritten, use root_init to unpack stuff that comes before
 unpack /filesystem/root /
-
-
-#set up gui service
-sed -i 's/#user-session=.*/user-session=fullpageos/g' /etc/lightdm/lightdm.conf
-sed -i 's/#autologin-user=.*/autologin-user=pi/g' /etc/lightdm/lightdm.conf
 
 # Set up x11vnc
 sudo -u pi /home/pi/scripts/setX11vncPass raspberry
