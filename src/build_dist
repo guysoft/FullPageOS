@@ -5,5 +5,5 @@ export CUSTOM_PI_OS_PATH=$(<${DIR}/custompios_path)
 export PATH=$PATH:$CUSTOM_PI_OS_PATH
 echo ${CUSTOM_PI_OS_PATH}
 
-${CUSTOM_PI_OS_PATH}/build_custom_os ${DIST_PATH}
+${CUSTOM_PI_OS_PATH}/build_custom_os $@
 
