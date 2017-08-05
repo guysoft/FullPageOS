@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
-set -x
-set -e
-# OctoPI generation script
-# Helper script that runs in a Raspbian chroot to create the OctoPI distro
+# FullPageOS generation script
+# Helper script that runs in a Raspbian/others chroot to create the FullPageOS distro
 # Written by Guy Sheffer <guysoft at gmail dot com>
 # GPL V3
+########
+set -x
+set -e
 
 source /common.sh
 
