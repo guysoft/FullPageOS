@@ -13,10 +13,6 @@ unpack /filesystem/home/pi /home/pi pi
 unpack /filesystem/boot /boot
 unpack /filesystem/root_init /
 
-# prevent any installed services from automatically starting (I'm looking at you lighttpd)
-echo exit 101 > /usr/sbin/policy-rc.d
-chmod +x /usr/sbin/policy-rc.d
-
 apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 5B393194
 
 apt-get update
@@ -112,7 +108,6 @@ fi
 
 #echo "sudo -u pi startx /home/pi/scripts/run_onepageos &" >> /etc/rc.local
 #echo "(sleep 15 ; sudo -u pi /home/pi/scripts/fullscreen) &" >> /etc/rc.local
-echo "exit 0" >> /etc/rc.local
 
 #####################################################################
 ### setup services
