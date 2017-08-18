@@ -13,9 +13,9 @@ FullPageOS is a fork of `OctoPi <https://github.com/guysoft/OctoPi>`_
 Where to get it?
 ----------------
 
-Official mirror is `here <http://docstech.net/FullPageOS/>`_
+Official mirror is `here <http://unofficialpi.org/Distros/FullPageOS/>`_
 
-Nightly builds are available `here <http://docstech.net/FullPageOS/nightly/>`_ (currently built on demand)
+Nightly builds are available `here <http://unofficialpi.org/Distros/FullPageOS/nightly/>`_ (currently built on demand)
 
 How to use it?
 --------------
