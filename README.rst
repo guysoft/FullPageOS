@@ -84,9 +84,13 @@ Building Using Vagrant
 ~~~~~~~~~~~~~~~~~~~~~~
 There is a vagrant machine configuration to let build FullPageOS in case your build environment behaves differently. Unless you do extra configuration, vagrant must run as root to have nfs folder sync working.
 
+Make sure you have a version of vagrant later than 1.9!
+
+If you are using older versions of Ubuntu/Debian and not using apt-get `from the download page <https://www.vagrantup.com/downloads.html>`_.
+
 To use it::
 
-    sudo apt-get install vagrant nfs-kernel-server
+    sudo apt-get install vagrant nfs-kernel-server virtualbox
     sudo vagrant plugin install vagrant-nfs_guest
     sudo modprobe nfs
     cd FullPageOS/src/vagrant
