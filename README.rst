@@ -60,7 +60,7 @@ FullPageOS can be built from Debian, Ubuntu, Raspbian, or even FullPageOS.
 Build requires about 2.5 GB of free space available.
 You can build it by issuing the following commands::
 
-    sudo apt-get install realpath qemu-user-static
+    sudo apt-get install realpath p7zip-full qemu-user-static
     
     git clone https://github.com/guysoft/CustomPiOS.git
     git clone https://github.com/guysoft/FullPageOS.git
