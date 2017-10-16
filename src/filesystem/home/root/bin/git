@@ -1,9 +1,0 @@
-#!/bin/bash
-
-if [ "$(id -u)" == "0" ]
-then
-  echo "Please run git without sudo, your regular user account is enough :)" 2>&1
-  exit 1
-fi
-
-/usr/bin/git "$@"

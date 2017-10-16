@@ -1,19 +1,17 @@
 #!/usr/bin/env bash
-set -x
-set -e
-# OctoPI generation script
-# Helper script that runs in a Raspbian chroot to create the OctoPI distro
+# FullPageOS generation script
+# Helper script that runs in a Raspbian/others chroot to create the FullPageOS distro
 # Written by Guy Sheffer <guysoft at gmail dot com>
 # GPL V3
+########
+set -x
+set -e
 
 source /common.sh
 
 unpack /filesystem/home/pi /home/pi pi
-unpack /filesystem/home/root /root root
 unpack /filesystem/boot /boot
 unpack /filesystem/root_init /
-
-apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 5B393194
 
 apt-get update
 
@@ -29,7 +27,7 @@ then
     sudo -u pi sed -i 's@%BROWSER_START_SCRIPT%@/home/pi/scripts/start_chromium_browser@g' /home/pi/scripts/run_onepageos
 fi
 
-apt-get install -y --force-yes xdotool matchbox-window-manager xorg lightdm
+apt-get install -y --force-yes xdotool
 apt-get install -y --force-yes vim x11vnc expect
 
 
@@ -64,30 +62,6 @@ then
         fi
     popd
     
-    
-    if [ "$FULLPAGEOS_INCLUDE_ACCELERATION" == "yes" ]
-    then
-        #TODO enable_gpu
-        apt-get -y --force-yes install xcompmgr libgl1-mesa-dri mesa-utils compton libconfig9
-        
-        # Hack to pass non-interactive install
-        mv /usr/bin/whiptail /usr/bin/whiptail.bak
-        echo "#!/bin/bash" > /usr/bin/whiptail
-        echo "exit 0" >> /usr/bin/whiptail
-        chmod 755 /usr/bin/whiptail
-        apt-get -y --force-yes install rpi-chromium-mods
-        rm /usr/bin/whiptail
-        mv /usr/bin/whiptail.bak /usr/bin/whiptail
-        if [ -e /usr/share/X11/xorg.conf.d/99-fbturbo.conf ]; then
-            mv /usr/share/X11/xorg.conf.d/99-fbturbo.conf /usr/share/X11/xorg.conf.d/99-fbturbo.~
-        fi
-        
-        systemctl enable enable_gpu_first_boot.service
-        
-    else
-        echo "gpu_mem=128" >> /boot/config.txt
-    fi
-    
     echo "enabled" > /boot/check_for_httpd
 else
     echo "disabled" > /boot/check_for_httpd
@@ -115,57 +89,31 @@ then
     echo "pi:$FULLPAGEOS_OVERRIDE_PASSWORD" | chpasswd
 fi
 
-
-#reach pi by name
-echo "$FULLPAGEOS_OVERRIDE_HOSTNAME" > /etc/hostname
-sed -i -e "s@raspberrypi@$FULLPAGEOS_OVERRIDE_HOSTNAME@g" /etc/hosts
-
-#make sure users don't run git with sudo, thus breaking permissions, by adding /root/bin to the
-#default sudo path and placing a git wrapper script there that checks if it's run as root
-sed -i "s@secure_path=\"@secure_path=\"/root/bin:@g" /etc/sudoers
-chmod +x /root/bin/git
-
-# enable raspicam
-echo "# enable raspicam" >> /boot/config.txt
-echo "start_x=1" >> /boot/config.txt
-
-# allow network configuration via /boot/fullpageos-network.txt
-sed -i "s@iface wlan0 @iface wlan0-raspbian @g" /etc/network/interfaces
-sed -i "s@iface wlan1 @iface wlan1-raspbian @g" /etc/network/interfaces
-echo "mapping wlan0" >> /etc/network/interfaces
-echo "  script /root/bin/map_iface" >> /etc/network/interfaces
-echo "mapping wlan1" >> /etc/network/interfaces
-echo "  script /root/bin/map_iface" >> /etc/network/interfaces
-echo "source /boot/fullpageos-network.txt" >> /etc/network/interfaces
-
 #unpack root in the end, so etc file are not overwritten, use root_init to unpack stuff that comes before
 unpack /filesystem/root /
 
-
-#set up gui service
-sed -i 's/#user-session=.*/user-session=fullpageos/g' /etc/lightdm/lightdm.conf
-sed -i 's/#autologin-user=.*/autologin-user=pi/g' /etc/lightdm/lightdm.conf
-
-#set up x11vnc
+# Set up x11vnc
 sudo -u pi /home/pi/scripts/setX11vncPass raspberry
 if [ ! -f /home/pi/.vnc/passwd ]; then
-  echo "/home/pi/.vnc/passwd was not created"
+  echo "/home/pi/.vnc/passwd was not created. Trying again."
   sudo -u pi /home/pi/scripts/setX11vncPass raspberry
   if [ ! -f /home/pi/.vnc/passwd ]; then
-    echo "failed again"
+    echo "/home/pi/.vnc/passwd was not created again. Giving up."
+    echo "Failed to set a VNC password. Aborting build."
     exit 1
   fi
 fi
 
 #echo "sudo -u pi startx /home/pi/scripts/run_onepageos &" >> /etc/rc.local
 #echo "(sleep 15 ; sudo -u pi /home/pi/scripts/fullscreen) &" >> /etc/rc.local
-echo "exit 0" >> /etc/rc.local
 
 #####################################################################
 ### setup services
 
 echo "server time.nist.gov" >> /etc/ntp.conf
 echo "server ntp.ubuntu.com" >> /etc/ntp.conf
+
+rm -r /usr/sbin/policy-rc.d
 
 #cleanup
 apt-get clean

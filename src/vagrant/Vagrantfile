@@ -1,16 +1,17 @@
+vagrant_root = File.dirname(__FILE__)
 Vagrant.configure("2") do |o|
-    # o.vm.box = "fullpageos-build"
-    #o.vm.box= "https://github.com/kraksoft/vagrant-box-ubuntu/releases/download/15.04/ubuntu-15.04-amd64.box"
+    # o.vm.box = "octopi-build"
     o.vm.box= "ubuntu/zesty64"
     o.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
-    o.vm.synced_folder "../../", "/FullPageOS", create:true, type: "nfs"
+    o.vm.synced_folder File.read("../custompios_path").gsub("\n",""), "/CustomPiOS", create:true, type: "nfs"
+    o.vm.synced_folder "../", "/distro", create:true, type: "nfs"
     o.vm.network :private_network, ip: "192.168.55.55"
     o.vm.provision :shell, :path => "setup.sh", args: ENV['SHELL_ARGS']
+
+    #o.vbguest.auto_update = false
 
     o.vm.provider "virtualbox" do |v|
         v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
         v.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
     end
-
-
 end

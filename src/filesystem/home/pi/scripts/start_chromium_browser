@@ -1,2 +1,0 @@
-#!/bin/bash
-chromium-browser --kiosk --touch-events=enabled --disable-pinch --noerrdialogs --app=$(head -n 1 /boot/fullpageos.txt)

@@ -1,4 +1,0 @@
-# variant example, flavor default: override hostname & custom config setting
-
-OCTOPI_OVERRIDE_HOSTNAME=blueberrypi
-OCTOPI_EXAMPLE_CUSTOM="Hello there"
