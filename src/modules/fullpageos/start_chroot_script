@@ -89,9 +89,6 @@ then
     echo "pi:$FULLPAGEOS_OVERRIDE_PASSWORD" | chpasswd
 fi
 
-#unpack root in the end, so etc file are not overwritten, use root_init to unpack stuff that comes before
-unpack /filesystem/root /
-
 # Set up x11vnc
 sudo -u pi /home/pi/scripts/setX11vncPass raspberry
 if [ ! -f /home/pi/.vnc/passwd ]; then
