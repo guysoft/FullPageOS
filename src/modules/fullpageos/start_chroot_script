@@ -41,7 +41,6 @@ then
     chmod 775 /var/www/html
     usermod -a -G www-data pi
     systemctl enable clear_lighttpd_cache.service
-    systemctl enable ssh.socket
     pushd /var/www/html
         #Put git clones in place
         if [ "$FULLPAGEOS_INCLUDE_DASHBOARD" == "yes" ]
