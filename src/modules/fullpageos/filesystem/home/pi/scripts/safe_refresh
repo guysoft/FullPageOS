@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# This script attempts a refresh, but only if the requested page returns successfully.
+
+url="$(cat /boot/fullpageos.txt)"
+
+curl --fail "$url" &> /dev/null
+curlRetr="$?"
+
+if [[ "$curlRetr" -ne "0" ]]; then
+  echo "Waiting to refresh since server is having issues.";
+  exit 1;
+fi
+
+echo "Refreshing page.";
+
+export DISPLAY=:0
+WID=$(xdotool search --onlyvisible --class chromium|head -1)
+xdotool windowactivate ${WID}
+xdotool key ctrl+F5
+
+xdotool key F11
