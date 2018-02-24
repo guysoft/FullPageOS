@@ -109,7 +109,7 @@ fi
 echo "server time.nist.gov" >> /etc/ntp.conf
 echo "server ntp.ubuntu.com" >> /etc/ntp.conf
 
-rm -r /usr/sbin/policy-rc.d
+rm -r /usr/sbin/policy-rc.d || true
 
 #cleanup
 apt-get clean
