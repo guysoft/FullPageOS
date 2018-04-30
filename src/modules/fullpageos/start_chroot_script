@@ -34,14 +34,13 @@ apt-get install -y --force-yes vim x11vnc expect
 #Install web stack
 if [ "$FULLPAGEOS_INCLUDE_LIGHTTPD" == "yes" ]
 then
-    apt-get install -y lighttpd php5-common php5-cgi php5
+    apt-get install -y lighttpd php-common php-cgi php
     lighty-enable-mod fastcgi-php
     #service lighttpd force-reload
     chown -R www-data:www-data /var/www/html
     chmod 775 /var/www/html
     usermod -a -G www-data pi
     systemctl enable clear_lighttpd_cache.service
-    systemctl enable ssh.socket
     pushd /var/www/html
         #Put git clones in place
         if [ "$FULLPAGEOS_INCLUDE_DASHBOARD" == "yes" ]
@@ -89,9 +88,6 @@ then
     echo "pi:$FULLPAGEOS_OVERRIDE_PASSWORD" | chpasswd
 fi
 
-#unpack root in the end, so etc file are not overwritten, use root_init to unpack stuff that comes before
-unpack /filesystem/root /
-
 # Set up x11vnc
 sudo -u pi /home/pi/scripts/setX11vncPass raspberry
 if [ ! -f /home/pi/.vnc/passwd ]; then
@@ -113,7 +109,7 @@ fi
 echo "server time.nist.gov" >> /etc/ntp.conf
 echo "server ntp.ubuntu.com" >> /etc/ntp.conf
 
-rm -r /usr/sbin/policy-rc.d
+rm -r /usr/sbin/policy-rc.d || true
 
 #cleanup
 apt-get clean

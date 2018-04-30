@@ -1,7 +1,7 @@
 vagrant_root = File.dirname(__FILE__)
 Vagrant.configure("2") do |o|
     # o.vm.box = "octopi-build"
-    o.vm.box= "ubuntu/zesty64"
+    o.vm.box= "debian/stretch64"
     o.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
     o.vm.synced_folder File.read("../custompios_path").gsub("\n",""), "/CustomPiOS", create:true, type: "nfs"
     o.vm.synced_folder "../", "/distro", create:true, type: "nfs"
