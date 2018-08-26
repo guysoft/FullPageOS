@@ -1,22 +1,2 @@
 #!/bin/bash
-
-# Standard behavior - runs chrome
 chromium-browser --kiosk --touch-events=enabled --disable-pinch --noerrdialogs --disable-session-crashed-bubble --app=$(head -n 1 /boot/fullpageos.txt)
-exit;
-
-# Remove the two lines above to enable signage mode - refresh the browser whenever errors are seen in log
-
-chromium-browser --enable-logging --v=1 --kiosk --touch-events=enabled --disable-pinch --noerrdialogs --disable-session-crashed-bubble --app=$(head -n 1 /boot/fullpageos.txt) &
-
-export logfile="/home/pi/.config/chromium/chrome_debug.log"
-
-
-# Refreshes after a crash by watching logs
-tail -n 0 -f "$logfile" | while read LOGLINE &> /dev/null; do
-
-   echo "Refreshing after crash"
-   echo "Restarting at `date` after a reported crash. Logline: ${LOGLINE}" >> /tmp/crashlog
-   [[ "${LOGLINE}" == *"ERROR"* ]] && /home/pi/scripts/refresh
-
-done
-
