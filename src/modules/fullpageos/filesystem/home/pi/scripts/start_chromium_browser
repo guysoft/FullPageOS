@@ -3,12 +3,12 @@
 SERIAL=`cat /proc/cpuinfo | perl -n -e '/^Serial[ ]*: ([0-9a-f]{16})$/ && print "$1\n"'`
 
 # Standard behavior - runs chrome
-chromium-browser --kiosk --touch-events=enabled --disable-pinch --noerrdialogs --disable-session-crashed-bubble --app=$(head -n 1 /boot/fullpageos.txt | sed -e "s/{serial}/${MYVAR}/g")
+chromium-browser --kiosk --touch-events=enabled --disable-pinch --noerrdialogs --disable-session-crashed-bubble --app=$(head -n 1 /boot/fullpageos.txt | sed -e "s/{serial}/${SERIAL}/g")
 exit;
 
 # Remove the two lines above to enable signage mode - refresh the browser whenever errors are seen in log
 
-chromium-browser --enable-logging --v=1 --kiosk --touch-events=enabled --disable-pinch --noerrdialogs --disable-session-crashed-bubble --app=$(head -n 1 /boot/fullpageos.txt | sed -e "s/{serial}/${MYVAR}/g") &
+chromium-browser --enable-logging --v=1 --kiosk --touch-events=enabled --disable-pinch --noerrdialogs --disable-session-crashed-bubble --app=$(head -n 1 /boot/fullpageos.txt | sed -e "s/{serial}/${SERIAL}/g") &
 
 export logfile="/home/pi/.config/chromium/chrome_debug.log"
 
