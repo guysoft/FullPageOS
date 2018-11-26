@@ -81,6 +81,12 @@ To build a variant use::
 
     sudo bash -x ./build_dist [Variant]
     
+    
+Building Using Docker
+~~~~~~~~~~~~~~~~~~~~~~
+`See Building with docker entry in wiki <https://github.com/guysoft/CustomPiOS/wiki/Building-with-Docker>`_
+
+    
 Building Using Vagrant
 ~~~~~~~~~~~~~~~~~~~~~~
 There is a vagrant machine configuration to let build FullPageOS in case your build environment behaves differently. Unless you do extra configuration, vagrant must run as root to have nfs folder sync working.
