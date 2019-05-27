@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SERIAL=`cat /proc/cpuinfo | perl -n -e '/^Serial[ ]*: ([0-9a-f]{16})$/ && print "$1\n"'`
+SERIAL=`cat /proc/cpuinfo | grep -i '^Serial' | awk '{ print $3 }'`
 
 # Standard behavior - runs chrome
 chromium-browser --kiosk --touch-events=enabled --disable-pinch --noerrdialogs --disable-session-crashed-bubble --app=$(head -n 1 /boot/fullpageos.txt | sed -e "s/{serial}/${SERIAL}/g")
