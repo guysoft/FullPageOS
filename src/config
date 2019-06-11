@@ -1,6 +1,6 @@
 export DIST_NAME=FullpageOS
 export DIST_VERSION=0.10.0
-export MODULES="base(raspicam, network, disable-services(gui(fullpageos)))"
+export MODULES="base(raspicam, network, disable-services(gui(fullpageos), usage-statistics))"
 
 # if set will enlarge root parition prior to build by provided size in MB
 export BASE_IMAGE_ENLARGEROOT=1000
@@ -9,3 +9,6 @@ export BASE_IMAGE_ENLARGEROOT=1000
 # provided size in MB
 export BASE_IMAGE_RESIZEROOT=200
 export GUI_STARTUP_SCRIPT=/home/pi/scripts/run_onepageos
+
+export USAGE_STATISTICS_URL=https://fullpageos-tracking.gnethomelinux.com
+
