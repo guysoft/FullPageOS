@@ -1,0 +1,9 @@
+#!/bin/bash
+
+if [ ! -f /etc/cockpit_service ]; then
+    apt-get install -y cockpit
+    touch /etc/cockpit_service
+    if [ "$FULLPAGEOS_DISABLE_COCKPIT_SOCKET" == "yes" ]; then
+        systemctl disable cockpit.socket
+    fi
+fi

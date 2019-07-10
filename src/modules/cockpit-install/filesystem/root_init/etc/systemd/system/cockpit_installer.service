@@ -1,0 +1,11 @@
+[Unit]
+Description=On first boot run Cockpit installer
+After=network.target
+After=systemd-user-sessions.service
+After=network-online.target
+[Service]
+User=root
+ExecStart=/home/pi/scripts/install_cockpit
+ExecStop=
+[Install]
+WantedBy=multi-user.target

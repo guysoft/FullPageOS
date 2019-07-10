@@ -1,0 +1,7 @@
+##########################################################
+# Cockpit is a Red Hat sponsored free software project released under the LGPL v2.1+
+# https://cockpit-project.org/
+
+#disable the cockpit web socket if you already have a cockpit server setup and dont want this
+#pi to have a web dashboard
+FULLPAGEOS_DISABLE_COCKPIT_SOCKET=no
