@@ -70,7 +70,7 @@ fi
 #override timezone
 if [ "$FULLPAGEOS_OVERRIDE_TIMEZONE" != "default" ]
 then
-    echo "$FULLPAGEOS_OVERRIDE_TIMEZONE" > /etc/timezone
+    ln -fs /usr/share/zoneinfo/"$FULLPAGEOS_OVERRIDE_TIMEZONE" /etc/localtime
     dpkg-reconfigure -f noninteractive tzdata
 fi
 
