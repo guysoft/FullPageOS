@@ -1,18 +1,16 @@
 #!/usr/bin/env bash
-set -x
-set -e
 # CustomPiOS generation script
 # Helper script that runs in a Raspbian chroot to create the CustomPiOS distro gui module
 # Written by asdfinit
 # GPL V3
+
+set -x
+set -e
 
 source /common.sh
 
 unpack /filesystem/home/pi /home/pi pi
 unpack /filesystem/root_init /
 
-echo exit 101 > /usr/sbin/policy-rc.d
-chmod +x /usr/sbin/policy-rc.d
-
-chmod u+x /home/pi/scripts/install_cockpit
+chmod +x /home/pi/scripts/install_cockpit
 systemctl enable cockpit_installer.service
