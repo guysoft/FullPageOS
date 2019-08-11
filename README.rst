@@ -12,7 +12,7 @@ FullPageOS is a fork of `OctoPi <https://github.com/guysoft/OctoPi>`_
 
 Donate
 ------
-FullPageOS is 100% free and open source and mainated Guy Sheffer. If its helping your life, your organization or makes you happy, please consider making a donation. It means I can code more and worry less about my balance. Any amount counts.
+FullPageOS is 100% free and open source and maintained by Guy Sheffer. If its helping your life, your organisation or makes you happy, please consider making a donation. It means I can code more and worry less about my balance. Any amount counts.
 
 |paypal|
 
