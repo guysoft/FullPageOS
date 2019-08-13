@@ -10,6 +10,15 @@ This repository contains the source script to generate the distribution out of a
 
 FullPageOS is a fork of `OctoPi <https://github.com/guysoft/OctoPi>`_
 
+Donate
+------
+FullPageOS is 100% free and open source and maintained by Guy Sheffer. If its helping your life, your organisation or makes you happy, please consider making a donation. It means I can code more and worry less about my balance. Any amount counts.
+
+|paypal|
+
+.. |paypal| image:: https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif
+   :target: guysoft@gmail.com
+
 Where to get it?
 ----------------
 
