@@ -17,7 +17,7 @@ FullPageOS is 100% free and open source and maintained by Guy Sheffer. If its he
 |paypal|
 
 .. |paypal| image:: https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif
-   :target: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=9KKRS7ERGDCCG&source=url
+   :target: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=26VJ9MSBH3V3W&source=url
 
 Where to get it?
 ----------------
