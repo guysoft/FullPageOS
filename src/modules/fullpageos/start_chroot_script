@@ -88,10 +88,10 @@ then
     #root password
     echo "pi:$FULLPAGEOS_OVERRIDE_PASSWORD" | chpasswd
     # Set up x11vnc
-    sudo -u pi /home/pi/scripts/setX11vncPass $FULLPAGEOS_OVERRIDE_PASSWORD
+    sudo -u pi /home/pi/scripts/setX11vncPass "$FULLPAGEOS_OVERRIDE_PASSWORD"
     if [ ! -f /home/pi/.vnc/passwd ]; then
       echo "/home/pi/.vnc/passwd was not created. Trying again."
-      sudo -u pi /home/pi/scripts/setX11vncPass $FULLPAGEOS_OVERRIDE_PASSWORD
+      sudo -u pi /home/pi/scripts/setX11vncPass "$FULLPAGEOS_OVERRIDE_PASSWORD"
       if [ ! -f /home/pi/.vnc/passwd ]; then
         echo "/home/pi/.vnc/passwd was not created again. Giving up."
         echo "Failed to set a VNC password. Aborting build."
