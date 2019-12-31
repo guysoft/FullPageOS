@@ -1,5 +1,5 @@
 export DIST_NAME=FullpageOS
-export DIST_VERSION=0.11.0
+export DIST_VERSION=0.12.0
 export MODULES="base(raspicam, network, disable-services(gui(fullpageos), usage-statistics))"
 
 # if set will enlarge root parition prior to build by provided size in MB
