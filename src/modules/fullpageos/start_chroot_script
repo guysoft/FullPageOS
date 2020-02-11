@@ -15,6 +15,16 @@ unpack /filesystem/root_init /
 
 apt-get update
 
+# Display a custom Splashscreen when booting the Rpi
+if [ "$FULLPAGEOS_CUSTOM_SPLASHSCREEN" == "yes" ]
+then
+    apt-get install -y fbi
+    sed -i 's/n/ logo.nologo consoleblank=0 loglevel=0 quiet/' /boot/cmdline.txt
+    echo "disable_splash=1" >> /boot/config.txt
+    systemctl enable splashscreen.service
+    systemctl disable getty@tty1
+fi
+
 apt-get remove -y --purge scratch squeak-plugins-scratch squeak-vm python-minecraftpi minecraft-pi sonic-pi oracle-java8-jdk bluej greenfoot libreoffice-common libreoffice-core freepats
 apt-get autoremove -y
 
@@ -29,7 +39,6 @@ fi
 
 apt-get install -y --force-yes xdotool
 apt-get install -y --force-yes vim x11vnc expect
-
 
 #Install web stack
 if [ "$FULLPAGEOS_INCLUDE_LIGHTTPD" == "yes" ]

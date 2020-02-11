@@ -28,3 +28,5 @@
 # Add GPU acceleration
 [ -n "$FULLPAGEOS_INCLUDE_ACCELERATION" ] || FULLPAGEOS_INCLUDE_ACCELERATION=yes
 
+# Enable custom Splashscreen. Put your picture into FullPageOS/modules/fullpageos/filesystem/home/pi/media/splash.png
+[ -n "$FULLPAGEOS_CUSTOM_SPLASHSCREEN" ] || FULLPAGEOS_CUSTOM_SPLASHSCREEN=yes

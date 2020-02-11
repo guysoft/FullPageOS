@@ -48,6 +48,7 @@ Features
     * You can use variable `{serial}` in the url to get device's serialnumber in the URL
 * Default app is `FullPageDashboard <https://github.com/amitdar/FullPageDashboard>`_, which lets you add multiple tabs changes that switch automatically.
 * Ships with preconfigured `X11VNC <http://www.karlrunge.com/x11vnc/>`_, for remote connection (password 'raspberry')
+* Specify a custom Splashscreen that gets displayed on booting process instead of Kernel messages/text
 
 Developing
 ----------
