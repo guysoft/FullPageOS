@@ -1,0 +1,13 @@
+[Unit]
+Description=VNC Server for X11
+ConditionPathExists=/home/pi/.vnc/passwd
+Requires=display-manager.service
+
+[Service]
+ExecStart=/usr/bin/x11vnc -display :0 -auth guess -many -noxdamage -rfbauth /home/pi/.vnc/passwd -rfbport 5900 -shared
+ExecStop=/usr/bin/x11vnc -R stop
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

@@ -124,6 +124,9 @@ then
     fi
 fi
 
+#Enable x11vnc service
+systemctl enable x11vnc.service
+
 #echo "sudo -u pi startx /home/pi/scripts/run_onepageos &" >> /etc/rc.local
 #echo "(sleep 15 ; sudo -u pi /home/pi/scripts/fullscreen) &" >> /etc/rc.local
 
