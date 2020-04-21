@@ -1,5 +1,5 @@
 #!/bin/bash
-x11vnc -many -rfbauth /home/pi/.vnc/passwd &
+
 while true
 do
     if [ $(curl -sL -w "%{http_code}\\n" "http://localhost/FullPageDashboard" -o /dev/null) == "200" ] || grep -q disabled "/boot/check_for_httpd" ; then
