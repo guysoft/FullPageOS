@@ -19,7 +19,7 @@ apt-get update
 if [ "$FULLPAGEOS_CUSTOM_SPLASHSCREEN" == "yes" ]
 then
     apt-get install -y fbi
-    sed -i 's/n/ logo.nologo consoleblank=0 loglevel=0 quiet/' /boot/cmdline.txt
+    sed -i 's/$/ logo.nologo consoleblank=0 loglevel=0 quiet/' /boot/cmdline.txt
     echo "disable_splash=1" >> /boot/config.txt
     systemctl enable splashscreen.service
     systemctl disable getty@tty1
