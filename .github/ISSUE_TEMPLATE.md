@@ -15,3 +15,5 @@
 #### Screenshot(s) showing the problem:
 
 [If applicable. Always include if unsure or reporting UI issues.]
+
+#### If you are building FullPageOS - provide a build.log that is created for the build
