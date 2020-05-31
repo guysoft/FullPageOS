@@ -76,7 +76,7 @@ You can build it by issuing the following commands::
     git clone https://github.com/guysoft/CustomPiOS.git
     git clone https://github.com/guysoft/FullPageOS.git
     cd FullPageOS/src/image
-    wget -c --trust-server-names 'https://downloads.raspberrypi.org/raspbian_lite_latest'
+    wget -c --trust-server-names 'https://downloads.raspberrypi.org/raspios_lite_armhf_latest'
     cd ..
     ../../CustomPiOS/src/update-custompios-paths
     sudo modprobe loop
