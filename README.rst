@@ -37,6 +37,7 @@ How to use it?
 Requirements
 ------------
 * Raspberry Pi 2 and newer or device running Armbian. Older Raspberry Pis are not currently supported.  See `Raspberry Pi <https://github.com/guysoft/FullPageOS/issues/12>`_ and `Raspberry Pi <https://github.com/guysoft/FullPageOS/issues/43>`_.
+* SD card, 4GB or larger, Class 10. (Early June 2020 was the image size 3GB.)
 * 2A power supply
 
 
