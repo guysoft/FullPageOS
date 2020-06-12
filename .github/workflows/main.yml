@@ -22,6 +22,7 @@ jobs:
       with:
         repository: ${{ github.repository }}
         path: repository
+        submodules: true
     - name: Download Raspbian Image
       run: cd repository/src/image && wget -q -c --trust-server-names 'https://downloads.raspberrypi.org/raspbian_lite_latest'
     - name: Update CustomPiOS Paths
