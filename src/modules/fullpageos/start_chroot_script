@@ -29,16 +29,13 @@ apt-get remove -y --purge scratch squeak-plugins-scratch squeak-vm python-minecr
 apt-get autoremove -y
 
 #apt-get tools
-apt-get -y --force-yes install python2.7 git screen checkinstall avahi-daemon libavahi-compat-libdnssd1 xterm
+apt-get -y --force-yes install python2.7 git screen checkinstall avahi-daemon libavahi-compat-libdnssd1 xterm xdotool vim expect
 
 if [ "$FULLPAGEOS_INCLUDE_CHROMIUM" == "yes" ]
 then
     apt-get install -y --force-yes chromium-browser
     sudo -u pi sed -i 's@%BROWSER_START_SCRIPT%@/home/pi/scripts/start_chromium_browser@g' /home/pi/scripts/run_onepageos
 fi
-
-apt-get install -y --force-yes xdotool
-apt-get install -y --force-yes vim x11vnc expect
 
 #Install web stack
 if [ "$FULLPAGEOS_INCLUDE_LIGHTTPD" == "yes" ]
@@ -96,36 +93,42 @@ if [ "$FULLPAGEOS_OVERRIDE_PASSWORD" != "default" ]
 then
     #root password
     echo "pi:$FULLPAGEOS_OVERRIDE_PASSWORD" | chpasswd
-    # Set up x11vnc
-    sudo -u pi /home/pi/scripts/setX11vncPass "$FULLPAGEOS_OVERRIDE_PASSWORD"
-    if [ ! -f /home/pi/.vnc/passwd ]; then
-      echo "/home/pi/.vnc/passwd was not created. Trying again."
-      sudo -u pi /home/pi/scripts/setX11vncPass "$FULLPAGEOS_OVERRIDE_PASSWORD"
-      if [ ! -f /home/pi/.vnc/passwd ]; then
-        echo "/home/pi/.vnc/passwd was not created again. Giving up."
-        echo "Failed to set a VNC password. Aborting build."
-        exit 1
-       fi
-    fi
 fi
 
-if [ "$FULLPAGEOS_OVERRIDE_PASSWORD" == "default" ]
+#Setup x11vnc
+if [ "$FULLPAGEOS_INCLUDE_X11VNC"  == "yes" ]
 then
-    # Set up x11vnc
-    sudo -u pi /home/pi/scripts/setX11vncPass raspberry
-    if [ ! -f /home/pi/.vnc/passwd ]; then
-      echo "/home/pi/.vnc/passwd was not created. Trying again."
-      sudo -u pi /home/pi/scripts/setX11vncPass raspberry
-      if [ ! -f /home/pi/.vnc/passwd ]; then
-        echo "/home/pi/.vnc/passwd was not created again. Giving up."
-        echo "Failed to set a VNC password. Aborting build."
-        exit 1
-      fi
-    fi
-fi
+    apt-get install -y --force-yes x11vnc
 
-#Enable x11vnc service
-systemctl enable x11vnc.service
+    # Set x11vnc password
+    if [ "$FULLPAGEOS_OVERRIDE_PASSWORD" != "default" ]
+    then
+        sudo -u pi /home/pi/scripts/setX11vncPass "$FULLPAGEOS_OVERRIDE_PASSWORD"
+        if [ ! -f /home/pi/.vnc/passwd ]; then
+          echo "/home/pi/.vnc/passwd was not created. Trying again."
+          sudo -u pi /home/pi/scripts/setX11vncPass "$FULLPAGEOS_OVERRIDE_PASSWORD"
+          if [ ! -f /home/pi/.vnc/passwd ]; then
+            echo "/home/pi/.vnc/passwd was not created again. Giving up."
+            echo "Failed to set a VNC password. Aborting build."
+            exit 1
+           fi
+        fi
+    else
+        sudo -u pi /home/pi/scripts/setX11vncPass raspberry
+        if [ ! -f /home/pi/.vnc/passwd ]; then
+          echo "/home/pi/.vnc/passwd was not created. Trying again."
+          sudo -u pi /home/pi/scripts/setX11vncPass raspberry
+          if [ ! -f /home/pi/.vnc/passwd ]; then
+            echo "/home/pi/.vnc/passwd was not created again. Giving up."
+            echo "Failed to set a VNC password. Aborting build."
+            exit 1
+          fi
+        fi
+    fi
+
+    #Enable x11vnc service
+    systemctl enable x11vnc.service
+fi
 
 #echo "sudo -u pi startx /home/pi/scripts/run_onepageos &" >> /etc/rc.local
 #echo "(sleep 15 ; sudo -u pi /home/pi/scripts/fullscreen) &" >> /etc/rc.local
@@ -135,8 +138,6 @@ systemctl enable x11vnc.service
 
 echo "server time.nist.gov" >> /etc/ntp.conf
 echo "server ntp.ubuntu.com" >> /etc/ntp.conf
-
-rm -r /usr/sbin/policy-rc.d || true
 
 #cleanup
 apt-get clean
