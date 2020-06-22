@@ -30,3 +30,6 @@
 
 # Enable custom Splashscreen. Put your picture into FullPageOS/modules/fullpageos/filesystem/home/pi/media/splash.png
 [ -n "$FULLPAGEOS_CUSTOM_SPLASHSCREEN" ] || FULLPAGEOS_CUSTOM_SPLASHSCREEN=yes
+
+# Install and enable x11vnc service
+[ -n "$FULLPAGEOS_INCLUDE_X11VNC" ] || FULLPAGEOS_INCLUDE_X11VNC=yes
