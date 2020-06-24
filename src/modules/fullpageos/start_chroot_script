@@ -88,6 +88,20 @@ then
     update-locale LANG="$FULLPAGEOS_OVERRIDE_LOCALE"
 fi
 
+#override keyboard model and layout
+if [ "$FULLPAGEOS_OVERRIDE_KBD_MODEL" != "default" ]
+then
+    sed -i 's/^XKBMODEL=.*/XKBMODEL="'$FULLPAGEOS_OVERRIDE_KBD_MODEL'"/' /etc/default/keyboard
+fi
+if [ "$FULLPAGEOS_OVERRIDE_KBD_LAYOUT" != "default" ]
+then
+    sed -i 's/^XKBLAYOUT=.*/XKBLAYOUT="'$FULLPAGEOS_OVERRIDE_KBD_LAYOUT'"/' /etc/default/keyboard
+fi
+if [ "$FULLPAGEOS_OVERRIDE_KBD_MODEL" != "default" ] || [ "$FULLPAGEOS_OVERRIDE_KBD_LAYOUT" != "default" ]
+then
+    setupcon -k --save-only
+fi
+
 #override password
 if [ "$FULLPAGEOS_OVERRIDE_PASSWORD" != "default" ]
 then
