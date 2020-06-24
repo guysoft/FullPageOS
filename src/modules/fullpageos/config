@@ -7,6 +7,12 @@
 # More information at https://wiki.debian.org/Locale#Standard
 [ -n "$FULLPAGEOS_OVERRIDE_LOCALE" ] || FULLPAGEOS_OVERRIDE_LOCALE=default
 
+#override keyboard model and layout, otherwise use image default
+# see `man keyboard` for more information and the file
+# `/usr/share/X11/xkb/rules/xorg.lst` for the list of models and layouts
+[ -n "$FULLPAGEOS_OVERRIDE_KBD_MODEL" ] || FULLPAGEOS_OVERRIDE_KBD_MODEL=default
+[ -n "$FULLPAGEOS_OVERRIDE_KBD_LAYOUT" ] || FULLPAGEOS_OVERRIDE_KBD_LAYOUT=default
+
 #override password, otherwise use image default
 [ -n "$FULLPAGEOS_OVERRIDE_PASSWORD" ] || FULLPAGEOS_OVERRIDE_PASSWORD=default
 
