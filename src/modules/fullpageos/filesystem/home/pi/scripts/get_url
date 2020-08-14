@@ -1,0 +1,5 @@
+#!/bin/bash
+
+SERIAL=`cat /proc/cpuinfo | grep -i '^Serial' | awk '{ print $3 }'`
+URL="$(head -n 1 /boot/fullpageos.txt | sed -e "s/{serial}/${SERIAL}/g")"
+echo $URL

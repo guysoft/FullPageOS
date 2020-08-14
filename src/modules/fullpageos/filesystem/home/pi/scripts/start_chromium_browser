@@ -1,9 +1,7 @@
 #!/bin/bash
 
-SERIAL=`cat /proc/cpuinfo | grep -i '^Serial' | awk '{ print $3 }'`
-
 # Standard behavior - runs chrome
-chromium-browser --kiosk --touch-events=enabled --disable-pinch --noerrdialogs --disable-session-crashed-bubble --simulate-outdated-no-au='Tue, 31 Dec 2099 23:59:59 GMT' --disable-component-update --overscroll-history-navigation=0 --disable-features=TranslateUI --app=$(head -n 1 /boot/fullpageos.txt | sed -e "s/{serial}/${SERIAL}/g")
+chromium-browser --kiosk --touch-events=enabled --disable-pinch --noerrdialogs --disable-session-crashed-bubble --simulate-outdated-no-au='Tue, 31 Dec 2099 23:59:59 GMT' --disable-component-update --overscroll-history-navigation=0 --disable-features=TranslateUI --app=$(/home/pi/scripts/get_url)
 exit;
 
 # Remove the two lines above to enable signage mode - refresh the browser whenever errors are seen in log

@@ -5,3 +5,6 @@ src/build.log
 src/vagrant/.vagrant/*
 src/vagrant/*.log
 src/workspace/*
+src/workspace*/*
+src/variants/*
+!src/variants/no-acceleration
