@@ -2,9 +2,7 @@
 
 # This script attempts a refresh, but only if the requested page returns successfully.
 
-url="$(cat /boot/fullpageos.txt)"
-
-curl --fail "$url" &> /dev/null
+curl --fail "$(/home/pi/scripts/get_url)" &> /dev/null
 curlRetr="$?"
 
 if [[ "$curlRetr" -ne "0" ]]; then
