@@ -144,6 +144,9 @@ then
     systemctl enable x11vnc.service
 fi
 
+#Disable cursor in x11 by default
+sed -i 's/^#xserver-command=.*/xserver-command=X -nocursor/' /etc/lightdm/lightdm.conf
+
 #echo "sudo -u pi startx /home/pi/scripts/run_onepageos &" >> /etc/rc.local
 #echo "(sleep 15 ; sudo -u pi /home/pi/scripts/fullscreen) &" >> /etc/rc.local
 

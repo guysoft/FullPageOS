@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+#Disable cursor in x11
+
+if [ "$1" == "hide" ]; then
+    # replace in orginal config
+    sudo sed -i 's/^#xserver-command.*/xserver-command=X -nocursor/' /etc/lightdm/lightdm.conf
+    # replace in manually edited file
+    sudo sed -i 's/^xserver-command.*/xserver-command=X -nocursor/' /etc/lightdm/lightdm.conf
+    # restart service for instant change
+    sudo systemctl restart lightdm
+elif [ "$1" == "show" ]; then
+    # replace in orginal config
+    sudo sed -i 's/^#xserver-command.*/\#xserver-command=X/' /etc/lightdm/lightdm.conf
+    # replace in manually edited file
+    sudo sed -i 's/^xserver-command.*/\#xserver-command=X/' /etc/lightdm/lightdm.conf
+    # restart service for instant change
+    sudo systemctl restart lightdm
+else
+    echo "Possible options are 'hide' or 'show'!"
+fi
