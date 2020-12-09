@@ -1,0 +1,26 @@
+#!/bin/bash
+if [ ! -f /etc/gpu_enabled ]; then
+    sudo sed 's@matchbox-window-manager \&@compton -b -d :0 --backend glx --unredir-if-possible --glx-swap-method buffer-age --glx-no-stencil --paint-on-overlay --vsync opengl \nmatchbox-window-manager \&@g' -i /home/pi/scripts/start_gui
+    sudo sed -i /boot/cmdline.txt -e "s/ quiet//"
+    sudo sed -i /boot/cmdline.txt -e "s/ splash//"
+    sudo sed -i /boot/cmdline.txt -e "s/ plymouth.ignore-serial-consoles//"
+    check="$(sudo cat /proc/cpuinfo | grep 'Revision' | awk '{print $3}' | sed -e 's/[a-c]//')"
+    if [ "${check}" != "03111" ] && [ "${check}" != "03112" ]; then
+        if [ "$(dmesg | grep raspberrypi-ts)" ]; then
+            # we found an original rpi display -> kms not possible via csi - using fake kms!
+            # cleanup config.txt from vc4 overlays
+            sudo sed -i "/^\#dtoverlay=vc4/d" /boot/config.txt
+            sudo sed -i "/^dtoverlay=vc4/d" /boot/config.txt
+            printf "dtoverlay=vc4-fkms-v3d\n" | sudo tee -a /boot/config.txt
+        else
+            # no original rpi display found - all fine ... using kms
+            # cleanup config.txt from vc4 overlays
+            sudo sed -i "/^\#dtoverlay=vc4/d" /boot/config.txt
+            sudo sed -i "/^dtoverlay=vc4/d" /boot/config.txt
+            printf "dtoverlay=vc4-kms-v3d\n" | sudo tee -a /boot/config.txt
+        fi
+    fi
+    sudo sed -i /boot/config.txt -e "s/^gpu_mem/\#gpu_mem/"
+    touch /etc/gpu_enabled
+    sudo shutdown -r now
+fi
