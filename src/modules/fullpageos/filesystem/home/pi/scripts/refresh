@@ -1,5 +1,6 @@
 #!/bin/bash
 export DISPLAY=:0
+sleep 1
 WID=$(xdotool search --onlyvisible --class chromium|head -1)
 xdotool windowactivate ${WID}
 xdotool key ctrl+F5
