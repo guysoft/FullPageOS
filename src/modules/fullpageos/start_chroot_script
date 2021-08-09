@@ -102,6 +102,10 @@ then
     setupcon -k --save-only
 fi
 
+# Add emoji support
+sudo -u pi mkdir -p /home/pi/.fonts
+sudo -u pi wget --directory-prefix /home/pi/.fonts https://github.com/googlefonts/noto-emoji/raw/main/fonts/NotoColorEmoji.ttf
+
 #override password
 if [ "$FULLPAGEOS_OVERRIDE_PASSWORD" != "default" ]
 then
