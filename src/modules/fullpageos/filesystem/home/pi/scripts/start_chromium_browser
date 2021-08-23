@@ -12,7 +12,7 @@ export logfile="/home/pi/.config/chromium/chrome_debug.log"
 
 
 # Refreshes after a crash by watching logs
-tail -n 0 -f "$logfile" | while read LOGLINE &> /dev/null; do
+tail -n 0 -F "$logfile" | while read LOGLINE &> /dev/null; do
 
    echo "Refreshing after crash"
    echo "Restarting at `date` after a reported crash. Logline: ${LOGLINE}" >> /tmp/crashlog
