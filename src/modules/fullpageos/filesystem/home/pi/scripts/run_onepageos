@@ -3,7 +3,6 @@
 while true
 do
     if [ $(curl -sL -w "%{http_code}\\n" "$(/home/pi/scripts/get_url)" -o /dev/null) == "200" ] || grep -q disabled "/boot/check_for_httpd" ; then
-      (sleep 15 ; /home/pi/scripts/fullscreen) &
       xdotool mousemove 9000 9000
       %BROWSER_START_SCRIPT%
     fi
