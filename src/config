@@ -10,5 +10,9 @@ export BASE_IMAGE_ENLARGEROOT=1000
 export BASE_IMAGE_RESIZEROOT=200
 export GUI_STARTUP_SCRIPT=/home/pi/scripts/run_onepageos
 
+export RPI_IMAGER_NAME="${DIST_NAME}"
+export RPI_IMAGER_DESCRIPTION="A raspberrypi distro to display a full page browser on boot"
+export RPI_IMAGER_ICON="https://raw.githubusercontent.com/guysoft/FullPageOS/devel/media/rpi-imager-FullPageOS.png"
+
 export USAGE_STATISTICS_URL=https://fullpageos-tracking.gnethomelinux.com
 
