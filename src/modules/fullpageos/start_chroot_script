@@ -125,10 +125,10 @@ then
     if [ "$FULLPAGEOS_OVERRIDE_PASSWORD" != "default" ]
     then
         sudo -u pi /home/pi/scripts/setX11vncPass "$FULLPAGEOS_OVERRIDE_PASSWORD"
-        if [ ! -f /home/pi/.vnc/passwd ]; then
+        if [ ! -f /home/pi/.vnc/passwd ] || [ ! -s /home/pi/.vnc/passwd ]; then
           echo "/home/pi/.vnc/passwd was not created. Trying again."
           sudo -u pi /home/pi/scripts/setX11vncPass "$FULLPAGEOS_OVERRIDE_PASSWORD"
-          if [ ! -f /home/pi/.vnc/passwd ]; then
+          if [ ! -f /home/pi/.vnc/passwd ] || [ ! -s /home/pi/.vnc/passwd ]; then
             echo "/home/pi/.vnc/passwd was not created again. Giving up."
             echo "Failed to set a VNC password. Aborting build."
             exit 1
@@ -136,16 +136,17 @@ then
         fi
     else
         sudo -u pi /home/pi/scripts/setX11vncPass raspberry
-        if [ ! -f /home/pi/.vnc/passwd ]; then
+        if [ ! -f /home/pi/.vnc/passwd ] || [ ! -s /home/pi/.vnc/passwd ]; then
           echo "/home/pi/.vnc/passwd was not created. Trying again."
           sudo -u pi /home/pi/scripts/setX11vncPass raspberry
-          if [ ! -f /home/pi/.vnc/passwd ]; then
+          if [ ! -f /home/pi/.vnc/passwd ] || [ ! -s /home/pi/.vnc/passwd ]; then
             echo "/home/pi/.vnc/passwd was not created again. Giving up."
             echo "Failed to set a VNC password. Aborting build."
             exit 1
           fi
         fi
     fi
+    ls -l /home/pi/.vnc/passwd
 
     #Enable x11vnc service
     systemctl enable x11vnc.service
