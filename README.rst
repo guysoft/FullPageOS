@@ -131,4 +131,14 @@ Usage
 #. Run ``src/build_dist`` as root.
 #. The final image will be created in ``src/workspace``
 
+
+Remote access
+~~~~~
+
+Remote GUI access can be archieved through VNC Viewer. Get the IP of you raspberry ``hostname -I`` via SSH. 
+
+The password is ``raspberry`` and is independent of password you have set for your user(s). Change the password by ``x11vnc -storepasswd`` via SSH.
+
+
+
 Code contribution would be appreciated!
