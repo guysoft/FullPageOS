@@ -133,12 +133,25 @@ Usage
 
 
 Remote access
-~~~~~
+~~~~~~~~~~~~~
 
 Remote GUI access can be archieved through VNC Viewer. Get the IP of you raspberry ``hostname -I`` via SSH. 
 
 The password is ``raspberry`` and is independent of password you have set for your user(s). Change the password by ``x11vnc -storepasswd`` via SSH.
 
+
+Install Chrome Extensions
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Press ``ctrl`` + ``t``, it will open an new tab. 
+
+You can either install extensions frome `Chrome Web Store <https://chrome.google.com/webstore/category/extensions>`_ or `install your own extension  <https://support.google.com/chrome_webstore/answer/2664769?hl=en>`_. 
+
+If you which to install your own extension then you can transfer the build files via tools like ``rcp``, ``rsync`` etc.
+
+Example::
+
+    rsync -av <extension-build-folder>/ pi@fullpageos.local:extensions/<extension-name>/
 
 
 Code contribution would be appreciated!
