@@ -64,6 +64,7 @@ Requirements
 #. Bash
 #. realpath
 #. sudo (the script itself calls it, running as root without sudo won't work)
+#. jq (part of CustomPiOS dependencies)
 
 Build FullPageOS From within FullPageOS / Raspbian / Debian / Ubuntu
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
