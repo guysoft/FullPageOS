@@ -1,7 +1,7 @@
 FullPageOS
 ==========
 
-.. image:: https://raw.githubusercontent.com/guysoft/FullPageOS/devel/media/FullPageOS.png
+.. image:: https://github.com/guysoft/FullPageOS/blob/secularstevelogo/media/FullPageOS.png?raw=true
 .. :scale: 50 %
 .. :alt: FullPageOS logo
 
