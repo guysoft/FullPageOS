@@ -6,6 +6,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+    - name: Update apt
+      run: sudo apt-get update
     - name: Install Dependencies
       run: sudo apt install coreutils p7zip-full qemu-user-static
     - name: Checkout CustomPiOS
