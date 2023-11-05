@@ -125,9 +125,11 @@ then
     if [ "$FULLPAGEOS_OVERRIDE_PASSWORD" != "default" ]
     then
         sudo -u pi /home/pi/scripts/setX11vncPass "$FULLPAGEOS_OVERRIDE_PASSWORD"
+        sync
         if [ ! -f /home/pi/.vnc/passwd ] || [ ! -s /home/pi/.vnc/passwd ]; then
           echo "/home/pi/.vnc/passwd was not created. Trying again."
           sudo -u pi /home/pi/scripts/setX11vncPass "$FULLPAGEOS_OVERRIDE_PASSWORD"
+          sync
           if [ ! -f /home/pi/.vnc/passwd ] || [ ! -s /home/pi/.vnc/passwd ]; then
             echo "/home/pi/.vnc/passwd was not created again. Giving up."
             echo "Failed to set a VNC password. Aborting build."
