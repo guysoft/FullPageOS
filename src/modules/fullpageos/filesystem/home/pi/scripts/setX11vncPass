@@ -1,10 +1,2 @@
-#!/usr/bin/env expect
-set pass [lindex $argv 0]
-spawn x11vnc -storepasswd;
-expect "*?assword:*"
-send -- "$pass\r";
-expect "*?assword:*"
-send -- "$pass\r";
-expect "*?assword*"
-send -- "y\n\r";
-interact
+#!/usr/bin/env bash
+x11vnc -storepasswd "${1}" ~/.vnc/passwd
