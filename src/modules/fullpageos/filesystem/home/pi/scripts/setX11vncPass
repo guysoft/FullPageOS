@@ -1,2 +1,3 @@
 #!/usr/bin/env bash
-x11vnc -storepasswd "${1}" ~/.vnc/passwd
+# fix for when runnign in sudo
+bash -c 'x11vnc -storepasswd "'${1}'" ~/.vnc/passwd'
