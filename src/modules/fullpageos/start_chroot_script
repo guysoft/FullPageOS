@@ -138,9 +138,11 @@ then
         fi
     else
         sudo -u pi /home/pi/scripts/setX11vncPass raspberry
+        sync
         if [ ! -f /home/pi/.vnc/passwd ] || [ ! -s /home/pi/.vnc/passwd ]; then
           echo "/home/pi/.vnc/passwd was not created. Trying again."
           sudo -u pi /home/pi/scripts/setX11vncPass raspberry
+          sync
           if [ ! -f /home/pi/.vnc/passwd ] || [ ! -s /home/pi/.vnc/passwd ]; then
             echo "/home/pi/.vnc/passwd was not created again. Giving up."
             echo "Failed to set a VNC password. Aborting build."
