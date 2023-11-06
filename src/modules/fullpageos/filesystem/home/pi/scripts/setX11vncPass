@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
 # fix for when runnign in sudo
-mkdir -p  /home/pi/.vnc
-chown pi:pi /home/pi/.vnc
+bash -c 'mkdir -p ~/.vnc'
 bash -c 'x11vnc -storepasswd "'${1}'" ~/.vnc/passwd'
