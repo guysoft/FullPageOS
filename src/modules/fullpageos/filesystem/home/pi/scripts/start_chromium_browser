@@ -13,13 +13,13 @@ flags=(
    --autoplay-policy=no-user-gesture-required
 )
 
-# Standard behavior - runs chrome
+# Standard behavior - runs chromium
 chromium-browser "${flags[@]}" --app=$(/home/pi/scripts/get_url)
 exit;
 
 # Remove the two lines above to enable signage mode - refresh the browser whenever errors are seen in log
 
-chromium-browser --enable-logging --log-level=2 --v=0 "${flags[@]}" --app=$(head -n 1 /boot/fullpageos.txt | sed -e "s/{serial}/${SERIAL}/g") &
+chromium-browser --enable-logging --log-level=2 --v=0 "${flags[@]}" --app=$(/home/pi/scripts/get_url) &
 
 export logfile="/home/pi/.config/chromium/chrome_debug.log"
 
