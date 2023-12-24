@@ -12,7 +12,7 @@ FullPageOS started as a fork from `OctoPi <https://github.com/guysoft/OctoPi>`_,
 
 Donate
 ------
-FullPageOS is 100% free and open source and maintained by Guy Sheffer. If its helping your life, your organisation or makes you happy, please consider making a donation. It means I can code more and worry less about my balance. Any amount counts.
+FullPageOS is 100% free and open source and maintained by Guy Sheffer. If it's helping your life, your organisation or makes you happy, please consider making a donation. It means I can code more and worry less about my balance. Any amount counts.
 
 |paypal|
 
@@ -22,7 +22,7 @@ FullPageOS is 100% free and open source and maintained by Guy Sheffer. If its he
 Where to get it?
 ----------------
 
-Official mirror is `here <http://unofficialpi.org/Distros/FullPageOS/>`_
+The official mirror is `here <http://unofficialpi.org/Distros/FullPageOS/>`_
 
 Nightly builds are available `here <http://unofficialpi.org/Distros/FullPageOS/nightly/>`_ (currently built on demand)
 
@@ -44,12 +44,12 @@ Requirements
 Features
 --------
 
-* Loads Chromium at boot in full screen
+* Loads Chromium at boot in full-screen
 * Webpage can be changed from /boot/fullpageos.txt
     * You can use variable `{serial}` in the url to get device's serialnumber in the URL
 * Default app is `FullPageDashboard <https://github.com/amitdar/FullPageDashboard>`_, which lets you add multiple tabs changes that switch automatically.
 * Ships with preconfigured `X11VNC <http://www.karlrunge.com/x11vnc/>`_, for remote connection (password 'raspberry')
-* Specify a custom Splashscreen that gets displayed on booting process instead of Kernel messages/text
+* Specify a custom Splashscreen that gets displayed on the booting process instead of Kernel messages/text
 
 Developing
 ----------
@@ -115,7 +115,7 @@ To use it::
     cd FullPageOS/src/vagrant
     sudo vagrant up
 
-After provisioning the machine, its also possible to run a nightly build which updates from devel using::
+After provisioning the machine, it's also possible to run a nightly build which updates from devel using::
 
     cd FullPageOS/src/vagrant
     run_vagrant_build.sh
@@ -136,7 +136,7 @@ Usage
 Remote access
 ~~~~~~~~~~~~~
 
-Remote GUI access can be archieved through VNC Viewer. Get the IP of you raspberry ``hostname -I`` via SSH. 
+Remote GUI access can be achieved through VNC Viewer. Get the IP of your raspberry ``hostname -I`` via SSH. 
 
 The password is ``raspberry`` and is independent of password you have set for your user(s). Change the password by ``x11vnc -storepasswd`` via SSH.
 
@@ -144,11 +144,11 @@ The password is ``raspberry`` and is independent of password you have set for yo
 Install Chrome Extensions
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Press ``ctrl`` + ``t``, it will open an new tab. 
+Press ``ctrl`` + ``t``, it will open a new tab. 
 
-You can either install extensions frome `Chrome Web Store <https://chrome.google.com/webstore/category/extensions>`_ or `install your own extension  <https://support.google.com/chrome_webstore/answer/2664769?hl=en>`_. 
+You can either install extensions from `Chrome Web Store <https://chrome.google.com/webstore/category/extensions>`_ or `install your own extension  <https://support.google.com/chrome_webstore/answer/2664769?hl=en>`_. 
 
-If you which to install your own extension then you can transfer the build files via tools like ``rcp``, ``rsync`` etc.
+If you wish to install your own extension then you can transfer the build files via tools like ``rcp``, ``rsync`` etc.
 
 Example::
 
