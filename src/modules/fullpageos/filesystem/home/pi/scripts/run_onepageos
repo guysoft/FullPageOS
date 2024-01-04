@@ -1,8 +1,10 @@
 #!/bin/bash
 
+USER_AGENT="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Safari/537.36"
+
 while true
 do
-    if [[ $(curl -sL -b cookiefile -w "%{http_code}\\n" "$(/home/pi/scripts/get_url)" -o /dev/null) =~ ^([23][0-9]{2,2}|401)$ ]] || grep -q disabled "/boot/check_for_httpd" ; then
+    if [[ $(curl -sL -b cookiefile -w "%{http_code}\\n" -H "user-agent: ${USER_AGENT}" "$(/home/pi/scripts/get_url)" -o /dev/null) =~ ^([23][0-9]{2,2}|401)$ ]] || grep -q disabled "/boot/check_for_httpd" ; then
       xdotool mousemove 9000 9000
       %BROWSER_START_SCRIPT%
     fi
