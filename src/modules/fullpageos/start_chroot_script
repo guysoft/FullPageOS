@@ -13,6 +13,16 @@ unpack /filesystem/home/pi /home/pi pi
 unpack /filesystem/boot /boot
 unpack /filesystem/root_init /
 
+FULLPAGEOS_BOOT_FILES=(
+"fullpageos.txt"
+"fullpagedashboard.txt"
+"check_for_httpd"
+)
+for FILE in "${FULLPAGEOS_BOOT_FILES[@]}"
+do
+    if ! [ -f "/boot/${FILE}" ] && ln -s "/boot/firmware/${FILE}" "/boot/${FILE}"
+done
+
 apt-get update
 
 # Display a custom Splashscreen when booting the Rpi
