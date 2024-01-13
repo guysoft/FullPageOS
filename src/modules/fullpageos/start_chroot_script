@@ -17,6 +17,7 @@ FULLPAGEOS_BOOT_FILES=(
 "fullpageos.txt"
 "fullpagedashboard.txt"
 "check_for_httpd"
+"splash.png"
 )
 for FILE in "${FULLPAGEOS_BOOT_FILES[@]}"
 do
