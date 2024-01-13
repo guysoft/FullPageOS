@@ -20,7 +20,7 @@ FULLPAGEOS_BOOT_FILES=(
 )
 for FILE in "${FULLPAGEOS_BOOT_FILES[@]}"
 do
-    [ ! -f "/boot/${FILE}" ] && ln -s "/boot/firmware/${FILE}" "/boot/${FILE}"
+    [ ! -e "/boot/${FILE}" ] && ln -s "/boot/firmware/${FILE}" "/boot/${FILE}"
 done
 
 apt-get update
