@@ -14,11 +14,13 @@ unpack /filesystem/boot /boot
 unpack /filesystem/root_init /
 
 FULLPAGEOS_BOOT_FILES=(
+"check_for_httpd"
 "fullpageos.txt"
 "fullpagedashboard.txt"
-"check_for_httpd"
+"octopi.txt"
 "splash.png"
 )
+
 for FILE in "${FULLPAGEOS_BOOT_FILES[@]}"
 do
     [ ! -e "/boot/${FILE}" ] && ln -s "/boot/firmware/${FILE}" "/boot/${FILE}"
