@@ -10,7 +10,7 @@ set -e
 source /common.sh
 
 unpack /filesystem/home/pi /home/pi pi
-unpack /filesystem/boot /boot
+unpack /filesystem/boot /"${BASE_BOOT_MOUNT_PATH}"
 unpack /filesystem/root_init /
 
 apt-get update
