@@ -19,8 +19,8 @@ apt-get update
 if [ "$FULLPAGEOS_CUSTOM_SPLASHSCREEN" == "yes" ]
 then
     apt-get install -y fbi
-    sed -i 's/$/ logo.nologo consoleblank=0 loglevel=0 quiet/' /boot/cmdline.txt
-    echo "disable_splash=1" >> /boot/config.txt
+    sed -i 's/$/ logo.nologo consoleblank=0 loglevel=0 quiet/' /"${BASE_BOOT_MOUNT_PATH}"/cmdline.txt
+    echo "disable_splash=1" >> /"${BASE_BOOT_MOUNT_PATH}"/config.txt
     systemctl enable splashscreen.service
     systemctl disable getty@tty1
 fi
@@ -59,7 +59,7 @@ then
             chown -R www-data:www-data FullPageDashboard
             chmod 775 FullPageDashboard
             pushd FullPageDashboard
-                sed -i "s@'INIT_URL_PATH', __DIR__ . '/init.txt'@'INIT_URL_PATH', '/boot/fullpagedashboard.txt'@g" config.php
+                sed -i "s@'INIT_URL_PATH', __DIR__ . '/init.txt'@'INIT_URL_PATH', '/"${BASE_BOOT_MOUNT_PATH}"/fullpagedashboard.txt'@g" config.php
             popd
         fi
         #Set Welcome screen
@@ -70,9 +70,9 @@ then
         fi
     popd
     
-    echo "enabled" > /boot/check_for_httpd
+    echo "enabled" > /"${BASE_BOOT_MOUNT_PATH}"/check_for_httpd
 else
-    echo "disabled" > /boot/check_for_httpd
+    echo "disabled" > /"${BASE_BOOT_MOUNT_PATH}"/check_for_httpd
 fi
 
 
