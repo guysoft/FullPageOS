@@ -8,7 +8,7 @@ export BASE_IMAGE_ENLARGEROOT=2000
 # if set will resize root partition on image after build to minimum size + 
 # provided size in MB
 export BASE_IMAGE_RESIZEROOT=200
-export GUI_STARTUP_SCRIPT=/home/pi/scripts/run_onepageos
+export GUI_STARTUP_SCRIPT=/opt/custompios/scripts/run_onepageos
 
 export RPI_IMAGER_NAME="${DIST_NAME}"
 export RPI_IMAGER_DESCRIPTION="A raspberrypi distro to display a full page browser on boot"

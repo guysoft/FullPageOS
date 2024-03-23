@@ -9,7 +9,7 @@ set -e
 
 source /common.sh
 
-unpack /filesystem/home/pi /home/pi pi
+unpack /filesystem/opt /opt
 unpack /filesystem/boot /"${BASE_BOOT_MOUNT_PATH}"
 unpack /filesystem/root_init /
 
@@ -37,7 +37,7 @@ apt-get -y --force-yes install git screen checkinstall avahi-daemon libavahi-com
 if [ "$FULLPAGEOS_INCLUDE_CHROMIUM" == "yes" ]
 then
     apt-get install -y --force-yes chromium-browser
-    sudo -u pi sed -i 's@%BROWSER_START_SCRIPT%@/home/pi/scripts/start_chromium_browser@g' /home/pi/scripts/run_onepageos
+    sed -i 's@%BROWSER_START_SCRIPT%@/opt/custompios/scripts/start_chromium_browser@g' /opt/custompios/scripts/run_onepageos
 fi
 
 #Install web stack
@@ -124,11 +124,11 @@ then
     # Set x11vnc password
     if [ "$FULLPAGEOS_OVERRIDE_PASSWORD" != "default" ]
     then
-        sudo -u pi /home/pi/scripts/setX11vncPass "$FULLPAGEOS_OVERRIDE_PASSWORD"
+        sudo -u pi /opt/custompios/scripts/setX11vncPass "$FULLPAGEOS_OVERRIDE_PASSWORD"
         sync
         if [ ! -f /home/pi/.vnc/passwd ] || [ ! -s /home/pi/.vnc/passwd ]; then
           echo "/home/pi/.vnc/passwd was not created. Trying again."
-          sudo -u pi /home/pi/scripts/setX11vncPass "$FULLPAGEOS_OVERRIDE_PASSWORD"
+          sudo -u pi /opt/custompios/scripts/setX11vncPass "$FULLPAGEOS_OVERRIDE_PASSWORD"
           sync
           if [ ! -f /home/pi/.vnc/passwd ] || [ ! -s /home/pi/.vnc/passwd ]; then
             echo "/home/pi/.vnc/passwd was not created again. Giving up."
@@ -137,11 +137,11 @@ then
            fi
         fi
     else
-        sudo -u pi /home/pi/scripts/setX11vncPass raspberry
+        sudo -u pi /opt/custompios/scripts/setX11vncPass raspberry
         sync
         if [ ! -f /home/pi/.vnc/passwd ] || [ ! -s /home/pi/.vnc/passwd ]; then
           echo "/home/pi/.vnc/passwd was not created. Trying again."
-          sudo -u pi /home/pi/scripts/setX11vncPass raspberry
+          sudo -u pi /opt/custompios/scripts/setX11vncPass raspberry
           sync
           if [ ! -f /home/pi/.vnc/passwd ] || [ ! -s /home/pi/.vnc/passwd ]; then
             echo "/home/pi/.vnc/passwd was not created again. Giving up."
@@ -156,8 +156,8 @@ then
     systemctl enable x11vnc.service
 fi
 
-#echo "sudo -u pi startx /home/pi/scripts/run_onepageos &" >> /etc/rc.local
-#echo "(sleep 15 ; sudo -u pi /home/pi/scripts/fullscreen) &" >> /etc/rc.local
+#echo "sudo -u pi startx /opt/custompios/scripts/run_onepageos &" >> /etc/rc.local
+#echo "(sleep 15 ; sudo -u pi /opt/custompios/scripts/fullscreen) &" >> /etc/rc.local
 
 #####################################################################
 ### setup services

@@ -2,7 +2,7 @@
 
 # This script attempts a refresh, but only if the requested page returns successfully.
 
-curl --fail "$(/home/pi/scripts/get_url)" &> /dev/null
+curl --fail "$(/opt/custompios/scripts/get_url)" &> /dev/null
 curlRetr="$?"
 
 if [[ "$curlRetr" -ne "0" ]]; then

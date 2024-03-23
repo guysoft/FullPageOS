@@ -14,14 +14,14 @@ flags=(
 )
 
 # Standard behavior - runs chromium
-chromium-browser "${flags[@]}" --app=$(/home/pi/scripts/get_url)
+chromium-browser "${flags[@]}" --app=$(/opt/custompios/scripts/get_url)
 exit;
 
 # Remove the two lines above to enable signage mode - refresh the browser whenever errors are seen in log
 
-chromium-browser --enable-logging --log-level=2 --v=0 "${flags[@]}" --app=$(/home/pi/scripts/get_url) &
+chromium-browser --enable-logging --log-level=2 --v=0 "${flags[@]}" --app=$(/opt/custompios/scripts/get_url) &
 
-export logfile="/home/pi/.config/chromium/chrome_debug.log"
+export logfile="/home/$(id -nu 1000)/.config/chromium/chrome_debug.log"
 
 
 # Refreshes after a crash by watching logs
@@ -29,6 +29,6 @@ tail -n 0 -F "$logfile" | while read LOGLINE &> /dev/null; do
 
    echo "Refreshing after crash"
    echo "Restarting at `date` after a reported crash. Logline: ${LOGLINE}" >> /tmp/crashlog
-   [[ ("${LOGLINE}" == *"ERROR"*) || ("${LOGLINE}" == *"FATAL"*) ]] && /home/pi/scripts/refresh
+   [[ ("${LOGLINE}" == *"ERROR"*) || ("${LOGLINE}" == *"FATAL"*) ]] && /home/$(id -nu 1000)/scripts/refresh
 
 done
