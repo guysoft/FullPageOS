@@ -2,6 +2,8 @@
 
 USER_AGENT="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 
+feh --bg-center /opt/custompios/background.png
+
 while true
 do
     if [[ $(curl -sL -b cookiefile -w "%{http_code}\\n" -H "user-agent: ${USER_AGENT}" "$(/opt/custompios/scripts/get_url)" -o /dev/null) =~ ^([23][0-9]{2,2}|401)$ ]] || grep -q disabled "/boot/firmware/check_for_httpd" ; then
