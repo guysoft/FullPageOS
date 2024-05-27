@@ -45,7 +45,7 @@ Features
 --------
 
 * Loads Chromium at boot in full screen
-* Webpage can be changed from /boot/fullpageos.txt
+* Webpage can be changed from /boot/firmware/fullpageos.txt
     * You can use variable `{serial}` in the url to get device's serialnumber in the URL
 * Default app is `FullPageDashboard <https://github.com/amitdar/FullPageDashboard>`_, which lets you add multiple tabs changes that switch automatically.
 * Ships with preconfigured `X11VNC <http://www.karlrunge.com/x11vnc/>`_, for remote connection (password 'raspberry')
