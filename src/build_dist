@@ -3,8 +3,8 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 export DIST_PATH=${DIR}
 export CUSTOM_PI_OS_PATH=$(<${DIR}/custompios_path)
 export PATH=$PATH:$CUSTOM_PI_OS_PATH
-export BASE_BOARD="raspberrypiarmhf"
 echo ${CUSTOM_PI_OS_PATH}
 
+export BASE_BOARD="raspberrypiarmhf"
 ${CUSTOM_PI_OS_PATH}/build_custom_os $@
 
