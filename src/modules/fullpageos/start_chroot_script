@@ -124,7 +124,7 @@ then
     apt-get install -y --force-yes x11vnc
 
     mkdir -p /opt/custompios/vnc
-    chown "${BASE_USER}":"${BASE_USER}"
+    chown "${BASE_USER}":"${BASE_USER}" /opt/custompios/vnc
 
     # Set x11vnc password
     if [ "$FULLPAGEOS_OVERRIDE_PASSWORD" != "default" ]
