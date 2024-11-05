@@ -9,6 +9,8 @@ set -e
 
 source /common.sh
 
+echo "127.0.0.1 $(hostname)" >> /etc/hosts
+
 unpack /filesystem/opt /opt
 unpack /filesystem/boot /"${BASE_BOOT_MOUNT_PATH}"
 unpack /filesystem/root_init /
