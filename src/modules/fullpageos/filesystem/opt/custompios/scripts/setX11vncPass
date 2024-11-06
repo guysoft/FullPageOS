@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
 # fix for when runnign in sudo
-bash -c 'mkdir -p ~/.vnc'
-bash -c 'x11vnc -storepasswd "'${1}'" ~/.vnc/passwd'
+PASSWORD_FILE="/opt/custompios/vnc/passwd"
+
+mkdir -p "$(dirname "$PASSWORD_FILE")"
+x11vnc -storepasswd "$1" "$PASSWORD_FILE"
