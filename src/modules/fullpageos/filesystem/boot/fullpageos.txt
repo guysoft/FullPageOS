@@ -1,1 +1,1 @@
-http://localhost/FullPageDashboard
+ https://considera-dsignage.vercel.app/welcome/{serial}

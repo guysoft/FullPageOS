@@ -1,1 +1,1 @@
-http://localhost/welcome
+https://considera-dsignage.vercel.app/welcome
