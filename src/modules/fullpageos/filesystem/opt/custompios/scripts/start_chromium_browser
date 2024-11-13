@@ -11,6 +11,15 @@ flags=(
    --overscroll-history-navigation=0
    --disable-features=TranslateUI
    --autoplay-policy=no-user-gesture-required
+   --disable-features=TranslateUI
+   --disable-features=Translate
+   --disable-features=TranslateLanguageDetection
+   
+   # disable permissions prompt
+   --use-fake-ui-for-media-stream
+   --use-fake-device-for-media-stream
+   --use-file-for-fake-audio-capture=/opt/custompios/scripts/silence.wav
+   --use-file-for-fake-video-capture=/opt/custompios/scripts/silence.y4m
 )
 
 # Standard behavior - runs chromium
