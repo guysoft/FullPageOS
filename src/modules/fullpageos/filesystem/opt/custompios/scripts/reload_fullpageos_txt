@@ -1,2 +1,2 @@
 #!/bin/bash
-killall /usr/lib/chromium-browser/chromium-browser
+killall /usr/lib/chromium/chromium
