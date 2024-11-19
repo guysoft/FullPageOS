@@ -39,3 +39,6 @@
 
 # Install and enable x11vnc service
 [ -n "$FULLPAGEOS_INCLUDE_X11VNC" ] || FULLPAGEOS_INCLUDE_X11VNC=yes
+
+# Enable Considera Dsignage ping service
+[ -n "$CONSIDERA_DSIGNAGE" ] || CONSIDERA_DSIGNAGE=yes

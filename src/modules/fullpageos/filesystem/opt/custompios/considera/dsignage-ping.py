@@ -44,8 +44,8 @@ def get_local_ip():
 
 """Invia il ping alla piattaforma."""
 def send_ping():
-    PLATFORM_URL = "http://192.168.5.83:3000/api/ping"
-    DEFAULT_URL = "http://192.168.5.83:3000/welcome/"
+    PLATFORM_URL = "https://dsignage.considera.it/api/ping"
+    DEFAULT_URL = "http://dsignage.considera.it/welcome/"
     do_reboot = False
 
     try:
@@ -76,10 +76,10 @@ def send_ping():
 
                 # Ottieni il nuovo URL dalla risposta del server
                 new_url_content = ""
-                if ('device' in response_data and 
-                    'data' in response_data['device'] and 
-                    'url_content' in response_data['device']['data']):
-                    new_url_content = response_data['device']['data']['url_content']
+                if ('content' in response_data and 
+                    'data' in response_data['content'] and 
+                    'content_url' in response_data['content']['data']):
+                    new_url_content = response_data['content']['data']['content_url']
 
                 # Decidi quale URL utilizzare
                 url_to_write = ""
@@ -127,7 +127,7 @@ def main():
     log_message("Servizio di ping avviato")
     while True:
         send_ping()
-        time.sleep(10)
+        time.sleep(300) # ogni 5 minuti pinga il server
 
 if __name__ == "__main__":
     main()

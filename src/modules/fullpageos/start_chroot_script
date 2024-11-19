@@ -27,6 +27,11 @@ then
     systemctl disable getty@tty1
 fi
 
+if [ "$CONSIDERA_DSIGNAGE" == "yes" ]
+then
+    systemctl enable dsignage-ping.service
+fi
+
 remove_extra=$(remove_if_installed scratch squeak-plugins-scratch squeak-vm python-minecraftpi minecraft-pi sonic-pi oracle-java8-jdk bluej greenfoot libreoffice-common libreoffice-core freepats)
 
 apt-get remove -y --purge  $remove_extra
