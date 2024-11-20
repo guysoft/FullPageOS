@@ -1,1 +1,1 @@
- https://considera-dsignage.vercel.app/welcome/{serial}
+ https://designage.considera.it/welcome/{serial}

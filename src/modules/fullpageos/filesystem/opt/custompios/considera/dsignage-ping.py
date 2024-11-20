@@ -44,8 +44,8 @@ def get_local_ip():
 
 """Invia il ping alla piattaforma."""
 def send_ping():
-    PLATFORM_URL = "https://dsignage.considera.it/api/ping"
-    DEFAULT_URL = "http://dsignage.considera.it/welcome/"
+    PLATFORM_URL = "https://designage.considera.it/api/ping"
+    DEFAULT_URL = "http://designage.considera.it/welcome/"
     do_reboot = False
 
     try:
