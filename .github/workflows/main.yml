@@ -1,37 +1,93 @@
 name: Build Image
 
-on: push
+on:
+  push:
+    branches:
+      - '**'
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    
     steps:
+    - name: Free Disk Space
+      run: |
+        sudo rm -rf /usr/share/dotnet
+        sudo rm -rf /usr/local/lib/android
+        sudo rm -rf /opt/ghc
+        sudo df -h
+        
     - name: Update apt
-      run: sudo apt-get update
+      run: |
+        sudo apt-get update
+        sudo apt-get clean
+      
     - name: Install Dependencies
-      run: sudo apt install coreutils p7zip-full qemu-user-static python3-git
+      run: |
+        sudo apt-get install -y \
+          coreutils \
+          p7zip-full \
+          qemu-user-static \
+          python3-git \
+          wget
+        
     - name: Checkout CustomPiOS
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
         repository: 'guysoft/CustomPiOS'
         path: CustomPiOS
+        
     - name: Checkout Project Repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
         repository: ${{ github.repository }}
         path: repository
         submodules: true
+        
+    - name: Cache Raspbian Image
+      id: cache-raspbian
+      uses: actions/cache@v3
+      with:
+        path: repository/src/image/raspios_lite_armhf_latest
+        key: ${{ runner.os }}-raspbian-${{ hashFiles('repository/src/image/raspios_lite_armhf_latest') }}
+        
     - name: Download Raspbian Image
-      run: cd repository/src/image && wget -q -c --trust-server-names 'https://downloads.raspberrypi.org/raspios_lite_armhf_latest'
+      if: steps.cache-raspbian.outputs.cache-hit != 'true'
+      run: |
+        cd repository/src/image
+        wget -q -c --trust-server-names 'https://downloads.raspberrypi.org/raspios_lite_armhf_latest'
+        
     - name: Update CustomPiOS Paths
-      run: cd repository/src && ../../CustomPiOS/src/update-custompios-paths
+      run: |
+        cd repository/src
+        ../../CustomPiOS/src/update-custompios-paths
+        
     - name: Build Image
-      run: sudo modprobe loop && cd repository/src && sudo bash -x ./build_dist
-    - name: Copy Output
-      run: cp ${{ github.workspace }}/repository/src/workspace/*-raspios-*-lite.img build.img
-    - name: Zip Output
-      run: gzip build.img
-    - uses: actions/upload-artifact@v4
+      run: |
+        sudo modprobe loop
+        cd repository/src
+        sudo bash -x ./build_dist
+      
+    - name: Prepare Output
+      run: |
+        mkdir -p output
+        find ${{ github.workspace }}/repository/src/workspace -name "*-raspios-*-lite.img" -exec cp {} output/build.img \;
+        
+    - name: Compress Output
+      run: |
+        cd output
+        gzip -9 build.img
+        
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
       with:
         name: build.img.gz
-        path: build.img.gz
+        path: output/build.img.gz
+        
+    - name: Cleanup
+      if: always()
+      run: |
+        sudo rm -rf output
+        sudo rm -rf repository/src/workspace
+        sudo df -h
