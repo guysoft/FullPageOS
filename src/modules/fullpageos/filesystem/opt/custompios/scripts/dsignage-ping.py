@@ -127,7 +127,7 @@ def main():
     log_message("Servizio di ping avviato")
     while True:
         send_ping()
-        time.sleep(300) # ogni 5 minuti pinga il server
+        time.sleep(120) # ogni 2 minuti pinga il server
 
 if __name__ == "__main__":
     main()

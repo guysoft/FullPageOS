@@ -1,6 +1,8 @@
 [Unit]
 Description=Considera Dsignage Ping Python
 After=network.target
+Wants=network-online.target
+After=network-online.target
 
 [Service]
 Type=simple
@@ -10,6 +12,8 @@ WorkingDirectory=/home/pi/scripts/
 ExecStart=/usr/bin/python3 /home/pi/scripts/dsignage-ping.py
 Restart=always
 RestartSec=3
+StandardOutput=journal
+StandardError=journal
 
 [Install]
 WantedBy=multi-user.target
