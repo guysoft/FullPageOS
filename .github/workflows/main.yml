@@ -32,7 +32,8 @@ jobs:
           python3-git \
           wget \
           fake-hwclock \
-          initramfs-tools
+          initramfs-tools \
+          systemd-container
         
     - name: Setup build environment
       run: |
@@ -72,28 +73,45 @@ jobs:
         
     - name: Prepare chroot environment
       run: |
-        sudo mkdir -p repository/src/workspace/mount/{proc,sys,dev/pts}
+        sudo mkdir -p repository/src/workspace/mount/{proc,sys,dev/pts,boot,var/cache/apt/archives/partial}
+        sudo chmod 755 repository/src/workspace/mount/var/cache/apt/archives/partial
         sudo mount -t proc proc repository/src/workspace/mount/proc || true
         sudo mount -t sysfs sysfs repository/src/workspace/mount/sys || true
         sudo mount -t devpts devpts repository/src/workspace/mount/dev/pts || true
+        
+    - name: Configure initramfs-tools
+      run: |
+        sudo mkdir -p repository/src/workspace/mount/etc/initramfs-tools/conf.d/
+        echo 'MODULES=dep' | sudo tee repository/src/workspace/mount/etc/initramfs-tools/conf.d/modules > /dev/null
+        echo 'COMPRESS=xz' | sudo tee -a repository/src/workspace/mount/etc/initramfs-tools/conf.d/modules > /dev/null
         
     - name: Build Image
       run: |
         sudo modprobe loop
         cd repository/src
-        sudo bash -x ./build_dist || true
+        sudo systemd-nspawn -D workspace/mount /bin/bash -c "mount -t sysfs sysfs /sys || true"
+        sudo bash -x ./build_dist
       
-    - name: Prepare Output
+    - name: Find and Copy Image
       run: |
-        mkdir -p output
-        find ${{ github.workspace }}/repository/src/workspace -name "*-raspios-*-lite.img" -exec cp {} output/build.img \;
+        sudo mkdir -p output
+        sudo chmod 777 output
+        sudo find repository/src/workspace -name "*-raspios-*-lite.img" -exec sudo cp {} output/build.img \; || true
+        sudo chown $USER:$USER output/build.img || true
         
     - name: Compress Output
+      if: success()
       run: |
         cd output
-        gzip -9 build.img
+        if [ -f build.img ]; then
+          gzip -9 build.img
+        else
+          echo "No image file found to compress"
+          exit 1
+        fi
         
     - name: Upload Artifact
+      if: success()
       uses: actions/upload-artifact@v4
       with:
         name: build.img.gz
