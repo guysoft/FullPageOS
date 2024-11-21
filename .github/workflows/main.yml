@@ -1,101 +1,37 @@
 name: Build Image
 
-on:
-  push:
-    branches:
-      - '**'
-  workflow_dispatch:
+on: push
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    
     steps:
-    - name: Optimize disk space
-      run: |
-        echo "Freeing up disk space..."
-        # Remove only the largest unnecessary directories
-        sudo rm -rf /usr/local/lib/android || true
-        sudo rm -rf /usr/share/dotnet || true
-        # Clean apt cache
-        sudo apt-get clean
-        # Remove unnecessary docker images
-        docker image prune -af
-        # Show disk space after cleanup
-        df -h
-      
+    - name: Update apt
+      run: sudo apt-get update
     - name: Install Dependencies
-      run: |
-        sudo apt-get update
-        sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
-          coreutils \
-          p7zip-full \
-          qemu-user-static \
-          python3-git \
-          wget \
-          initramfs-tools \
-          systemd-container
-        
-    - name: Checkout Repositories
-      run: |
-        # Checkout both repos in parallel
-        git clone --depth=1 https://github.com/guysoft/CustomPiOS.git CustomPiOS &
-        git clone --depth=1 ${{ github.repository }} repository &
-        wait
-        
-    - name: Setup build environment
-      run: |
-        sudo mkdir -p repository/src/workspace/mount/{proc,sys,dev/pts,boot,var/cache/apt/archives/partial}
-        sudo chmod -R 755 repository/src/workspace/mount
-        sudo mount -t proc proc repository/src/workspace/mount/proc || true
-        sudo mount -t sysfs sysfs repository/src/workspace/mount/sys || true
-        sudo mount -t devpts devpts repository/src/workspace/mount/dev/pts || true
-        
-    - name: Download and prepare Raspbian
-      run: |
-        cd repository/src/image
-        wget -q -c --trust-server-names 'https://downloads.raspberrypi.org/raspios_lite_armhf_latest'
-        cd ..
-        ../../CustomPiOS/src/update-custompios-paths
-        
+      run: sudo apt install coreutils p7zip-full qemu-user-static python3-git
+    - name: Checkout CustomPiOS
+      uses: actions/checkout@v2
+      with:
+        repository: 'guysoft/CustomPiOS'
+        path: CustomPiOS
+    - name: Checkout Project Repository
+      uses: actions/checkout@v2
+      with:
+        repository: ${{ github.repository }}
+        path: repository
+        submodules: true
+    - name: Download Raspbian Image
+      run: cd repository/src/image && wget -q -c --trust-server-names 'https://downloads.raspberrypi.org/raspios_lite_armhf_latest'
+    - name: Update CustomPiOS Paths
+      run: cd repository/src && ../../CustomPiOS/src/update-custompios-paths
     - name: Build Image
-      run: |
-        sudo modprobe loop
-        cd repository/src
-        # Configure initramfs-tools
-        sudo mkdir -p workspace/mount/etc/initramfs-tools/conf.d/
-        echo 'MODULES=dep' | sudo tee workspace/mount/etc/initramfs-tools/conf.d/modules > /dev/null
-        echo 'COMPRESS=xz' | sudo tee -a workspace/mount/etc/initramfs-tools/conf.d/modules > /dev/null
-        # Start build
-        sudo bash -x ./build_dist || true
-      
-    - name: Package Output
-      if: always()
-      run: |
-        sudo mkdir -p output
-        sudo find repository/src/workspace -name "*-raspios-*-lite.img" -exec sudo cp {} output/build.img \; || true
-        if [ -f output/build.img ]; then
-          sudo chown $USER:$USER output/build.img
-          cd output && gzip -9 build.img
-        else
-          echo "No image file found"
-          exit 1
-        fi
-        
-    - name: Upload Artifact
-      if: success()
-      uses: actions/upload-artifact@v4
+      run: sudo modprobe loop && cd repository/src && sudo bash -x ./build_dist
+    - name: Copy Output
+      run: cp ${{ github.workspace }}/repository/src/workspace/*-raspios-*-lite.img build.img
+    - name: Zip Output
+      run: gzip build.img
+    - uses: actions/upload-artifact@v4
       with:
         name: build.img.gz
-        path: output/build.img.gz
-        
-    - name: Cleanup
-      if: always()
-      run: |
-        echo "Cleaning up mounts..."
-        sudo umount -f repository/src/workspace/mount/proc || true
-        sudo umount -f repository/src/workspace/mount/sys || true
-        sudo umount -f repository/src/workspace/mount/dev/pts || true
-        echo "Removing workspace..."
-        sudo rm -rf repository/src/workspace
-        echo "Cleanup complete"
+        path: build.img.gz
