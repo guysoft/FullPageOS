@@ -6,8 +6,8 @@ After=network.target
 Type=simple
 User=root
 Group=root
-WorkingDirectory=/home/pi/considera/
-ExecStart=/usr/bin/python3 /home/pi/considera/dsignage-ping.py
+WorkingDirectory=/home/pi/scripts/
+ExecStart=/usr/bin/python3 /home/pi/scripts/dsignage-ping.py
 Restart=always
 RestartSec=3
 
