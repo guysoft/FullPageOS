@@ -52,3 +52,6 @@ You can build it by issuing the following commands::
     ../../CustomPiOS/src/update-custompios-paths
     sudo modprobe loop
     sudo bash -x ./build_dist
+
+
+All builds should be available in the repo page, made automatically by GitHub Actions
