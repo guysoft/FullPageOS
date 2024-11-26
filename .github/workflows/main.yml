@@ -31,8 +31,21 @@ jobs:
       - name: Update CustomPiOS Paths
         run: cd repository/src && ../../CustomPiOS/src/update-custompios-paths
         
+      - name: Prepare System
+        run: |
+          sudo modprobe loop
+          # Ensure required directories exist
+          sudo mkdir -p /sys
+          sudo mkdir -p /proc
+          
       - name: Build Image
-        run: sudo modprobe loop && cd repository/src && sudo bash -x ./build_dist
+        run: |
+          cd repository/src
+          # Mount required filesystems before chroot
+          sudo mount -t sysfs sysfs workspace/mount/sys || true
+          sudo mount -t proc proc workspace/mount/proc || true
+          # Run the build
+          sudo bash -x ./build_dist
         
       - name: Copy Output
         run: cp ${{ github.workspace }}/repository/src/workspace/*-raspios-*-lite.img build.img
