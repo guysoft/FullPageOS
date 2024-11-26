@@ -31,22 +31,31 @@ jobs:
       - name: Update CustomPiOS Paths
         run: cd repository/src && ../../CustomPiOS/src/update-custompios-paths
         
-      - name: Prepare System
+      - name: Prepare Build Environment
         run: |
           sudo modprobe loop
-          # Ensure required directories exist
-          sudo mkdir -p /sys
-          sudo mkdir -p /proc
+          # Creare il file di policy per dpkg
+          sudo mkdir -p repository/src/workspace/mount/etc/dpkg/dpkg.cfg.d/
+          echo 'path-exclude=/boot/initrd.img-*' | sudo tee repository/src/workspace/mount/etc/dpkg/dpkg.cfg.d/exclude-initramfs
+          echo 'path-exclude=/boot/vmlinuz-*' | sudo tee -a repository/src/workspace/mount/etc/dpkg/dpkg.cfg.d/exclude-initramfs
+          
+          # Creare il file di configurazione per initramfs-tools
+          sudo mkdir -p repository/src/workspace/mount/etc/initramfs-tools/
+          echo 'MODULES=none' | sudo tee repository/src/workspace/mount/etc/initramfs-tools/update-initramfs.conf
+          echo 'COMPRESS=none' | sudo tee -a repository/src/workspace/mount/etc/initramfs-tools/update-initramfs.conf
           
       - name: Build Image
         run: |
           cd repository/src
-          # Mount required filesystems before chroot
-          sudo mount -t sysfs sysfs workspace/mount/sys || true
+          # Preparare l'ambiente chroot
+          sudo mount --bind /dev workspace/mount/dev || true
+          sudo mount --bind /dev/pts workspace/mount/dev/pts || true
           sudo mount -t proc proc workspace/mount/proc || true
-          # Run the build
+          sudo mount -t sysfs sysfs workspace/mount/sys || true
+          
+          # Eseguire il build
           sudo bash -x ./build_dist
-        
+          
       - name: Copy Output
         run: cp ${{ github.workspace }}/repository/src/workspace/*-raspios-*-lite.img build.img
         
