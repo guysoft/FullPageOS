@@ -31,35 +31,48 @@ jobs:
       - name: Update CustomPiOS Paths
         run: cd repository/src && ../../CustomPiOS/src/update-custompios-paths
         
-      - name: Prepare Build Environment
-        run: |
-          sudo modprobe loop
-          
-          # Creare script per disabilitare update-initramfs
-          echo '#!/bin/sh' | sudo tee repository/src/workspace/mount/usr/sbin/update-initramfs
-          echo 'exit 0' | sudo tee -a repository/src/workspace/mount/usr/sbin/update-initramfs
-          sudo chmod +x repository/src/workspace/mount/usr/sbin/update-initramfs
-          
-          # Creare policy-rc.d per prevenire avvio servizi
-          echo '#!/bin/sh' | sudo tee repository/src/workspace/mount/usr/local/sbin/policy-rc.d
-          echo 'exit 101' | sudo tee -a repository/src/workspace/mount/usr/local/sbin/policy-rc.d
-          sudo chmod +x repository/src/workspace/mount/usr/local/sbin/policy-rc.d
-          
-          # Preparare file di configurazione per APT
-          echo 'DPkg::Pre-Invoke { "mount -t proc proc /proc"; };' | sudo tee repository/src/workspace/mount/etc/apt/apt.conf.d/99mount-proc
-          echo 'DPkg::Post-Invoke { "umount /proc"; };' | sudo tee -a repository/src/workspace/mount/etc/apt/apt.conf.d/99mount-proc
-          
+      - name: Load Loop Module
+        run: sudo modprobe loop
+
       - name: Build Image
         run: |
           cd repository/src
-          # Mount necessari
-          sudo mount --bind /dev workspace/mount/dev
-          sudo mount --bind /dev/pts workspace/mount/dev/pts
-          sudo mount -t proc proc workspace/mount/proc
-          sudo mount -t sysfs sysfs workspace/mount/sys
+          # Iniziare il build normalmente
+          sudo bash -x ./build_dist &
           
-          # Eseguire build con opzioni aggiuntive per apt
-          sudo DEBIAN_FRONTEND=noninteractive bash -x ./build_dist
+          # Aspettare che la directory mount sia creata
+          while [ ! -d workspace/mount ]; do
+            echo "Waiting for mount directory to be created..."
+            sleep 5
+          done
+          
+          # Configurare l'ambiente dopo che il mount è stato creato
+          echo "Configuring build environment..."
+          
+          # Disabilitare update-initramfs
+          echo '#!/bin/sh' | sudo tee workspace/mount/usr/sbin/update-initramfs
+          echo 'exit 0' | sudo tee -a workspace/mount/usr/sbin/update-initramfs
+          sudo chmod +x workspace/mount/usr/sbin/update-initramfs
+          
+          # Creare policy-rc.d
+          sudo mkdir -p workspace/mount/usr/local/sbin/
+          echo '#!/bin/sh' | sudo tee workspace/mount/usr/local/sbin/policy-rc.d
+          echo 'exit 101' | sudo tee -a workspace/mount/usr/local/sbin/policy-rc.d
+          sudo chmod +x workspace/mount/usr/local/sbin/policy-rc.d
+          
+          # Configurare APT
+          sudo mkdir -p workspace/mount/etc/apt/apt.conf.d/
+          echo 'DPkg::Pre-Invoke { "mount -t proc proc /proc"; };' | sudo tee workspace/mount/etc/apt/apt.conf.d/99mount-proc
+          echo 'DPkg::Post-Invoke { "umount /proc || true"; };' | sudo tee -a workspace/mount/etc/apt/apt.conf.d/99mount-proc
+          
+          # Mount necessari
+          sudo mount --bind /dev workspace/mount/dev || true
+          sudo mount --bind /dev/pts workspace/mount/dev/pts || true
+          sudo mount -t proc proc workspace/mount/proc || true
+          sudo mount -t sysfs sysfs workspace/mount/sys || true
+          
+          # Aspettare che il build finisca
+          wait
         env:
           SKIP_KERNELS: "1"
           DEBIAN_FRONTEND: noninteractive
