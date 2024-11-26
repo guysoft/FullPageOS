@@ -1,5 +1,5 @@
-export DIST_NAME=FullpageOS
-export DIST_VERSION=0.14.0
+export DIST_NAME=dsignageOS
+export DIST_VERSION=0.0.1
 export MODULES="base(raspicam, network, disable-services(gui(fullpageos), usage-statistics))"
 
 # if set will enlarge root parition prior to build by provided size in MB
@@ -11,7 +11,7 @@ export BASE_IMAGE_RESIZEROOT=200
 export GUI_STARTUP_SCRIPT=/opt/custompios/scripts/run_onepageos
 
 export RPI_IMAGER_NAME="${DIST_NAME}"
-export RPI_IMAGER_DESCRIPTION="A raspberrypi distro to display a full page browser on boot"
+export RPI_IMAGER_DESCRIPTION="A digital signage OS for Raspberry Pi 4+"
 export RPI_IMAGER_ICON="https://raw.githubusercontent.com/guysoft/FullPageOS/devel/media/rpi-imager-FullPageOS.png"
 
 export USAGE_STATISTICS_URL=https://fullpageos-tracking.gnethomelinux.com

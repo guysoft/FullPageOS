@@ -9,11 +9,14 @@ flags=(
    --simulate-outdated-no-au='Tue, 31 Dec 2099 23:59:59 GMT'
    --disable-component-update
    --overscroll-history-navigation=0
-   --disable-features=TranslateUI
    --autoplay-policy=no-user-gesture-required
    --disable-features=TranslateUI
-   --disable-features=Translate
    --disable-features=TranslateLanguageDetection
+
+   --disable-infobars
+   --disable-session-crashed-bubble
+   --noerrdialogs
+   --no-first-run
    
    # disable permissions prompt
    --use-fake-ui-for-media-stream
