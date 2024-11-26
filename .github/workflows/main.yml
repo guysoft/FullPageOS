@@ -34,27 +34,35 @@ jobs:
       - name: Prepare Build Environment
         run: |
           sudo modprobe loop
-          # Creare il file di policy per dpkg
-          sudo mkdir -p repository/src/workspace/mount/etc/dpkg/dpkg.cfg.d/
-          echo 'path-exclude=/boot/initrd.img-*' | sudo tee repository/src/workspace/mount/etc/dpkg/dpkg.cfg.d/exclude-initramfs
-          echo 'path-exclude=/boot/vmlinuz-*' | sudo tee -a repository/src/workspace/mount/etc/dpkg/dpkg.cfg.d/exclude-initramfs
           
-          # Creare il file di configurazione per initramfs-tools
-          sudo mkdir -p repository/src/workspace/mount/etc/initramfs-tools/
-          echo 'MODULES=none' | sudo tee repository/src/workspace/mount/etc/initramfs-tools/update-initramfs.conf
-          echo 'COMPRESS=none' | sudo tee -a repository/src/workspace/mount/etc/initramfs-tools/update-initramfs.conf
+          # Creare script per disabilitare update-initramfs
+          echo '#!/bin/sh' | sudo tee repository/src/workspace/mount/usr/sbin/update-initramfs
+          echo 'exit 0' | sudo tee -a repository/src/workspace/mount/usr/sbin/update-initramfs
+          sudo chmod +x repository/src/workspace/mount/usr/sbin/update-initramfs
+          
+          # Creare policy-rc.d per prevenire avvio servizi
+          echo '#!/bin/sh' | sudo tee repository/src/workspace/mount/usr/local/sbin/policy-rc.d
+          echo 'exit 101' | sudo tee -a repository/src/workspace/mount/usr/local/sbin/policy-rc.d
+          sudo chmod +x repository/src/workspace/mount/usr/local/sbin/policy-rc.d
+          
+          # Preparare file di configurazione per APT
+          echo 'DPkg::Pre-Invoke { "mount -t proc proc /proc"; };' | sudo tee repository/src/workspace/mount/etc/apt/apt.conf.d/99mount-proc
+          echo 'DPkg::Post-Invoke { "umount /proc"; };' | sudo tee -a repository/src/workspace/mount/etc/apt/apt.conf.d/99mount-proc
           
       - name: Build Image
         run: |
           cd repository/src
-          # Preparare l'ambiente chroot
-          sudo mount --bind /dev workspace/mount/dev || true
-          sudo mount --bind /dev/pts workspace/mount/dev/pts || true
-          sudo mount -t proc proc workspace/mount/proc || true
-          sudo mount -t sysfs sysfs workspace/mount/sys || true
+          # Mount necessari
+          sudo mount --bind /dev workspace/mount/dev
+          sudo mount --bind /dev/pts workspace/mount/dev/pts
+          sudo mount -t proc proc workspace/mount/proc
+          sudo mount -t sysfs sysfs workspace/mount/sys
           
-          # Eseguire il build
-          sudo bash -x ./build_dist
+          # Eseguire build con opzioni aggiuntive per apt
+          sudo DEBIAN_FRONTEND=noninteractive bash -x ./build_dist
+        env:
+          SKIP_KERNELS: "1"
+          DEBIAN_FRONTEND: noninteractive
           
       - name: Copy Output
         run: cp ${{ github.workspace }}/repository/src/workspace/*-raspios-*-lite.img build.img
