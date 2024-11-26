@@ -1,89 +1,59 @@
-name: Build Image
+name: Build RaspberryOS Image
 
-on: push
+on:
+  push:
+    branches:
+      - main
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
+
     steps:
       - name: Update apt
         run: sudo apt-get update
-        
+
       - name: Install Dependencies
-        run: sudo apt install coreutils p7zip-full qemu-user-static python3-git
-        
+        run: sudo apt install -y coreutils p7zip-full qemu-user-static python3-git wget
+
       - name: Checkout CustomPiOS
         uses: actions/checkout@v2
         with:
           repository: 'guysoft/CustomPiOS'
           path: CustomPiOS
-          
+
       - name: Checkout Project Repository
         uses: actions/checkout@v2
         with:
           repository: ${{ github.repository }}
           path: repository
           submodules: true
-          
+
       - name: Download Raspbian Image
-        run: cd repository/src/image && wget -q -c --trust-server-names 'https://downloads.raspberrypi.org/raspios_lite_armhf_latest'
-        
+        run: |
+          cd repository/src/image
+          wget -q -c --trust-server-names 'https://downloads.raspberrypi.org/raspios_lite_armhf_latest'
+
       - name: Update CustomPiOS Paths
-        run: cd repository/src && ../../CustomPiOS/src/update-custompios-paths
-        
-      - name: Load Loop Module
-        run: sudo modprobe loop
+        run: |
+          cd repository/src
+          ../../CustomPiOS/src/update-custompios-paths
 
       - name: Build Image
         run: |
+          sudo modprobe loop
           cd repository/src
-          # Iniziare il build normalmente
-          sudo bash -x ./build_dist &
-          
-          # Aspettare che la directory mount sia creata
-          while [ ! -d workspace/mount ]; do
-            echo "Waiting for mount directory to be created..."
-            sleep 5
-          done
-          
-          # Configurare l'ambiente dopo che il mount è stato creato
-          echo "Configuring build environment..."
-          
-          # Disabilitare update-initramfs
-          echo '#!/bin/sh' | sudo tee workspace/mount/usr/sbin/update-initramfs
-          echo 'exit 0' | sudo tee -a workspace/mount/usr/sbin/update-initramfs
-          sudo chmod +x workspace/mount/usr/sbin/update-initramfs
-          
-          # Creare policy-rc.d
-          sudo mkdir -p workspace/mount/usr/local/sbin/
-          echo '#!/bin/sh' | sudo tee workspace/mount/usr/local/sbin/policy-rc.d
-          echo 'exit 101' | sudo tee -a workspace/mount/usr/local/sbin/policy-rc.d
-          sudo chmod +x workspace/mount/usr/local/sbin/policy-rc.d
-          
-          # Configurare APT
-          sudo mkdir -p workspace/mount/etc/apt/apt.conf.d/
-          echo 'DPkg::Pre-Invoke { "mount -t proc proc /proc"; };' | sudo tee workspace/mount/etc/apt/apt.conf.d/99mount-proc
-          echo 'DPkg::Post-Invoke { "umount /proc || true"; };' | sudo tee -a workspace/mount/etc/apt/apt.conf.d/99mount-proc
-          
-          # Mount necessari
-          sudo mount --bind /dev workspace/mount/dev || true
-          sudo mount --bind /dev/pts workspace/mount/dev/pts || true
-          sudo mount -t proc proc workspace/mount/proc || true
-          sudo mount -t sysfs sysfs workspace/mount/sys || true
-          
-          # Aspettare che il build finisca
-          wait
-        env:
-          SKIP_KERNELS: "1"
-          DEBIAN_FRONTEND: noninteractive
-          
+          sudo bash -x ./build_dist
+
       - name: Copy Output
-        run: cp ${{ github.workspace }}/repository/src/workspace/*-raspios-*-lite.img build.img
-        
+        run: |
+          cp ${{ github.workspace }}/repository/src/workspace/*-raspios-*-lite.img build.img
+
       - name: Zip Output
         run: gzip build.img
-        
-      - uses: actions/upload-artifact@v4
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
         with:
           name: build.img.gz
           path: build.img.gz
