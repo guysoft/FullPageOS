@@ -1,5 +1,45 @@
 #!/bin/bash
 
+PACKAGE="xbindkeys"
+
+# Starting xbindkeys if is installed
+if apt list --installed "$PACKAGE" | grep -q "[installed]"; then
+    # Define the path to our custom config file (relative to the script)
+    DISABLE_CONFIG_PATH="/boot/firmware/xbindkeys_disable.conf"
+    CURRENT_USER=$(whoami)
+    # Define the path to the user's xbindkeysrc file
+    XBINDKEYS_RC="/home/$CURRENT_USER/.xbindkeysrc"
+
+    # Function to generate the xbindkeysrc file based on our config
+    generate_xbindkeysrc() {
+        local config_path=$1
+        local output_path="$XBINDKEYS_RC"
+
+        # Create a temporary xbindkeys config file
+        local temp_file="/tmp/xbindkeysrc.temp"
+        > "$temp_file" # Clear the file
+
+        # Read each line from the config file and format it for xbindkeysrc
+        while IFS= read -r combo; do
+            # Skip empty or commented lines
+            if [[ -z "$combo" || "$combo" =~ ^# ]]; then
+                continue
+            fi
+            echo "\"echo\"" >> "$temp_file"
+            echo "  $combo" >> "$temp_file"
+            echo >> "$temp_file"
+        done < "$config_path"
+
+        # Copy the temporary file to the user's home directory
+        cp "$temp_file" "$output_path"
+        #chown "$user":"$user" "$output_path"
+        rm "$temp_file"
+    }
+    echo "$PACKAGE is installed so starting the package!"
+    generate_xbindkeysrc "$DISABLE_CONFIG_PATH"
+    xbindkeys &
+fi
+
 flags=(
    --kiosk
    --touch-events=enabled

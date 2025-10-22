@@ -27,6 +27,14 @@ then
     systemctl disable getty@tty1
 fi
 
+#Disable keyboard shortcuts like (CTRL+w,CTRL+N,CTRL+t) for Chromium
+if [ "$FULLPAGEOS_DISABLE_CHROMIUM_KEYBOARD_SHORTCUTS" == "yes" ]
+then
+    #Only install if not disabled by configuration
+    echo "Disable keyboard shortcuts like (CTRL+w,CTRL+N,CTRL+t) for Chromium: $FULLPAGEOS_DISABLE_CHROMIUM_KEYBOARD_SHORTCUTS"
+    apt-get install xbindkeys -y
+fi
+
 remove_extra=$(remove_if_installed scratch squeak-plugins-scratch squeak-vm python-minecraftpi minecraft-pi sonic-pi oracle-java8-jdk bluej greenfoot libreoffice-common libreoffice-core freepats)
 
 apt-get remove -y --purge  $remove_extra
