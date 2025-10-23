@@ -8,3 +8,4 @@ src/workspace/*
 src/workspace*/*
 src/variants/*
 !src/variants/no-acceleration
+/.idea/
