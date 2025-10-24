@@ -16,6 +16,9 @@
 #disable keyboard shortcuts like (CTRL+w,CTRL+N,CTRL+t) for Chromium
 [ -n "$FULLPAGEOS_DISABLE_CHROMIUM_KEYBOARD_SHORTCUTS" ] || FULLPAGEOS_DISABLE_CHROMIUM_KEYBOARD_SHORTCUTS=yes
 
+# Add Midnight Commander command
+[ -n "$FULLPAGEOS_ADD_MIDNIGHT_COMMANDER" ] || FULLPAGEOS_ADD_MIDNIGHT_COMMANDER=yes
+
 #override password, otherwise use image default
 [ -n "$FULLPAGEOS_OVERRIDE_PASSWORD" ] || FULLPAGEOS_OVERRIDE_PASSWORD=default
 

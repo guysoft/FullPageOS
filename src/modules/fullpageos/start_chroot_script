@@ -20,11 +20,17 @@ if [ "$FULLPAGEOS_CUSTOM_SPLASHSCREEN" == "yes" ]
 then
     apt-get install -y fbi
     if [ "${BASE_BOARD}" == raspberrypi* ]; then
-        sed -i 's/$/ logo.nologo consoleblank=0 loglevel=0 quiet/' /"${BASE_BOOT_MOUNT_PATH}"/cmdline.txt
+        sed -i 's/$/ logo.nologo consoleblank=0 loglevel=3 quiet vt.global_cursor_default=0/' /"${BASE_BOOT_MOUNT_PATH}"/cmdline.txt
     fi
     echo "disable_splash=1" >> /"${BASE_BOOT_MOUNT_PATH}"/config.txt
     systemctl enable splashscreen.service
     systemctl disable getty@tty1
+fi
+
+# If Add Midnight Commander command
+if [ "$FULLPAGEOS_ADD_MIDNIGHT_COMMANDER" == "yes" ]
+then
+    apt-get install -y mc
 fi
 
 #Disable keyboard shortcuts like (CTRL+w,CTRL+N,CTRL+t) for Chromium
