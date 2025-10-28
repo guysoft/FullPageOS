@@ -1,6 +1,10 @@
 name: Build Image
 
-on: push
+on:
+  push:
+    branches:
+      - custom/main
+      - custom/dev
 
 jobs:
   build:
@@ -22,7 +26,9 @@ jobs:
         path: repository
         submodules: true
     - name: Download Raspbian Image
-      run: cd repository/src/image && wget -q -c --trust-server-names 'https://downloads.raspberrypi.org/raspios_lite_armhf_latest'
+#      Add temporary this version due to code not working for latest Raspberry Pi OS 13 (Trixie) version
+      run: cd repository/src/image && wget -c --trust-server-names 'https://downloads.raspberrypi.org/raspios_lite_armhf/images/raspios_lite_armhf-2025-05-13/2025-05-13-raspios-bookworm-armhf-lite.img.xz'
+#      run: cd repository/src/image && wget -q -c --trust-server-names 'https://downloads.raspberrypi.org/raspios_lite_armhf_latest'
     - name: Update CustomPiOS Paths
       run: cd repository/src && ../../CustomPiOS/src/update-custompios-paths
     - name: Build Image
