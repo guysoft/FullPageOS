@@ -1,0 +1,23 @@
+#!/bin/bash
+sleep 5
+
+# List all input devices
+xinput list
+
+# Rotate HDMI-1
+xrandr --output HDMI-1 --rotate right
+
+# List all props for input devices
+#xinput list-props 6
+
+# Find Waveshare touch device ID
+TOUCH_ID=$(xinput list | grep -i waveshare | grep -oP 'id=\K\d+')
+
+echo "Touch device: $TOUCH_ID"
+
+# Rotate touch matrix using patter to get "waveshare" device id to left
+#xinput set-prop \$(xinput list | grep -i waveshare | grep -oP 'id=\K\d+') "libinput Calibration Matrix" 0 -1 1 1 0 0 0 0 1
+
+# Rotate touch matrix using patter to get device id to right
+xinput set-prop $TOUCH_ID "Coordinate Transformation Matrix" 1 0 0 0 1 0 0 0 1
+xinput set-prop $TOUCH_ID "libinput Calibration Matrix" 0 1 0 -1 0 1 0 0 1

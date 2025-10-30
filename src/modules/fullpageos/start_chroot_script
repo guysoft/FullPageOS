@@ -20,7 +20,7 @@ if [ "$FULLPAGEOS_CUSTOM_SPLASHSCREEN" == "yes" ]
 then
     apt-get install -y fbi
     if [ "${BASE_BOARD}" == raspberrypi* ]; then
-        sed -i 's/$/ logo.nologo consoleblank=0 loglevel=3 quiet vt.global_cursor_default=0/' /"${BASE_BOOT_MOUNT_PATH}"/cmdline.txt
+        sed -i 's/$/ fbcon=rotate:1 logo.nologo consoleblank=0 loglevel=3 quiet vt.global_cursor_default=0/' /"${BASE_BOOT_MOUNT_PATH}"/cmdline.txt
     fi
     echo "disable_splash=1" >> /"${BASE_BOOT_MOUNT_PATH}"/config.txt
     systemctl enable splashscreen.service
@@ -33,11 +33,11 @@ then
     apt-get install -y mc
 fi
 
-#Disable keyboard shortcuts like (CTRL+w,CTRL+N,CTRL+t) for Chromium
+# Disable keyboard shortcuts like (CTRL+w,CTRL+N,CTRL+t) for Chromium
 if [ "$FULLPAGEOS_DISABLE_CHROMIUM_KEYBOARD_SHORTCUTS" == "yes" ]
 then
     #Only install if not disabled by configuration
-    echo "Disable keyboard shortcuts like (CTRL+w,CTRL+N,CTRL+t) for Chromium: $FULLPAGEOS_DISABLE_CHROMIUM_KEYBOARD_SHORTCUTS"
+    echo "Disable keyboard shortcuts like (CTRL+W,CTRL+N,CTRL+t) for Chromium: $FULLPAGEOS_DISABLE_CHROMIUM_KEYBOARD_SHORTCUTS"
     apt-get install xbindkeys -y
 fi
 
