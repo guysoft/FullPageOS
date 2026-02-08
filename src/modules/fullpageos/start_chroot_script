@@ -38,7 +38,7 @@ apt-get -y --force-yes install git screen checkinstall avahi-daemon libavahi-com
 
 if [ "$FULLPAGEOS_INCLUDE_CHROMIUM" == "yes" ]
 then
-    apt-get install -y --force-yes chromium-browser
+    apt-get install -y --force-yes chromium
     sed -i 's@%BROWSER_START_SCRIPT%@/opt/custompios/scripts/start_chromium_browser@g' /opt/custompios/scripts/run_onepageos
 fi
 
