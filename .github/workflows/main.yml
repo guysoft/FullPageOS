@@ -5,6 +5,13 @@ on: push
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        variant:
+          - name: "default"
+            suffix: ""
+          - name: "no-acceleration"
+            suffix: "-no-acceleration"
     steps:
     - name: Update apt
       run: sudo apt-get update
@@ -25,13 +32,26 @@ jobs:
       run: cd repository/src/image && wget -q -c --trust-server-names 'https://downloads.raspberrypi.org/raspios_lite_armhf_latest'
     - name: Update CustomPiOS Paths
       run: cd repository/src && ../../CustomPiOS/src/update-custompios-paths
-    - name: Build Image
-      run: sudo modprobe loop && cd repository/src && sudo bash -x ./build_dist
+    - name: Build Image - ${{ matrix.variant.name }}
+      run: |
+        sudo modprobe loop
+        cd repository/src
+        if [ "${{ matrix.variant.name }}" = "default" ]; then
+          sudo bash -x ./build_dist
+        else
+          sudo bash -x ./build_dist ${{ matrix.variant.name }}
+        fi
     - name: Copy Output
-      run: cp ${{ github.workspace }}/repository/src/workspace/*-raspios-*-lite.img build.img
+      run: |
+        if [ "${{ matrix.variant.name }}" = "default" ]; then
+          WORKSPACE_DIR="workspace"
+        else
+          WORKSPACE_DIR="workspace-${{ matrix.variant.name }}"
+        fi
+        cp ${{ github.workspace }}/repository/src/${WORKSPACE_DIR}/*.img build${{ matrix.variant.suffix }}.img
     - name: Zip Output
-      run: gzip build.img
+      run: gzip build${{ matrix.variant.suffix }}.img
     - uses: actions/upload-artifact@v4
       with:
-        name: build.img.gz
-        path: build.img.gz
+        name: build${{ matrix.variant.suffix }}.img.gz
+        path: build${{ matrix.variant.suffix }}.img.gz
