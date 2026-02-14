@@ -36,6 +36,17 @@ apt-get autoremove -y
 #apt-get tools
 apt-get -y --force-yes install git screen checkinstall avahi-daemon libavahi-compat-libdnssd1 xterm xdotool vim expect feh pulseaudio
 
+# Install entropy management for headless operation and first boot
+# haveged: Software entropy daemon that works on all hardware without requiring hardware RNG
+echo "Installing entropy management (haveged)..."
+apt-get install -y haveged
+
+# Ensure service is enabled (should be auto-enabled by package installation)
+systemctl enable haveged.service || true
+
+# Verify service will start on boot
+systemctl is-enabled haveged.service && echo "haveged.service enabled successfully" || echo "Warning: haveged.service may not be enabled"
+
 if [ "$FULLPAGEOS_INCLUDE_CHROMIUM" == "yes" ]
 then
     apt-get install -y --force-yes chromium
