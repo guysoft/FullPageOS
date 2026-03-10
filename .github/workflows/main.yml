@@ -1,37 +1,140 @@
 name: Build Image
 
-on: push
+on:
+  repository_dispatch:
+  push:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - board: raspberrypiarmhf
+            arch: armhf
+          - board: raspberrypiarm64
+            arch: arm64
     steps:
-    - name: Update apt
-      run: sudo apt-get update
-    - name: Install Dependencies
-      run: sudo apt install coreutils p7zip-full qemu-user-static python3-git
-    - name: Checkout CustomPiOS
-      uses: actions/checkout@v2
-      with:
-        repository: 'guysoft/CustomPiOS'
-        path: CustomPiOS
-    - name: Checkout Project Repository
-      uses: actions/checkout@v2
-      with:
-        repository: ${{ github.repository }}
-        path: repository
-        submodules: true
-    - name: Download Raspbian Image
-      run: cd repository/src/image && wget -q -c --trust-server-names 'https://downloads.raspberrypi.org/raspios_lite_armhf_latest'
-    - name: Update CustomPiOS Paths
-      run: cd repository/src && ../../CustomPiOS/src/update-custompios-paths
-    - name: Build Image
-      run: sudo modprobe loop && cd repository/src && sudo bash -x ./build_dist
-    - name: Copy Output
-      run: cp ${{ github.workspace }}/repository/src/workspace/*-raspios-*-lite.img build.img
-    - name: Zip Output
-      run: gzip build.img
-    - uses: actions/upload-artifact@v4
-      with:
-        name: build.img.gz
-        path: build.img.gz
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y coreutils p7zip-full qemu-user-static \
+            python3-git python3-yaml
+
+      - name: Checkout CustomPiOS
+        uses: actions/checkout@v4
+        with:
+          repository: 'guysoft/CustomPiOS'
+          ref: feature/e2e
+          path: CustomPiOS
+
+      - name: Checkout Project Repository
+        uses: actions/checkout@v4
+        with:
+          path: repository
+          submodules: true
+
+      - name: Update CustomPiOS Paths
+        run: |
+          cd repository/src
+          ../../CustomPiOS/src/update-custompios-paths
+
+      - name: Download Base Image
+        run: |
+          cd repository/src
+          export DIST_PATH=$(pwd)
+          export CUSTOM_PI_OS_PATH=$(cat custompios_path)
+          export BASE_BOARD=${{ matrix.board }}
+          $CUSTOM_PI_OS_PATH/base_image_downloader_wrapper.sh
+
+      - name: Build Image
+        run: |
+          sudo modprobe loop
+          cd repository/src
+          sudo BASE_BOARD=${{ matrix.board }} bash -x ./build_dist
+
+      - name: Copy output
+        id: copy
+        run: |
+          source repository/src/config
+          NOW=$(date +"%Y-%m-%d-%H%M")
+          IMAGE="${NOW}-fullpageos-${DIST_VERSION}-${{ matrix.arch }}"
+          cp repository/src/workspace/*.img ${IMAGE}.img
+          echo "image=${IMAGE}" >> $GITHUB_OUTPUT
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fullpageos-${{ matrix.arch }}
+          path: ${{ steps.copy.outputs.image }}.img
+
+  e2e-test:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Checkout CustomPiOS
+        uses: actions/checkout@v4
+        with:
+          repository: 'guysoft/CustomPiOS'
+          ref: feature/e2e
+          path: CustomPiOS
+
+      - name: Download arm64 image from build
+        uses: actions/download-artifact@v4
+        with:
+          name: fullpageos-arm64
+          path: image/
+
+      - name: Prepare testing context
+        run: |
+          mkdir -p testing/custompios
+          cp -r CustomPiOS/src/distro_testing/scripts testing/custompios/scripts
+          cp -r CustomPiOS/src/distro_testing/tests testing/custompios/tests
+
+      - name: Build test Docker image
+        run: DOCKER_BUILDKIT=0 docker build -t fullpageos-e2e-test ./testing/
+
+      - name: Start E2E test container
+        run: |
+          mkdir -p artifacts
+          IMG=$(find image/ -name '*.img' | head -1)
+          docker run -d --name fullpageos-test \
+            -v "$PWD/artifacts:/output" \
+            -v "$(realpath $IMG):/input/image.img:ro" \
+            -e ARTIFACTS_DIR=/output \
+            -e DISTRO_NAME="FullPageOS" \
+            -e QEMU_EXTRA_ARGS="-device virtio-gpu-pci" \
+            -e KEEP_ALIVE=true \
+            fullpageos-e2e-test
+
+      - name: Wait for tests to complete
+        run: |
+          for i in $(seq 1 180); do
+            [ -f artifacts/exit-code ] && break
+            sleep 5
+          done
+          if [ ! -f artifacts/exit-code ]; then
+            echo "ERROR: Tests did not complete within 15 minutes"
+            docker logs fullpageos-test 2>&1 | tail -80
+            exit 1
+          fi
+          echo "Tests finished with exit code: $(cat artifacts/exit-code)"
+          cat artifacts/test-results.txt 2>/dev/null || true
+
+      - name: Collect logs and stop container
+        if: always()
+        run: |
+          docker logs fullpageos-test > artifacts/container.log 2>&1 || true
+          docker stop fullpageos-test 2>/dev/null || true
+
+      - name: Check test result
+        run: exit "$(cat artifacts/exit-code 2>/dev/null || echo 1)"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e2e-test-results
+          path: artifacts/

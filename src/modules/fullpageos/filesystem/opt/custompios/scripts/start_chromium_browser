@@ -16,12 +16,12 @@ flags=(
 )
 
 # Standard behavior - runs chromium
-chromium-browser "${flags[@]}" --app=$(/opt/custompios/scripts/get_url)
+chromium "${flags[@]}" --app=$(/opt/custompios/scripts/get_url)
 exit;
 
 # Remove the two lines above to enable signage mode - refresh the browser whenever errors are seen in log
 
-chromium-browser --enable-logging --log-level=2 --v=0 "${flags[@]}" --app=$(/opt/custompios/scripts/get_url) &
+chromium --enable-logging --log-level=2 --v=0 "${flags[@]}" --app=$(/opt/custompios/scripts/get_url) &
 
 export logfile="/home/$(id -nu 1000)/.config/chromium/chrome_debug.log"
 
