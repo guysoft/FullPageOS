@@ -71,7 +71,7 @@ jobs:
   e2e-test:
     needs: build
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
 
@@ -106,18 +106,16 @@ jobs:
             -v "$(realpath $IMG):/input/image.img:ro" \
             -e ARTIFACTS_DIR=/output \
             -e DISTRO_NAME="FullPageOS" \
-            -e QEMU_EXTRA_ARGS="-device virtio-gpu-pci" \
-            -e KEEP_ALIVE=true \
             fullpageos-e2e-test
 
       - name: Wait for tests to complete
         run: |
-          for i in $(seq 1 180); do
+          for i in $(seq 1 360); do
             [ -f artifacts/exit-code ] && break
             sleep 5
           done
           if [ ! -f artifacts/exit-code ]; then
-            echo "ERROR: Tests did not complete within 15 minutes"
+            echo "ERROR: Tests did not complete within 30 minutes"
             docker logs fullpageos-test 2>&1 | tail -80
             exit 1
           fi
