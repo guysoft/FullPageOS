@@ -13,11 +13,11 @@ $SSH_CMD "sudo apt-get update -qq && sudo DEBIAN_FRONTEND=noninteractive apt-get
 # In QEMU virt, logind's seat0 has CanGraphical=no (no real display device),
 # so lightdm won't start an X session. Start Xvfb and the GUI session directly.
 echo "Starting Xvfb virtual display..."
-$SSH_CMD "sudo Xvfb :0 -screen 0 1280x720x24 &"
+$SSH_CMD "sudo nohup Xvfb :0 -screen 0 1280x720x24 > /dev/null 2>&1 < /dev/null &"
 sleep 2
 
 echo "Starting GUI session (matchbox + chromium kiosk)..."
-$SSH_CMD "sudo -u pi bash -c 'export DISPLAY=:0; export HOME=/home/pi; /opt/custompios/scripts/start_gui' &"
+$SSH_CMD "sudo -u pi nohup bash -c 'export DISPLAY=:0; export HOME=/home/pi; /opt/custompios/scripts/start_gui' > /dev/null 2>&1 < /dev/null &"
 
 # Wait for Chromium to appear on the display
 echo "Waiting for Chromium to start..."
