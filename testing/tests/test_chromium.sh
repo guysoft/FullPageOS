@@ -42,7 +42,18 @@ if [ -n "$ARTIFACTS_DIR" ]; then
 fi
 
 if [ -z "$WINDOW_TITLE" ]; then
-    echo "  FAIL: No visible window on X display (display pipeline not working)"
+    echo "  No windows found with --onlyvisible, trying without visibility filter..."
+    WINDOW_TITLE=$($SSH_CMD "DISPLAY=:0 xdotool search --name . getwindowname 2>&1 || true" 2>/dev/null)
+    if [ -n "$ARTIFACTS_DIR" ]; then
+        echo "$WINDOW_TITLE" > "$ARTIFACTS_DIR/window-title.txt" 2>/dev/null || true
+    fi
+fi
+
+if [ -z "$WINDOW_TITLE" ]; then
+    echo "  Diagnosing X display access..."
+    $SSH_CMD "DISPLAY=:0 xdpyinfo 2>&1 | head -5 || echo 'xdpyinfo failed'" 2>/dev/null || true
+    $SSH_CMD "DISPLAY=:0 xdotool search --name . 2>&1 || echo 'xdotool search failed'" 2>/dev/null || true
+    echo "  FAIL: No window on X display (display pipeline not working)"
     exit 1
 fi
 

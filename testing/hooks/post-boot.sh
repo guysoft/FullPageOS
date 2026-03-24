@@ -8,7 +8,7 @@ echo "Installing Xvfb and x11-apps..."
 $SSH_CMD "sudo apt-get update -qq && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq xvfb x11-apps 2>&1 | tail -5"
 
 echo "Starting Xvfb virtual display..."
-$SSH_CMD "sudo nohup Xvfb :0 -screen 0 1280x720x24 > /tmp/xvfb.log 2>&1 < /dev/null &"
+$SSH_CMD "sudo nohup Xvfb :0 -screen 0 1280x720x24 -ac > /tmp/xvfb.log 2>&1 < /dev/null &"
 sleep 3
 
 echo "Verifying Xvfb is running..."
