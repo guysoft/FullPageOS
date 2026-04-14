@@ -26,7 +26,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: 'guysoft/CustomPiOS'
-          ref: feature/e2e
+          ref: devel
           path: CustomPiOS
 
       - name: Checkout Project Repository
@@ -70,69 +70,8 @@ jobs:
 
   e2e-test:
     needs: build
-    runs-on: ubuntu-latest
-    timeout-minutes: 45
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Checkout CustomPiOS
-        uses: actions/checkout@v4
-        with:
-          repository: 'guysoft/CustomPiOS'
-          ref: feature/e2e
-          path: CustomPiOS
-
-      - name: Download arm64 image from build
-        uses: actions/download-artifact@v4
-        with:
-          name: fullpageos-arm64
-          path: image/
-
-      - name: Prepare testing context
-        run: |
-          mkdir -p testing/custompios
-          cp -r CustomPiOS/src/distro_testing/scripts testing/custompios/scripts
-          cp -r CustomPiOS/src/distro_testing/tests testing/custompios/tests
-
-      - name: Build test Docker image
-        run: DOCKER_BUILDKIT=0 docker build -t fullpageos-e2e-test ./testing/
-
-      - name: Start E2E test container
-        run: |
-          mkdir -p artifacts
-          IMG=$(find image/ -name '*.img' | head -1)
-          docker run -d --name fullpageos-test \
-            -v "$PWD/artifacts:/output" \
-            -v "$(realpath $IMG):/input/image.img:ro" \
-            -e ARTIFACTS_DIR=/output \
-            -e DISTRO_NAME="FullPageOS" \
-            fullpageos-e2e-test
-
-      - name: Wait for tests to complete
-        run: |
-          for i in $(seq 1 360); do
-            [ -f artifacts/exit-code ] && break
-            sleep 5
-          done
-          if [ ! -f artifacts/exit-code ]; then
-            echo "ERROR: Tests did not complete within 30 minutes"
-            docker logs fullpageos-test 2>&1 | tail -80
-            exit 1
-          fi
-          echo "Tests finished with exit code: $(cat artifacts/exit-code)"
-          cat artifacts/test-results.txt 2>/dev/null || true
-
-      - name: Collect logs and stop container
-        if: always()
-        run: |
-          docker logs fullpageos-test > artifacts/container.log 2>&1 || true
-          docker stop fullpageos-test 2>/dev/null || true
-
-      - name: Check test result
-        run: exit "$(cat artifacts/exit-code 2>/dev/null || echo 1)"
-
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: e2e-test-results
-          path: artifacts/
+    uses: guysoft/CustomPiOS/.github/workflows/e2e-test.yml@feature/e2e
+    with:
+      image-artifact-name: fullpageos-arm64
+      distro-name: FullPageOS
+      timeout-minutes: 45
