@@ -1,4 +1,4 @@
-ARG CUSTOMPIOS_TAG=devel
+ARG CUSTOMPIOS_TAG=bugfix-e2e
 FROM ghcr.io/guysoft/custompios:${CUSTOMPIOS_TAG} AS custompios
 
 FROM ptrsr/pi-ci:latest
