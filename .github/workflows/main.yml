@@ -70,7 +70,7 @@ jobs:
 
   e2e-test:
     needs: build
-    uses: guysoft/CustomPiOS/.github/workflows/e2e-test.yml@feature/e2e
+    uses: guysoft/CustomPiOS/.github/workflows/e2e-test.yml@devel
     with:
       image-artifact-name: fullpageos-arm64
       distro-name: FullPageOS
