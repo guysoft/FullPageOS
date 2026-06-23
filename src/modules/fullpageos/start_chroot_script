@@ -108,8 +108,39 @@ then
 fi
 
 # Add emoji support
-sudo -u pi mkdir -p /home/pi/.fonts
-sudo -u pi wget --directory-prefix /home/pi/.fonts https://github.com/googlefonts/noto-emoji/raw/main/fonts/NotoColorEmoji.ttf
+apt-get install -y fonts-noto-color-emoji fontconfig
+mkdir -p /etc/fonts/conf.d
+cat > /etc/fonts/conf.d/99-fullpageos-emoji.conf <<'EOF'
+<?xml version="1.0"?>
+<!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
+<fontconfig>
+  <match target="pattern">
+    <test qual="any" name="family">
+      <string>sans-serif</string>
+    </test>
+    <edit name="family" mode="prepend" binding="strong">
+      <string>Noto Color Emoji</string>
+    </edit>
+  </match>
+  <match target="pattern">
+    <test qual="any" name="family">
+      <string>serif</string>
+    </test>
+    <edit name="family" mode="prepend" binding="strong">
+      <string>Noto Color Emoji</string>
+    </edit>
+  </match>
+  <match target="pattern">
+    <test qual="any" name="family">
+      <string>monospace</string>
+    </test>
+    <edit name="family" mode="prepend" binding="strong">
+      <string>Noto Color Emoji</string>
+    </edit>
+  </match>
+</fontconfig>
+EOF
+fc-cache -f
 
 #override password
 if [ "$FULLPAGEOS_OVERRIDE_PASSWORD" != "default" ]
