@@ -34,6 +34,11 @@ touch /etc/gpu_enabled
 # Pre-create the lightdm conf directory so the hook can write to it.
 mkdir-p /etc/lightdm/lightdm.conf.d
 
+# The shared QEMU prep bypasses userconf-pi, so seed the tty1 autologin
+# side effect that `raspi-config do_boot_behaviour B4` would normally create.
+mkdir-p /etc/systemd/system/getty@tty1.service.d
+write /etc/systemd/system/getty@tty1.service.d/autologin.conf "[Service]\nExecStart=\nExecStart=-/sbin/agetty --autologin pi --noclear %I \$TERM\n"
+
 umount /
 GFEOF
 
