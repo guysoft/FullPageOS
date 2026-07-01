@@ -14,6 +14,7 @@ COPY --from=custompios /CustomPiOS/distro_testing/tests/ /test/tests/
 
 COPY tests/ /test/tests/
 COPY hooks/ /test/hooks/
+COPY fixtures/ /test/fixtures/
 
 RUN chmod +x /test/scripts/*.sh /test/tests/*.sh; \
     chmod +x /test/hooks/*.sh 2>/dev/null || true
