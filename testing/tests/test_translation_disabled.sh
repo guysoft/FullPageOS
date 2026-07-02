@@ -71,7 +71,22 @@ if [ "$PAGE_LOADED" -eq 0 ]; then
     ssh_cmd "pgrep -a chromium || true" 2>/dev/null || true
 fi
 
-echo "  Waiting for page render and any translate UI to settle..."
+echo "  Waiting for the German page to actually paint on :0..."
+TITLE_SEEN=0
+for i in $(seq 1 45); do
+    TITLES=$(ssh_cmd "DISPLAY=:0 xdotool search --name . getwindowname 2>/dev/null || true" 2>/dev/null || true)
+    if echo "$TITLES" | grep -qi "Deutsche\|Testseite\|Übersetzung\|german_test"; then
+        TITLE_SEEN=1
+        echo "  German page window visible (titles: $(echo "$TITLES" | tr '\n' ' '))"
+        break
+    fi
+    sleep 1
+done
+if [ "$TITLE_SEEN" -eq 0 ]; then
+    echo "  WARNING: German page title not detected on :0 (titles: $(ssh_cmd "DISPLAY=:0 xdotool search --name . getwindowname 2>/dev/null || true" 2>/dev/null | tr '\n' ' '))"
+fi
+
+echo "  Waiting for any translate UI to settle..."
 sleep 12
 
 CAPTURED=0
