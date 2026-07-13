@@ -5,7 +5,13 @@ export E2E_SSH_PORT="${2:-2222}"
 ARTIFACTS_DIR="${3:-/output}"
 source /test/scripts/ssh-helpers.sh
 SCREENSHOT_URL="${SCREENSHOT_URL:-http://localhost/FullPageDashboard}"
-PAINT_STDDEV_THRESHOLD="${PAINT_STDDEV_THRESHOLD:-0.08}"
+# The FullPageOS desktop wallpaper / dashboard shell alone paints at stddev
+# ~0.20, while the welcome dashboard with the QR code paints at ~0.31. Require
+# the higher value so we don't accept the wallpaper after the kiosk restarts
+# (e.g. following test_translation_disabled.sh), and wait for the welcome
+# iframe content to actually render.
+PAINT_STDDEV_THRESHOLD="${PAINT_STDDEV_THRESHOLD:-0.26}"
+PAINT_STABLE_PASSES="${PAINT_STABLE_PASSES:-2}"
 
 echo "Capturing X display screenshot from the running desktop..."
 
@@ -76,16 +82,26 @@ dashboard_is_painted() {
 }
 
 echo "  Waiting for dashboard iframe content to paint..."
+consecutive_passes=0
 for i in $(seq 1 60); do
     if capture_display_png "$ARTIFACTS_DIR/screenshot-candidate.png"; then
         cp "$ARTIFACTS_DIR/screenshot-candidate.png" "$ARTIFACTS_DIR/screenshot-not-painted.png"
         if dashboard_is_painted "$ARTIFACTS_DIR/screenshot-candidate.png"; then
-            mv "$ARTIFACTS_DIR/screenshot-candidate.png" "$ARTIFACTS_DIR/screenshot.png"
-            rm -f "$ARTIFACTS_DIR/screenshot-not-painted.png"
-            echo "Display screenshot saved after dashboard paint (${i}x2s)"
-            exit 0
+            consecutive_passes=$((consecutive_passes + 1))
+            if [ "$consecutive_passes" -ge "$PAINT_STABLE_PASSES" ]; then
+                mv "$ARTIFACTS_DIR/screenshot-candidate.png" "$ARTIFACTS_DIR/screenshot.png"
+                rm -f "$ARTIFACTS_DIR/screenshot-not-painted.png"
+                echo "Display screenshot saved after dashboard paint (${consecutive_passes} stable passes, ${i}x2s)"
+                exit 0
+            fi
+            echo "  Painted but waiting for stabilization (${consecutive_passes}/${PAINT_STABLE_PASSES})"
+            sleep 3
+            continue
+        else
+            consecutive_passes=0
         fi
     else
+        consecutive_passes=0
         echo "  Candidate capture failed (${i}x2s)"
     fi
     sleep 2

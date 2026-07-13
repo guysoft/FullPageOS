@@ -40,11 +40,31 @@ ORIG_URL=$(ssh_cmd "cat ${FULLPAGEOS_TXT} 2>/dev/null || true" 2>/dev/null || tr
 echo "  Current URL: ${ORIG_URL:-<empty>}"
 
 restore_url() {
+    local restored_url="${ORIG_URL:-http://localhost/FullPageDashboard}"
     echo "  Restoring original kiosk URL..."
-    if [ -n "$ORIG_URL" ]; then
-        ssh_cmd "printf '%s\n' \"$ORIG_URL\" | sudo tee ${FULLPAGEOS_TXT} >/dev/null" 2>/dev/null || true
-    fi
+    ssh_cmd "printf '%s\n' '${restored_url}' | sudo tee ${FULLPAGEOS_TXT} >/dev/null" 2>/dev/null || true
     ssh_cmd "killall chromium 2>/dev/null || true; exit 0" || true
+
+    # run_onepageos respawns chromium from fullpageos.txt, but the new kiosk
+    # process appearing does not mean its window has composited. Wait for the
+    # dashboard kiosk process to come back so screenshot.sh starts from a
+    # relaunched kiosk rather than the bare desktop wallpaper.
+    echo "  Waiting for dashboard kiosk to relaunch on ${restored_url}..."
+    local restored=0
+    for i in $(seq 1 60); do
+        local kiosk
+        kiosk=$(ssh_cmd "ps ax -o pid= -o args= | grep -F 'chromium' | grep -F -- '--kiosk' | grep -F -- '--app=${restored_url}' | grep -v grep || true" 2>/dev/null || true)
+        if [ -n "$kiosk" ]; then
+            restored=1
+            echo "  Dashboard kiosk restored (pid: $(echo "$kiosk" | awk '{print $1}' | head -1)) after ${i}x2s"
+            break
+        fi
+        sleep 2
+    done
+    if [ "$restored" -eq 0 ]; then
+        echo "  WARNING: Dashboard kiosk did not relaunch on ${restored_url}"
+        ssh_cmd "pgrep -a chromium || true" 2>/dev/null || true
+    fi
 }
 
 echo "  Pointing kiosk at German test page..."
