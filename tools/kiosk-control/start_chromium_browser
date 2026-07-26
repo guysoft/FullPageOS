@@ -1,0 +1,26 @@
+#!/bin/bash
+flags=(
+   --start-fullscreen
+   --touch-events=enabled
+   --disable-pinch
+   --noerrdialogs
+   --disable-session-crashed-bubble
+   --simulate-outdated-no-au='Tue, 31 Dec 2099 23:59:59 GMT'
+   --disable-component-update
+   --overscroll-history-navigation=0
+   --disable-features=TranslateUI
+   --autoplay-policy=no-user-gesture-required
+   --remote-debugging-port=9222
+)
+# Standard behavior - runs chromium
+chromium-browser "${flags[@]}" $(/opt/custompios/scripts/get_url)
+exit;
+# Remove the two lines above to enable signage mode - refresh the browser whenever errors are seen in log
+chromium-browser --enable-logging --log-level=2 --v=0 "${flags[@]}" $(/opt/custompios/scripts/get_url) &
+export logfile="/home/$(id -nu 1000)/.config/chromium/chrome_debug.log"
+# Refreshes after a crash by watching logs
+tail -n 0 -F "$logfile" | while read LOGLINE &> /dev/null; do
+   echo "Refreshing after crash"
+   echo "Restarting at `date` after a reported crash. Logline: ${LOGLINE}" >> /tmp/crashlog
+   [[ ("${LOGLINE}" == *"ERROR"*) || ("${LOGLINE}" == *"FATAL"*) ]] && /home/$(id -nu 1000)/scripts/refresh
+done
