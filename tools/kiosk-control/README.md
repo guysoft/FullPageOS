@@ -145,6 +145,46 @@ Every save also rewrites `/boot/firmware/fullpageos.txt`, so the change
 survives a future reboot too — the live push and the persisted file are
 always kept in sync in one action.
 
+## Screen sleep/wake (optional)
+
+`screen_power.sh` (also in this folder) sleeps or wakes the display via X11
+DPMS signaling — useful if you don't want an always-on kiosk lit up all
+night. Copy it over and make it executable:
+
+```
+scp screen_power.sh pi@<kiosk-ip>:/home/pi/
+ssh pi@<kiosk-ip> chmod +x /home/pi/screen_power.sh
+```
+
+Test it manually first — whether the physical screen actually honors DPMS
+(drops to standby, backlight off) rather than just showing a black frame
+with the backlight still lit depends on the specific display:
+
+```
+ssh pi@<kiosk-ip> /home/pi/screen_power.sh off   # screen should go dark
+ssh pi@<kiosk-ip> /home/pi/screen_power.sh on    # and come back
+```
+
+Once confirmed, schedule it with cron for an overnight sleep (adjust the
+times to taste):
+
+```
+ssh pi@<kiosk-ip>
+(crontab -l 2>/dev/null; echo "0 22 * * * /home/pi/screen_power.sh off"; echo "0 6 * * * /home/pi/screen_power.sh on") | crontab -
+```
+
+Kiosk Control's web UI also has **Sleep now** / **Wake now** buttons (in the
+"Screen" card) that call `screen_power.sh` directly via a new `/api/screen`
+endpoint — a manual override so you can flip the screen back on immediately
+instead of waiting for the next scheduled cron time or needing to SSH in.
+This is optional: if `screen_power.sh` isn't installed, those buttons will
+just report an error rather than break anything else in the UI.
+
+Note that `rotate_tabs.sh` keeps sending its `ctrl+Next` on schedule
+regardless of screen power state — X still processes those events with the
+display powered off, so tab rotation continues silently in the background.
+That's harmless, just something to be aware of.
+
 ## Rolling back, if anything looks wrong
 
 ```

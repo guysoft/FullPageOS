@@ -25,6 +25,7 @@ Stdlib only — no pip install needed on the Pi.
 """
 import json
 import os
+import subprocess
 import urllib.request
 import urllib.parse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -35,6 +36,13 @@ INTERVAL_FILE = os.path.join(KIOSK_DIR, 'interval.txt')
 FULLPAGEOS_TXT = '/boot/firmware/fullpageos.txt'
 CDP_BASE = 'http://localhost:9222'
 PORT = 7077
+
+# screen_power.sh (see the accompanying file) handles the actual X11 DPMS
+# on/off signaling; it's meant to also be on a cron schedule (e.g. 10pm/6am)
+# for an overnight sleep. These buttons are a manual override on top of that
+# schedule — e.g. so the screen can be turned back on right away instead of
+# waiting for the next scheduled cron fire, without needing to SSH in.
+SCREEN_SCRIPT = '/home/pi/screen_power.sh'
 
 # Only used to guess a friendly label the very first time pages.json doesn't
 # exist yet (seeded from whatever is actually in fullpageos.txt on this Pi at
@@ -134,6 +142,21 @@ def push_live(pages):
     return True, 'Applied live — no reboot needed.'
 
 
+def screen_power(action):
+    """Run screen_power.sh on/off — a manual override of the cron sleep
+    schedule, so the screen can be toggled from the web UI without SSH."""
+    try:
+        result = subprocess.run([SCREEN_SCRIPT, action], capture_output=True, text=True, timeout=10)
+    except FileNotFoundError:
+        return False, f"{SCREEN_SCRIPT} not found — is the screen sleep/wake script installed?"
+    except Exception as e:
+        return False, f"Failed to run {SCREEN_SCRIPT}: {e}"
+    if result.returncode != 0:
+        detail = (result.stderr or result.stdout).strip()
+        return False, f"screen_power.sh exited with an error: {detail or f'code {result.returncode}'}"
+    return True, ('Screen turned off.' if action == 'off' else 'Screen turned on.')
+
+
 PAGE_HTML = r"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -211,6 +234,15 @@ PAGE_HTML = r"""<!DOCTYPE html>
 
   <button class="btn primary" id="btn-save">Save &amp; Apply Live</button>
   <div id="status"></div>
+
+  <div class="card" style="margin-top: 18px;">
+    <h2>Screen</h2>
+    <div class="sub" style="margin: 0 0 12px;">If screen_power.sh is on a cron schedule for overnight sleep, use these to override right now, without waiting for the next scheduled time.</div>
+    <div style="display: flex; gap: 8px;">
+      <button class="btn" id="btn-screen-off" style="flex: 1;">Sleep now</button>
+      <button class="btn" id="btn-screen-on" style="flex: 1;">Wake now</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -290,6 +322,30 @@ document.getElementById('btn-save').addEventListener('click', async () => {
   btn.disabled = false; btn.textContent = 'Save & Apply Live';
 });
 
+async function screenAction(action, btn) {
+  const statusEl = document.getElementById('status');
+  const label = btn.textContent;
+  btn.disabled = true; btn.textContent = '…';
+  statusEl.className = ''; statusEl.style.display = 'none';
+  try {
+    const r = await fetch('/api/screen', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action }),
+    });
+    const data = await r.json();
+    statusEl.textContent = data.message;
+    statusEl.className = data.ok ? 'ok' : 'err';
+  } catch (e) {
+    statusEl.textContent = 'Request failed: ' + e;
+    statusEl.className = 'err';
+  }
+  statusEl.style.display = 'block';
+  btn.disabled = false; btn.textContent = label;
+}
+document.getElementById('btn-screen-off').addEventListener('click', e => screenAction('off', e.target));
+document.getElementById('btn-screen-on').addEventListener('click', e => screenAction('on', e.target));
+
 load();
 </script>
 </body>
@@ -336,6 +392,19 @@ class Handler(BaseHTTPRequestHandler):
                 disk_msg = f"Warning: couldn't write {FULLPAGEOS_TXT} ({e}) — check its permissions (see README.md). "
             live_ok, live_msg = push_live(pages)
             self._send(200, json.dumps({'ok': not disk_msg and live_ok, 'message': disk_msg + live_msg}))
+        elif self.path == '/api/screen':
+            length = int(self.headers.get('Content-Length', 0))
+            try:
+                body = json.loads(self.rfile.read(length) or b'{}')
+            except json.JSONDecodeError:
+                self._send(400, json.dumps({'ok': False, 'message': 'Malformed request body.'}))
+                return
+            action = body.get('action')
+            if action not in ('on', 'off'):
+                self._send(400, json.dumps({'ok': False, 'message': "action must be 'on' or 'off'."}))
+                return
+            ok, msg = screen_power(action)
+            self._send(200, json.dumps({'ok': ok, 'message': msg}))
         else:
             self._send(404, json.dumps({'error': 'not found'}))
 
