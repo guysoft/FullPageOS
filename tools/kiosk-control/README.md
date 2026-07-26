@@ -165,8 +165,17 @@ ssh pi@<kiosk-ip> /home/pi/screen_power.sh off   # screen should go dark
 ssh pi@<kiosk-ip> /home/pi/screen_power.sh on    # and come back
 ```
 
-Once confirmed, schedule it with cron for an overnight sleep (adjust the
-times to taste):
+Once confirmed, set the schedule from Kiosk Control's web UI itself — the
+"Screen" card has **Sleep at** / **Wake at** time fields and a **Save
+schedule** button. Saving calls a new `/api/schedule` endpoint that rewrites
+the `pi` user's crontab for you (see `apply_schedule_to_cron()` in
+`app.py`), replacing any previous `screen_power.sh` cron lines while leaving
+every other crontab entry untouched. No SSH or manual `crontab -e` needed —
+times are entered as a normal 24-hour clock (e.g. `22:00`, `06:00`) and take
+effect on the very next scheduled fire.
+
+If you'd rather set the initial schedule by hand instead of through the UI,
+the equivalent manual crontab entry looks like:
 
 ```
 ssh pi@<kiosk-ip>
@@ -176,9 +185,10 @@ ssh pi@<kiosk-ip>
 Kiosk Control's web UI also has **Sleep now** / **Wake now** buttons (in the
 "Screen" card) that call `screen_power.sh` directly via a new `/api/screen`
 endpoint — a manual override so you can flip the screen back on immediately
-instead of waiting for the next scheduled cron time or needing to SSH in.
-This is optional: if `screen_power.sh` isn't installed, those buttons will
-just report an error rather than break anything else in the UI.
+instead of waiting for the next scheduled time, without needing to SSH in.
+This is optional: if `screen_power.sh` isn't installed, those buttons (and
+the schedule save) will just report an error rather than break anything
+else in the UI.
 
 Note that `rotate_tabs.sh` keeps sending its `ctrl+Next` on schedule
 regardless of screen power state — X still processes those events with the

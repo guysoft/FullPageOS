@@ -25,6 +25,7 @@ Stdlib only — no pip install needed on the Pi.
 """
 import json
 import os
+import re
 import subprocess
 import urllib.request
 import urllib.parse
@@ -33,16 +34,22 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 KIOSK_DIR = os.path.dirname(os.path.abspath(__file__))
 PAGES_FILE = os.path.join(KIOSK_DIR, 'pages.json')
 INTERVAL_FILE = os.path.join(KIOSK_DIR, 'interval.txt')
+SCHEDULE_FILE = os.path.join(KIOSK_DIR, 'schedule.json')
 FULLPAGEOS_TXT = '/boot/firmware/fullpageos.txt'
 CDP_BASE = 'http://localhost:9222'
 PORT = 7077
 
 # screen_power.sh (see the accompanying file) handles the actual X11 DPMS
-# on/off signaling; it's meant to also be on a cron schedule (e.g. 10pm/6am)
-# for an overnight sleep. These buttons are a manual override on top of that
-# schedule — e.g. so the screen can be turned back on right away instead of
-# waiting for the next scheduled cron fire, without needing to SSH in.
+# on/off signaling. Its cron schedule (when it fires off/on automatically)
+# is managed below by apply_schedule_to_cron() / schedule.json, editable
+# from the "Screen" card in the UI — no SSH or manual crontab editing
+# needed. The Sleep now / Wake now buttons are a manual override on top of
+# whatever that schedule is, e.g. to turn the screen back on right away
+# instead of waiting for the next scheduled time.
 SCREEN_SCRIPT = '/home/pi/screen_power.sh'
+DEFAULT_SLEEP_TIME = '22:00'
+DEFAULT_WAKE_TIME = '06:00'
+TIME_RE = re.compile(r'^([01]\d|2[0-3]):[0-5]\d$')
 
 # Only used to guess a friendly label the very first time pages.json doesn't
 # exist yet (seeded from whatever is actually in fullpageos.txt on this Pi at
@@ -97,6 +104,26 @@ def save_interval(secs):
     os.makedirs(KIOSK_DIR, exist_ok=True)
     with open(INTERVAL_FILE, 'w') as f:
         f.write(str(secs))
+
+
+def load_schedule():
+    if os.path.exists(SCHEDULE_FILE):
+        try:
+            with open(SCHEDULE_FILE) as f:
+                data = json.load(f)
+            sleep_time = data.get('sleep_time', DEFAULT_SLEEP_TIME)
+            wake_time = data.get('wake_time', DEFAULT_WAKE_TIME)
+            if TIME_RE.match(sleep_time) and TIME_RE.match(wake_time):
+                return sleep_time, wake_time
+        except Exception:
+            pass
+    return DEFAULT_SLEEP_TIME, DEFAULT_WAKE_TIME
+
+
+def save_schedule(sleep_time, wake_time):
+    os.makedirs(KIOSK_DIR, exist_ok=True)
+    with open(SCHEDULE_FILE, 'w') as f:
+        json.dump({'sleep_time': sleep_time, 'wake_time': wake_time}, f)
 
 
 def write_fullpageos_txt(pages):
@@ -157,6 +184,38 @@ def screen_power(action):
     return True, ('Screen turned off.' if action == 'off' else 'Screen turned on.')
 
 
+def apply_schedule_to_cron(sleep_time, wake_time):
+    """Rewrite this user's crontab so screen_power.sh fires off/on at the
+    given HH:MM (24-hour) times. Any existing crontab lines that call
+    screen_power.sh are treated as ours to manage and replaced; every other
+    line in the crontab is left untouched."""
+    try:
+        result = subprocess.run(['crontab', '-l'], capture_output=True, text=True, timeout=10)
+    except FileNotFoundError:
+        return False, "crontab command not found — is cron installed?"
+    except Exception as e:
+        return False, f"Failed to read the current crontab: {e}"
+    # A non-zero exit here usually just means this user has no crontab yet,
+    # which is fine — we're about to create one.
+    existing_lines = result.stdout.splitlines() if result.returncode == 0 else []
+    kept_lines = [line for line in existing_lines if SCREEN_SCRIPT not in line]
+
+    sleep_h, sleep_m = sleep_time.split(':')
+    wake_h, wake_m = wake_time.split(':')
+    kept_lines.append(f"{int(sleep_m)} {int(sleep_h)} * * * {SCREEN_SCRIPT} off")
+    kept_lines.append(f"{int(wake_m)} {int(wake_h)} * * * {SCREEN_SCRIPT} on")
+    new_crontab = '\n'.join(kept_lines) + '\n'
+
+    try:
+        proc = subprocess.run(['crontab', '-'], input=new_crontab, capture_output=True, text=True, timeout=10)
+    except Exception as e:
+        return False, f"Failed to write the new crontab: {e}"
+    if proc.returncode != 0:
+        detail = (proc.stderr or proc.stdout).strip()
+        return False, f"crontab exited with an error: {detail or f'code {proc.returncode}'}"
+    return True, f"Schedule saved — sleep at {sleep_time}, wake at {wake_time}."
+
+
 PAGE_HTML = r"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -195,6 +254,12 @@ PAGE_HTML = r"""<!DOCTYPE html>
         padding: 9px 10px; font-size: 15px; }
   .presets { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
   .presets button { font-size: 13px; padding: 6px 10px; }
+  .time-row { display: flex; gap: 12px; }
+  .time-field { flex: 1; }
+  .time-field label { display: block; font-size: 13px; color: rgba(243,239,232,0.55); margin-bottom: 4px; }
+  .time-field input[type=time] { width: 100%; background: rgba(243,239,232,0.08);
+        border: 1px solid rgba(243,239,232,0.18); color: #f3efe8; border-radius: 8px;
+        padding: 9px 10px; font-size: 15px; }
   #status { margin-top: 14px; font-size: 14px; padding: 10px 12px; border-radius: 8px; display: none; }
   #status.ok { display: block; background: rgba(120,200,140,0.15); color: #a8e0b8; }
   #status.err { display: block; background: rgba(232,103,103,0.18); color: #f0a898; }
@@ -237,11 +302,22 @@ PAGE_HTML = r"""<!DOCTYPE html>
 
   <div class="card" style="margin-top: 18px;">
     <h2>Screen</h2>
-    <div class="sub" style="margin: 0 0 12px;">If screen_power.sh is on a cron schedule for overnight sleep, use these to override right now, without waiting for the next scheduled time.</div>
-    <div style="display: flex; gap: 8px;">
+    <div class="sub" style="margin: 0 0 12px;">Sleeps and wakes automatically on the schedule below. Use these to override right now, without waiting for the next scheduled time.</div>
+    <div style="display: flex; gap: 8px; margin-bottom: 18px;">
       <button class="btn" id="btn-screen-off" style="flex: 1;">Sleep now</button>
       <button class="btn" id="btn-screen-on" style="flex: 1;">Wake now</button>
     </div>
+    <div class="time-row">
+      <div class="time-field">
+        <label for="sleep-time">Sleep at</label>
+        <input type="time" id="sleep-time">
+      </div>
+      <div class="time-field">
+        <label for="wake-time">Wake at</label>
+        <input type="time" id="wake-time">
+      </div>
+    </div>
+    <button class="btn" id="btn-save-schedule" style="width: 100%; margin-top: 10px;">Save schedule</button>
   </div>
 </div>
 
@@ -296,6 +372,10 @@ async function load() {
   const data = await r.json();
   pages = data.pages;
   document.getElementById('interval').value = data.interval;
+  if (data.schedule) {
+    document.getElementById('sleep-time').value = data.schedule.sleep_time;
+    document.getElementById('wake-time').value = data.schedule.wake_time;
+  }
   render();
 }
 
@@ -346,6 +426,36 @@ async function screenAction(action, btn) {
 document.getElementById('btn-screen-off').addEventListener('click', e => screenAction('off', e.target));
 document.getElementById('btn-screen-on').addEventListener('click', e => screenAction('on', e.target));
 
+document.getElementById('btn-save-schedule').addEventListener('click', async () => {
+  const statusEl = document.getElementById('status');
+  const btn = document.getElementById('btn-save-schedule');
+  const sleepTime = document.getElementById('sleep-time').value;
+  const wakeTime = document.getElementById('wake-time').value;
+  if (!sleepTime || !wakeTime) {
+    statusEl.textContent = 'Set both a sleep time and a wake time.';
+    statusEl.className = 'err';
+    statusEl.style.display = 'block';
+    return;
+  }
+  btn.disabled = true; btn.textContent = 'Saving…';
+  statusEl.className = ''; statusEl.style.display = 'none';
+  try {
+    const r = await fetch('/api/schedule', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sleep_time: sleepTime, wake_time: wakeTime }),
+    });
+    const data = await r.json();
+    statusEl.textContent = data.message;
+    statusEl.className = data.ok ? 'ok' : 'err';
+  } catch (e) {
+    statusEl.textContent = 'Request failed: ' + e;
+    statusEl.className = 'err';
+  }
+  statusEl.style.display = 'block';
+  btn.disabled = false; btn.textContent = 'Save schedule';
+});
+
 load();
 </script>
 </body>
@@ -366,7 +476,12 @@ class Handler(BaseHTTPRequestHandler):
         if self.path in ('/', '/index.html'):
             self._send(200, PAGE_HTML, 'text/html; charset=utf-8')
         elif self.path == '/api/state':
-            self._send(200, json.dumps({'pages': load_pages(), 'interval': load_interval()}))
+            sleep_time, wake_time = load_schedule()
+            self._send(200, json.dumps({
+                'pages': load_pages(),
+                'interval': load_interval(),
+                'schedule': {'sleep_time': sleep_time, 'wake_time': wake_time},
+            }))
         else:
             self._send(404, json.dumps({'error': 'not found'}))
 
@@ -404,6 +519,22 @@ class Handler(BaseHTTPRequestHandler):
                 self._send(400, json.dumps({'ok': False, 'message': "action must be 'on' or 'off'."}))
                 return
             ok, msg = screen_power(action)
+            self._send(200, json.dumps({'ok': ok, 'message': msg}))
+        elif self.path == '/api/schedule':
+            length = int(self.headers.get('Content-Length', 0))
+            try:
+                body = json.loads(self.rfile.read(length) or b'{}')
+            except json.JSONDecodeError:
+                self._send(400, json.dumps({'ok': False, 'message': 'Malformed request body.'}))
+                return
+            sleep_time = (body.get('sleep_time') or '').strip()
+            wake_time = (body.get('wake_time') or '').strip()
+            if not TIME_RE.match(sleep_time) or not TIME_RE.match(wake_time):
+                self._send(400, json.dumps({'ok': False, 'message': 'Times must be 24-hour HH:MM.'}))
+                return
+            ok, msg = apply_schedule_to_cron(sleep_time, wake_time)
+            if ok:
+                save_schedule(sleep_time, wake_time)
             self._send(200, json.dumps({'ok': ok, 'message': msg}))
         else:
             self._send(404, json.dumps({'error': 'not found'}))
