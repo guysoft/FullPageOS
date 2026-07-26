@@ -15,7 +15,7 @@ How it works:
     rotate_tabs.sh re-reads every loop, so a new value takes effect within
     one cycle — no service restart needed.
 
-Requires (see the accompanying SETUP.md for exact one-time steps):
+Requires (see the accompanying README.md for exact one-time steps):
   - start_chromium_browser launched with --remote-debugging-port=9222
   - rotate_tabs.sh reading its interval from INTERVAL_FILE each loop
   - This directory and /boot/firmware/fullpageos.txt writable by the user
@@ -333,7 +333,7 @@ class Handler(BaseHTTPRequestHandler):
                 write_fullpageos_txt(pages)
                 disk_msg = ''
             except Exception as e:
-                disk_msg = f"Warning: couldn't write {FULLPAGEOS_TXT} ({e}) — check its permissions (see SETUP.md). "
+                disk_msg = f"Warning: couldn't write {FULLPAGEOS_TXT} ({e}) — check its permissions (see README.md). "
             live_ok, live_msg = push_live(pages)
             self._send(200, json.dumps({'ok': not disk_msg and live_ok, 'message': disk_msg + live_msg}))
         else:
