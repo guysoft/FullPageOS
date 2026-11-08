@@ -1,5 +1,5 @@
 export DIST_NAME=FullpageOS
-export DIST_VERSION=1.0.0
+export DIST_VERSION=1.0.0-dashboard-recovery-test
 export MODULES="base(raspicam, network, disable-services(gui(fullpageos), usage-statistics))"
 
 # if set will enlarge root parition prior to build by provided size in MB
@@ -16,3 +16,6 @@ export RPI_IMAGER_ICON="https://raw.githubusercontent.com/guysoft/FullPageOS/dev
 
 export USAGE_STATISTICS_URL=https://fullpageos-tracking.gnethomelinux.com
 
+# Test upstream dashboard PR #8 without changing the normal release branches.
+export FULLPAGEOS_DASHBOARD_REPO_BUILD=https://github.com/guysoft/FullPageDashboard.git
+export FULLPAGEOS_DASHBOARD_REPO_BRANCH=fix/recover-json-state

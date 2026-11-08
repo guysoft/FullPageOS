@@ -1,0 +1,5 @@
+#!/bin/bash
+set -e
+
+# Refuse to build if the dashboard test branch no longer matches the tested PR.
+test "$(git -c safe.directory=/var/www/html/FullPageDashboard -C /var/www/html/FullPageDashboard rev-parse HEAD)" = 70294af91b01610f813e5b673dd5e6780dc9ffce
