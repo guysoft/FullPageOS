@@ -19,8 +19,8 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y coreutils p7zip-full qemu-user-static \
-            python3-git python3-yaml
+          sudo apt-get install -y coreutils p7zip-full qemu-user-binfmt \
+            python3-git python3-yaml file
 
       - name: Checkout CustomPiOS
         uses: actions/checkout@v4
